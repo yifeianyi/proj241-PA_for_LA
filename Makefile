@@ -1,5 +1,5 @@
-STUID = 221220000
-STUNAME = 张三
+STUID = T202412059992867
+STUNAME = run的全都队
 
 # DO NOT modify the following code!!!
 
