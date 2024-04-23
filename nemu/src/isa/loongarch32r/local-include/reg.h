@@ -33,11 +33,11 @@ static inline const char* reg_name(int idx) {
 #define R(i) gpr(i)
 #define Mr vaddr_read
 #define Mw vaddr_write
-
+//=================================================================
 enum {
   TYPE_2R   , TYPE_3R   , TYPE_4R,
   TYPE_2RI8 , TYPE_2RI12, TYPE_2RI14,
-  TYPE_2RI16, TYPE_1RI20,  
+  TYPE_2RI16, TYPE_1RI20, TYPE_1RI21, 
   TYPE_N, // none
 };
 
