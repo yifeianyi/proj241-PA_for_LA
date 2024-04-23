@@ -18,7 +18,7 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         uint32_t type =  GetInst(inst,code);
         Assert(inst!=NULL,"GetInst false.");
 
-        char *p = inst;
+        char p[20];
         int rj = BITS(code, 9, 5);
         switch (type)
         {
@@ -29,5 +29,6 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         default:
             break;
         }
+        strcat(inst,p);
         strcpy(str,inst);
 }
