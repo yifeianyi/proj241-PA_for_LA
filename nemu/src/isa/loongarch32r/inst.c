@@ -51,6 +51,7 @@ static int decode_exec(Decode *s) {
 #define INSTPAT_INST(s) ((s)->isa.inst.val)
 #define INSTPAT_MATCH(s, name, type, ... /* execute body */ ) { \
   decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
+  printf("inst:0x%x\n",(s)->isa.inst.val);\
   __VA_ARGS__ ; \
 }
 
