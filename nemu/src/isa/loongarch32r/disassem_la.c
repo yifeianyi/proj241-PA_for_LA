@@ -19,14 +19,12 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         Assert(inst!=NULL,"GetInst false.");
 
         char p[20];
-        word_t *imm = NULL;
-        uint32_t i = code;
         int rd = BITS(code, 4, 0);
         switch (type)
         {
         case TYPE_1RI20:
-            simm20();
-            sprintf(p,"  %s, %d",regs[rd],*imm);
+            int imm = SEXT(BITS(code, 24, 5), 20) << 12;
+            sprintf(p,"  %s, %d",regs[rd],imm);
             break;
         
         default:
