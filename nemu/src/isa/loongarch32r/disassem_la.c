@@ -17,6 +17,7 @@ static void GetInst(char *inst, uint32_t code){
     // uint32_t opcode_31_26 = BITS(code, 31, 26);
 
     if (opcode_31_25 == PCADDU12I) {
+        Log("In opcode_31_25");
         strcpy((char*)inst, "pcaddu12i\0");
         return ;
     }
