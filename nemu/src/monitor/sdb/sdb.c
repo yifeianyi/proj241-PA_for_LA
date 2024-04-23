@@ -19,6 +19,8 @@
 #include <readline/history.h>
 #include "sdb.h"
 
+#include "memory/paddr.h"
+
 static int is_batch_mode = false;
 
 void init_regex();
@@ -49,7 +51,22 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+  nemu_state.state = NEMU_QUIT;
   return -1;
+}
+
+static int cmd_x(char *args){
+  char* first = strtok(args," ");
+  char* second = strtok(NULL," ");
+  int len = 0;
+  paddr_t addr = 0;
+  sscanf(first,"%d",&len);
+  sscanf(second,"%x",&addr);
+  for(int i = 0;i<len;i++){
+    printf("0x%08X: 0x%08X\n",addr,paddr_read(addr,4));
+    addr += 4;
+  }
+  return 0;
 }
 
  static int cmd_si(char *args){
@@ -61,7 +78,7 @@ static int cmd_q(char *args) {
    cpu_exec(step);
    return 0;
  }
- 
+
 static int cmd_help(char *args);
 
 static struct {
@@ -72,7 +89,8 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-
+  { "x", "Memory scanning",cmd_x},
+  
   /* TODO: Add more commands */
   
   { "si", "Pause the program after executing N instructions in one step,\n       When N is not given, it defaults to 1", cmd_si},
