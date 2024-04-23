@@ -17,7 +17,7 @@ static void GetInst(char *inst, uint32_t code){
     // uint32_t opcode_31_26 = BITS(code, 31, 26);
 
     if (opcode_31_25 == PCADDU12I) {
-        strcpy((char*)inst, "pcaddu12i");
+        strcpy((char*)inst, "pcaddu12i\0");
         return ;
     }
     else {
@@ -29,5 +29,6 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         // uint8_t p[20];
         char *inst = NULL;
         GetInst(inst,code);
+
         strcpy((char*)str,(char*)inst);
 }
