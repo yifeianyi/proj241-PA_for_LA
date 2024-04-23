@@ -55,6 +55,7 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+<<<<<<< HEAD
 static int cmd_x(char *args){
   char* first = strtok(args," ");
   char* second = strtok(NULL," ");
@@ -70,6 +71,18 @@ static int cmd_x(char *args){
 }
 
 
+=======
+ static int cmd_si(char *args){
+   int step = 0;
+   if(args == NULL)
+      step = 1;
+   else
+     sscanf(args,"%d",&step);
+   cpu_exec(step);
+   return 0;
+ }
+ 
+>>>>>>> main
 static int cmd_help(char *args);
 
 static struct {
@@ -83,7 +96,8 @@ static struct {
   { "x", "Memory scanning",cmd_x},
   
   /* TODO: Add more commands */
-
+  
+  { "si", "Pause the program after executing N instructions in one step,\n       When N is not given, it defaults to 1", cmd_si},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
