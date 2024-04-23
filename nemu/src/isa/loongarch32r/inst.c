@@ -18,20 +18,6 @@
 #include <cpu/ifetch.h>
 #include <cpu/decode.h>
 
-#define R(i) gpr(i)
-#define Mr vaddr_read
-#define Mw vaddr_write
-
-enum {
-  TYPE_2R   , TYPE_3R   , TYPE_4R,
-  TYPE_2RI8 , TYPE_2RI12, TYPE_2RI14,
-  TYPE_2RI16, TYPE_1RI20,  
-  TYPE_N, // none
-};
-
-#define src1R()  do { *src1 = R(rj); } while (0)
-#define simm12() do { *imm = SEXT(BITS(i, 21, 10), 12); } while (0)
-#define simm20() do { *imm = SEXT(BITS(i, 24, 5), 20) << 12; } while (0)
 
 static void decode_operand(Decode *s, int *rd_, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;

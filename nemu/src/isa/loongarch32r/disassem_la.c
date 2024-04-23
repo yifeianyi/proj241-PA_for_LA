@@ -6,6 +6,12 @@
  *
 ******************************************************************************/
 extern const char *regs[];
+enum {
+  TYPE_2R   , TYPE_3R   , TYPE_4R,
+  TYPE_2RI8 , TYPE_2RI12, TYPE_2RI14,
+  TYPE_2RI16, TYPE_1RI20,  
+  TYPE_N, // none
+};
 static void GetInst(char *inst, uint32_t code){
     // uint32_t opcode_31_10 = BITS(code, 31, 10);
     // uint32_t opcode_31_15 = BITS(code, 31, 15);
