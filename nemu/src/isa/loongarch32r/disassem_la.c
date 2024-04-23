@@ -29,7 +29,7 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         // uint8_t p[20];
         char *inst = NULL;
         GetInst(inst,code);
-
+        Assert(inst!=NULL,"GetInst false.");
         strcpy((char*)str,(char*)inst);
         printf("inst:%s",str);
 }
