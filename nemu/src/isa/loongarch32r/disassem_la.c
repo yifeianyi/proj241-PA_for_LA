@@ -14,19 +14,21 @@ static uint32_t GetInst(char *inst, uint32_t code){
     else { strcpy(inst,"\0");return TYPE_N;}
 }
 void disassem_la(char *str, uint64_t pc, uint32_t code){
+        //获取指令
         char inst[30];
         uint32_t type =  GetInst(inst,code);
         Assert(inst!=NULL,"GetInst false.");
 
         char p[20];
         int rd = BITS(code, 4, 0);
+
+        //获取指令的寄存器 和 立即数值
         switch (type)
         {
         case TYPE_1RI20:
             int imm = SEXT(BITS(code, 24, 5), 20) << 12;
             sprintf(p,"  %s, %d",regs[rd],imm);
             break;
-        
         default:
             break;
         }
