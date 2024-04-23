@@ -31,4 +31,5 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         GetInst(inst,code);
 
         strcpy((char*)str,(char*)inst);
+        printf("inst:%s",str);
 }
