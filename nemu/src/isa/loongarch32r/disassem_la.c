@@ -10,7 +10,7 @@ static uint32_t GetInst(char *inst, uint32_t code){
     uint32_t opcode_31_25 = BITS(code, 31, 25);
     // uint32_t opcode_31_26 = BITS(code, 31, 26);
 
-    if (opcode_31_25 == PCADDU12I) {strcpy(inst, "pcaddu12i");return TYPE_1RI21;}
+    if (opcode_31_25 == PCADDU12I) {strcpy(inst, "pcaddu12i");return TYPE_1RI20;}
     else { strcpy(inst,"\0");return TYPE_N;}
 }
 void disassem_la(char *str, uint64_t pc, uint32_t code){
@@ -19,11 +19,14 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         Assert(inst!=NULL,"GetInst false.");
 
         char p[20];
+        word_t *imm = NULL;
+        uint32_t i = code;
         int rd = BITS(code, 4, 0);
         switch (type)
         {
-        case TYPE_1RI21:
-            sprintf(p,"  %s, ",regs[rd]);
+        case TYPE_1RI20:
+            simm20();
+            sprintf(p,"  %s, %d",regs[rd],*imm);
             break;
         
         default:
