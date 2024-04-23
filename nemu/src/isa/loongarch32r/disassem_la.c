@@ -17,15 +17,15 @@ static void GetInst(char *inst, uint32_t code){
     // uint32_t opcode_31_26 = BITS(code, 31, 26);
 
     if (opcode_31_25 == PCADDU12I) {strcpy(inst, "pcaddu12i");return ;}
-    else {
-        strcpy(inst,"\0");
-        return;
-    }
+    else { strcpy(inst,"\0");return;}
 }
 void disassem_la(char *str, uint64_t pc, uint32_t code){
         char inst[30];
         GetInst(inst,code);
         Assert(inst!=NULL,"GetInst false.");
+
+        // char *p = inst;
+        // // sprintf(p,"");
+
         strcpy(str,inst);
-        printf("inst:%s\n",str);
 }
