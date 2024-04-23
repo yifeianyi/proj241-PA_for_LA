@@ -18,20 +18,20 @@ static void GetInst(char *inst, uint32_t code){
 
     if (opcode_31_25 == PCADDU12I) {
         Log("In opcode_31_25");
-        strcpy((char*)inst, "pcaddu12i\0");
+        strcpy(inst, "pcaddu12i\0");
         // printf("inst:%s \n",inst);
         return ;
     }
     else {
-        strcpy((char*)inst,"\0");
+        strcpy(inst,"\0");
         return;
     }
 }
 void disassem_la(char *str, uint64_t pc, uint32_t code){
         // uint8_t p[20];
-        char *inst = NULL;
+        char inst[30];
         GetInst(inst,code);
         Assert(inst!=NULL,"GetInst false.");
-        strcpy((char*)str,(char*)inst);
+        strcpy(str,inst);
         printf("inst:%s",str);
 }
