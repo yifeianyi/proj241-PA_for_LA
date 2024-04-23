@@ -68,7 +68,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #else
   void disassem_la(char *str, uint64_t pc, uint32_t code);
   disassem_la(p, s->pc, s->isa.inst.val);
-  p[0] = '\0'; // the upstream llvm does not support loongarch32r
+  // p[0] = '\0'; // the upstream llvm does not support loongarch32r
 #endif
 #endif
 }
