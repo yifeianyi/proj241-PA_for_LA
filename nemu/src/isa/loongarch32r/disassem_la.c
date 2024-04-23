@@ -5,7 +5,7 @@
  *  code是八进制表示的指令
  *
 ******************************************************************************/
-
+extern const char *regs[];
 static void GetInst(char *inst, uint32_t code){
     // uint32_t opcode_31_10 = BITS(code, 31, 10);
     // uint32_t opcode_31_15 = BITS(code, 31, 15);
@@ -16,7 +16,7 @@ static void GetInst(char *inst, uint32_t code){
     uint32_t opcode_31_25 = BITS(code, 31, 25);
     // uint32_t opcode_31_26 = BITS(code, 31, 26);
 
-    if (opcode_31_25 == PCADDU12I) {strcpy(inst, "pcaddu12i");return ;}
+    if (opcode_31_25 == PCADDU12I) {strcpy(inst, "pcaddu12i");return;}
     else { strcpy(inst,"\0");return;}
 }
 void disassem_la(char *str, uint64_t pc, uint32_t code){
@@ -25,7 +25,6 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         Assert(inst!=NULL,"GetInst false.");
 
         // char *p = inst;
-        // // sprintf(p,"");
-
+        // sprintf(p,"\t%s, ");
         strcpy(str,inst);
 }
