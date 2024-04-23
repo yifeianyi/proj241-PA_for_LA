@@ -19,11 +19,11 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         Assert(inst!=NULL,"GetInst false.");
 
         char p[20];
-        int rj = BITS(code, 9, 5);
+        int rd = BITS(code, 4, 0);
         switch (type)
         {
         case TYPE_1RI21:
-            sprintf(p,"\t%s, ",regs[rj]);
+            sprintf(p,"  %s, ",regs[rd]);
             break;
         
         default:
