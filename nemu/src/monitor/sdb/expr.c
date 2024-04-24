@@ -122,6 +122,31 @@ static bool make_token(char *e) {
   return true;
 }
 
+static bool check_parentheses(int p, int q){
+  int i,cnt = 0;
+  if(tokens[p].type != '(' || tokens[q].type != ')') 
+    return false;
+  for(i = p; i <= q; i++){
+    if(tokens[p].type == '(') 
+      cnt++;
+    else if(tokens[q].type == ')') 
+      cnt--;
+    if(cnt == 0 && i<q) 
+      return false;
+  }
+  if(cnt < 0) return false;
+  return true;
+}
+
+int eval(int p,int q){
+  if(p>q){
+    return 0;
+  }
+  else if(check_parentheses(p,q)==true){
+    return eval(p+1,q-1);
+  }
+  return 0;
+}
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -129,8 +154,5 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  /* TODO: Insert codes to evaluate the expression. */
-  TODO();
-
-  return 0;
+  return eval(0, 1);
 }
