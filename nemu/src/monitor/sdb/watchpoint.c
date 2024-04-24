@@ -83,8 +83,8 @@ void watchpoint_show(){
         wp_pool[i].NO,wp_pool[i].expr,wp_pool[i].old_value,wp_pool[i].new_value);
         flag = false;
     }
-    if(flag) printf("No watchpoint now.\n");
   }
+  if(flag) printf("No watchpoint now.\n");
 }
 
 void delete_watchpoint(int no){
