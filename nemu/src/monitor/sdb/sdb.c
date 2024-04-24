@@ -102,6 +102,7 @@ static int cmd_info(char *args){
     watchpoint_show();
   }
   return 0;
+  
 }
 
 static int cmd_help(char *args);
