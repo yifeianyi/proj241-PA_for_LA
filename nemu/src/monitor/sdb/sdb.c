@@ -90,7 +90,18 @@ static int cmd_d(char* args){
 static int cmd_w(char *args){
     create_watchpoint(args);
     return 0;
-    
+
+}
+
+static int cmd_info(char *args){
+  if(args == NULL){
+    printf("no element\n");
+  }else if(strcmp(args,"r") == 0){
+    isa_reg_display();
+  }else if(strcmp(args,"w") == 0){
+    watchpoint_show();
+  }
+  return 0;
 }
 
 static int cmd_help(char *args);
@@ -106,6 +117,7 @@ static struct {
   { "x", "Memory scanning",cmd_x},
   
   /* TODO: Add more commands */
+  { "info","if you input second element is r,you can know the regs status,\n else if you input second element is w ,you can know watchpoint informeation",cmd_info},
   { "w", "set watchpoint",cmd_w},
   { "d", "delete watchpoint",cmd_d},
   { "si", "Pause the program after executing N instructions in one step,\n       When N is not given, it defaults to 1", cmd_si},
