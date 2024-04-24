@@ -90,6 +90,7 @@ static int cmd_d(char* args){
 static int cmd_w(char *args){
     create_watchpoint(args);
     return 0;
+    
 }
 
 static int cmd_help(char *args);
