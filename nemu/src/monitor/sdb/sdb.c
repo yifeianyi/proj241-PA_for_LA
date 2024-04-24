@@ -52,6 +52,19 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+static int cmd_p(char* args) {
+  bool success = true;
+  init_regex();
+  int res = expr(args, &success);
+  if (!success) {
+    puts("invalid expression");
+  } else {
+    printf("res = %d\n", res);
+  }
+  return 0;
+}
+
+
  static int cmd_si(char *args){
    int step = 0;
    if(args == NULL)
@@ -74,8 +87,8 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-  
-  { "si", "Pause the program after executing N instructions in one step,\n       When N is not given, it defaults to 1", cmd_si},
+  { "p", "p expr", cmd_p },
+  { "si", "Pause the program after executing N instructions in one step,\n      When N is not given, it defaults to 1", cmd_si},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
