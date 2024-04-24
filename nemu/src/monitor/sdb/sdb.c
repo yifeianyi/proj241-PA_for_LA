@@ -117,7 +117,7 @@ static struct {
   { "x", "Memory scanning",cmd_x},
   
   /* TODO: Add more commands */
-  { "info","if you input second element is r,you can know the regs status,\n else if you input second element is w ,you can know watchpoint informeation",cmd_info},
+  { "info","if you input second element is r,you can know the regs status,\n\t else if you input second element is w ,you can know watchpoint informeation",cmd_info},
   { "w", "set watchpoint",cmd_w},
   { "d", "delete watchpoint",cmd_d},
   { "si", "Pause the program after executing N instructions in one step,\n       When N is not given, it defaults to 1", cmd_si},
