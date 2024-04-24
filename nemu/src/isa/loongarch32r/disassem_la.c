@@ -4,7 +4,7 @@ static uint32_t GetInst(char *inst, uint32_t code){
     // uint32_t opcode_31_10 = BITS(code, 31, 10);
     // uint32_t opcode_31_15 = BITS(code, 31, 15);
     // uint32_t opcode_31_18 = BITS(code, 31, 18);
-    // uint32_t opcode_31_20 = BITS(code, 31, 20);
+    // uint32_t opcode_31_20 = BITS(code, 31, 20); 
     // uint32_t opcode_31_22 = BITS(code, 31, 22);
     // uint32_t opcode_31_24 = BITS(code, 31, 24);
     uint32_t opcode_31_25 = BITS(code, 31, 25);
