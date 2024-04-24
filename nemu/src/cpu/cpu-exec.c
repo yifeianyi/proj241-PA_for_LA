@@ -17,6 +17,8 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
+#include "isa.h"
+#include </home/lazy/project241-PA_for_LA/nemu/src/monitor/sdb/watchpoint.h>
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -38,7 +40,27 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+  // scan watchpoint
+  /*
+  for(int i = 0; i < NR_WP; i++){
+    if(wp_pool[i].use_flag){
+      bool flag = false;
+      int tmp = expr(wp_pool[i].expr,&flag);
+      if(flag){
+        if(tmp != wp_pool[i].old_value){
+          nemu_state.state = NEMU_STOP;
+          printf("not equal\n");
+          return ;
+        }
+      }else{
+          printf("expr error\n");
+          assert(0);
+      }
+    }
+  }
+  */
 }
+
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
