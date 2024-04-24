@@ -62,13 +62,15 @@ void free_wp(WP *wp){
   //delete the last node
   if(head -> NO == wp ->NO){
       head->use_flag = false;
-
+      head = NULL;
+      printf("Delete all watchpoint success\n");
   }
   //delete simple node
   for(WP* p = head;p->next != NULL; p=p->next){
     if(p -> next -> NO == wp->NO){
       p->next = p->next->next;
       p->next->use_flag = false;
+      printf("Delete watchpoint %d\n",p->next->NO);
       return ;
     }
   }
