@@ -102,6 +102,8 @@ void create_watchpoint(char* args){
   bool success = false;
   int tmp = expr(p -> expr,&success);
   if(success) p -> old_value = tmp;
-  else {printf("Get expr value error when create watchpoint\n");}
+  else {
+    //printf("Get expr value error when create watchpoint\n");
+  }
   printf("Create watchpoint NO.%d success\n", p->NO);
 }
