@@ -71,7 +71,7 @@ void free_wp(WP *wp){
     if(p -> next -> NO == wp->NO){
       p->next = p->next->next;
       p->next->use_flag = false;
-      printf("Delete watchpoint %d\n",p->next->NO);
+      printf("Delete watchpoint %d\n",p->NO);
       return ;
     }
   }
