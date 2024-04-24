@@ -18,18 +18,6 @@
 #include <cpu/ifetch.h>
 #include <cpu/decode.h>
 
-#define R(i) gpr(i)
-#define Mr vaddr_read
-#define Mw vaddr_write
-
-enum {
-  TYPE_2RI12, TYPE_1RI20,
-  TYPE_N, // none
-};
-
-#define src1R()  do { *src1 = R(rj); } while (0)
-#define simm12() do { *imm = SEXT(BITS(i, 21, 10), 12); } while (0)
-#define simm20() do { *imm = SEXT(BITS(i, 24, 5), 20) << 12; } while (0)
 
 static void decode_operand(Decode *s, int *rd_, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
@@ -53,7 +41,7 @@ static int decode_exec(Decode *s) {
 }
 
   INSTPAT_START();
-  INSTPAT("0001110 ????? ????? ????? ????? ?????" , pcaddu12i, 1RI20 , R(rd) = s->pc + imm);
+  INSTPAT("0001110??? ???????????? ????? ?????"   , pcaddu12i, 1RI20 , R(rd) = s->pc + imm);
   INSTPAT("0010100010 ???????????? ????? ?????"   , ld.w     , 2RI12 , R(rd) = Mr(src1 + imm, 4));
   INSTPAT("0010100110 ???????????? ????? ?????"   , st.w     , 2RI12 , Mw(src1 + imm, 4, R(rd)));
 
