@@ -64,6 +64,7 @@ void free_wp(WP *wp){
       head->use_flag = false;
       head = NULL;
       printf("Delete all watchpoint success\n");
+      return ;
   }
   //delete simple node
   for(WP* p = head;p->next != NULL; p=p->next){
