@@ -78,6 +78,20 @@ static int cmd_x(char *args){
    return 0;
 }
 
+static int cmd_d(char* args){
+  if(args == NULL){
+      printf("No args\n");
+  }else{
+      delete_watchpoint(atoi(args));
+  }
+  return 0;
+}
+
+static int cmd_w(char *args){
+    create_watchpoint(args);
+    return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -91,7 +105,8 @@ static struct {
   { "x", "Memory scanning",cmd_x},
   
   /* TODO: Add more commands */
-  
+  { "w", "set watchpoint",cmd_w},
+  { "d", "delete watchpoint",cmd_d},
   { "si", "Pause the program after executing N instructions in one step,\n       When N is not given, it defaults to 1", cmd_si},
 };
 

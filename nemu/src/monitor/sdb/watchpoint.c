@@ -22,7 +22,10 @@ typedef struct watchpoint {
   struct watchpoint *next;
 
   /* TODO: Add more members if necessary */
-
+  bool use_flag;
+  char expr[50];
+  int old_value;
+  int new_value;
 } WP;
 
 static WP wp_pool[NR_WP] = {};
@@ -40,4 +43,64 @@ void init_wp_pool() {
 }
 
 /* TODO: Implement the functionality of watchpoint */
+WP* new_wp(){
+   for(WP* p = free_; p->next != NULL ; p = p->next){
+      if(p->use_flag == false){
+         p->use_flag = true;
+         if(head == NULL){
+            head = p;
+         }
+         return p;
+      }
+   }
+   printf("No unuse point\n");
+   assert(0);
+   return NULL;
+}
 
+void free_wp(WP *wp){
+  //delete the last node
+  if(head -> NO == wp ->NO){
+      head->use_flag = false;
+
+  }
+  //delete simple node
+  for(WP* p = head;p->next != NULL; p=p->next){
+    if(p -> next -> NO == wp->NO){
+      p->next = p->next->next;
+      p->next->use_flag = false;
+      return ;
+    }
+  }
+}
+
+void watchpoint_show(){
+  bool flag = true;
+  for(int i = 0;i<NR_WP;i++){
+    if(wp_pool[i].use_flag){
+        printf("Watchpoint.No: %d, expr = %s, old_value = %d, new_value = %d\n",
+        wp_pool[i].NO,wp_pool[i].expr,wp_pool[i].old_value,wp_pool[i].new_value);
+        flag = false;
+    }
+    if(flag) printf("No watchpoint now.\n");
+  }
+}
+
+void delete_watchpoint(int no){
+    for(int i = 0;i<NR_WP;i++){
+       if(wp_pool[i].NO == no){
+          free_wp(&wp_pool[i]);
+          return ; 
+       }
+    }
+}
+
+void create_watchpoint(char* args){
+  WP* p = new_wp();
+  strcpy(p -> expr,args);
+  bool success = false;
+  int tmp = expr(p -> expr,&success);
+  if(success) p -> old_value = tmp;
+  else {printf("Get expr value error when create watchpoint\n");}
+  printf("Create watchpoint NO.%d success\n", p->NO);
+}
