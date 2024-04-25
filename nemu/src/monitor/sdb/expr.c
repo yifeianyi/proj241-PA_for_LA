@@ -189,6 +189,16 @@ int eval(int p, int q) {
                 return val1 * val2;
             case '/':
                 return val1 / val2;
+            case TK_AND:
+              if (strcmp(tokens[op].str, "&&") == 0)
+                return val1 && val2;
+            case TK_OR:
+              if (strcmp(tokens[op].str, "||") == 0)
+                return val1 || val2;
+            case '!':
+              if (strcmp(tokens[op].str, "!") == 0)
+                return !val2;
+
             default:
                 return 0;
         }
