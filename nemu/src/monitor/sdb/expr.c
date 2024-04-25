@@ -41,7 +41,7 @@ static struct rule {
   {"!", '!'},
   {"==", TK_EQ},
   {"!=", TK_NEQ},
-  {"(0[xX])?[0-9a-fA-F]+", TK_HEX},
+  {"0[xX][0-9a-fA-F]+", TK_HEX},
   {"[0-9]+", TK_NUMBER},
   {"[0-9]+\\.[0-9]+", TK_FLOAT},
   {"[a-zA-Z_][a-zA-Z0-9_]*", TK_IDENTIFIER}, // 标识符（变量名等）
