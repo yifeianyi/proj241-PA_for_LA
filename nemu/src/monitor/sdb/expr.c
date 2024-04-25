@@ -173,10 +173,8 @@ int eval(int p, int q) {
             // Handle hexadecimal and register expressions
             if (tokens[p].type == TK_HEX) {
                 int val;
-                printf("%s\n",tokens[p].str);
                 sscanf(tokens[p].str, "%x", &val);
                 return val;
-                // return evaluate_hexadecimal(tokens[p].str);
             } else if (tokens[p].type == TK_REGISTER) {
                 return evaluate_register(tokens[p].str);
             } else {
