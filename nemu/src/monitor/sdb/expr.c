@@ -130,11 +130,11 @@ static bool check_parentheses(int p, int q) {
     return true;
 }
 
-static int evaluate_hexadecimal(const char *str) {
+/*static int evaluate_hexadecimal(const char *str) {
     int val;
     sscanf(str, "%x", &val);
     return val;
-}
+}*/
 
 static int evaluate_register(const char *str) {
     if (strcmp(str, "$ra") == 0) {
@@ -168,7 +168,11 @@ int eval(int p, int q) {
         if (op == -1) {
             // Handle hexadecimal and register expressions
             if (tokens[p].type == TK_HEX) {
-                return evaluate_hexadecimal(tokens[p].str);
+                int val;
+                printf("%s\n",tokens[p].str);
+                sscanf(tokens[p].str, "%x", &val);
+                return val;
+                // return evaluate_hexadecimal(tokens[p].str);
             } else if (tokens[p].type == TK_REGISTER) {
                 return evaluate_register(tokens[p].str);
             } else {
