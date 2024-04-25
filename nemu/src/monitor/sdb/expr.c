@@ -88,6 +88,10 @@ static bool make_token(char *e) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
+
+        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+            i, rules[i].regex, position, substr_len, substr_len, substr_start);
+
         position += substr_len;
 
         switch (rules[i].token_type) {
@@ -129,12 +133,6 @@ static bool check_parentheses(int p, int q) {
         return false;
     return true;
 }
-
-/*static int evaluate_hexadecimal(const char *str) {
-    int val;
-    sscanf(str, "%x", &val);
-    return val;
-}*/
 
 static int evaluate_register(const char *str) {
     if (strcmp(str, "$ra") == 0) {
