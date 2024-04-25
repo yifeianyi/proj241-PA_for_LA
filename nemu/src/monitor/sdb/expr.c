@@ -124,18 +124,15 @@ static bool make_token(char *e) {
 
 static bool check_parentheses(int p, int q){
   int i,cnt = 0;
-  if(tokens[p].type != '(' || tokens[q].type != ')') 
-    return false;
   for(i = p; i <= q; i++){
-    if(tokens[p].type == '(') 
+    if(tokens[i].type == '(') 
       cnt++;
-    else if(tokens[q].type == ')') 
+    else if(tokens[i].type == ')') 
       cnt--;
-    if(cnt == 0 && i<q) 
+    if(cnt < 0) 
       return false;
   }
-  if(cnt < 0) return false;
-  return true;
+  return (cnt == 0);
 }
 
 int eval(int p, int q) {
@@ -161,8 +158,16 @@ int eval(int p, int q) {
     // 如果没有找到运算符，则将表达式转换为数值返回
     if (op == -1) {
       int val;
-      sscanf(tokens[p].str, "%d", &val);
-      return val;
+      if (tokens[p].type == TK_NUMBER) {
+        sscanf(tokens[p].str, "%d", &val);
+        return val;
+      } else if (tokens[p].type == TK_FLOAT) {
+        sscanf(tokens[p].str, "%d", &val);
+        return val;
+      } else {
+        // 错误处理
+        return 0;
+      }
     }
 
     // 递归求解左右子表达式的值
