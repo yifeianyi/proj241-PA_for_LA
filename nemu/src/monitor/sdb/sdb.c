@@ -49,23 +49,6 @@ static int cmd_c(char *args) {
   return 0;
 }
 
-static int cmd_info(char *args){
-  char *arg = strtok(NULL, " ");
-  char *arg2 = strtok(NULL," ");    //find more argument
-  if(arg2!=NULL){
-    printf("Too much args \n");  
-  }
-  else if(*arg=='r'){
-    isa_reg_display();
-  }
-  else if(*arg=='w'){  
-    // wp_iterate();
-    printf("w\n");
-  } else {
-    printf("Usage: info r (registers) or info w (watchpoints)\n");
-  }
-  return 0; 
-}
 
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_QUIT;
@@ -123,7 +106,6 @@ static struct {
   /* TODO: Add more commands */
   { "p", "p expr", cmd_p },
   { "si", "Pause the program after executing N instructions in one step,\n      When N is not given, it defaults to 1", cmd_si},
-  { "info", "info .. ,r -- > print register status;  w -- > prints monitor information", cmd_info},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
