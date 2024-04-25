@@ -160,26 +160,19 @@ int eval(int p, int q) {
                       (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
                       || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
                 op = i;
-            } else if (level == 0 && tokens[i].type == TK_HEX) {
-                if (op == -1 || tokens[op].type == '+' || tokens[op].type == '-') {
-                    op = i;
-                } else if (tokens[op].type == '*' || tokens[op].type == '/') {
-                    op = i;
-                } else if (tokens[op].type == '!' || tokens[op].type == TK_AND || tokens[op].type == TK_OR) {
-                    op = i;
-                }
             }
         }
 
-        if (op == -1) {
-            // Handle hexadecimal and register expressions
-            if (tokens[p].type == TK_HEX) {
+        if (tokens[p].type == TK_HEX) {
                 int val;
                 printf("%s\n",tokens[p].str);
                 sscanf(tokens[p].str, "%x", &val);
                 return val;
-                // return evaluate_hexadecimal(tokens[p].str);
-            } else if (tokens[p].type == TK_REGISTER) {
+        }
+
+        if (op == -1) {
+            // Handle hexadecimal and register expressions
+            if (tokens[p].type == TK_REGISTER) {
                 return evaluate_register(tokens[p].str);
             } else {
                 int val;
