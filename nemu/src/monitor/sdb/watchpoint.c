@@ -113,6 +113,7 @@ void create_watchpoint(char* args){
     printf("Get expr value error when create watchpoint\n");
   }
   printf("Create watchpoint NO.%d success\n", p->NO);
+  
 }
 
 /*scan watchpoint*/
