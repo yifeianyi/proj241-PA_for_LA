@@ -99,8 +99,6 @@ static bool make_token(char *e) {
                 position += substr_len;
 
                 switch (rules[i].token_type) {
-                    case TK_NOTYPE:
-                        break;
                     case TK_HEX: // 新增处理十六进制数字的情况
                         // 确定十六进制数字的结束位置
                         while (is_hex_digit(e[position])) {
@@ -113,6 +111,8 @@ static bool make_token(char *e) {
                         strncpy(tokens[nr_token].str, substr_start, substr_len);
                         tokens[nr_token].str[substr_len] = '\0';
                         nr_token++;
+                        break;
+                    case TK_NOTYPE:
                         break;
                     default:
                         tokens[nr_token].type = rules[i].token_type;
