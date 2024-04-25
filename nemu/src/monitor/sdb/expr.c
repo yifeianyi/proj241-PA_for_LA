@@ -160,8 +160,16 @@ int eval(int p, int q) {
                 level--;
             else if (level == 0 &&
                       (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
-                       || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
+                      || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
                 op = i;
+            } else if (level == 0 && tokens[i].type == TK_HEX) {
+                if (op == -1 || tokens[op].type == '+' || tokens[op].type == '-') {
+                    op = i;
+                } else if (tokens[op].type == '*' || tokens[op].type == '/') {
+                    op = i;
+                } else if (tokens[op].type == '!' || tokens[op].type == TK_AND || tokens[op].type == TK_OR) {
+                    op = i;
+                }
             }
         }
 
