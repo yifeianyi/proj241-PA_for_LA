@@ -24,18 +24,12 @@ enum {
   TK_NOTYPE = 256, TK_EQ, TK_NEQ,
   TK_NUMBER, TK_FLOAT, TK_IDENTIFIER,
 
-  /* TODO: Add more token types */
-
 };
 
 static struct rule {
   const char *regex;
   int token_type;
 } rules[] = {
-
-  /* TODO: Add more rules.
-   * Pay attention to the precedence level of different rules.
-   */
 
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},
@@ -106,7 +100,13 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          default: TODO();
+          case TK_NOTYPE:
+            break;
+          default:
+            tokens[nr_token].type = rules[i].token_type;
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
+            nr_token++;
         }
 
         break;
@@ -138,15 +138,53 @@ static bool check_parentheses(int p, int q){
   return true;
 }
 
-int eval(int p,int q){
-  if(p>q){
+int eval(int p, int q) {
+  if (p > q) {
+    // 没有表达式
     return 0;
+  } else if (check_parentheses(p, q)) {
+    // 去掉括号后递归求值
+    return eval(p + 1, q - 1);
+  } else {
+    // 找到最后一个运算符
+    int op = -1, level = 0, i;
+    for (i = q; i >= p; i--) {
+      if (tokens[i].type == ')' || tokens[i].type == '(')
+        level += (tokens[i].type == '(' ? 1 : -1);
+      else if (level == 0 && (tokens[i].type == '+' || tokens[i].type == '-' ||
+                               tokens[i].type == '*' || tokens[i].type == '/')) {
+        op = i;
+        break;
+      }
+    }
+
+    // 如果没有找到运算符，则将表达式转换为数值返回
+    if (op == -1) {
+      int val;
+      sscanf(tokens[p].str, "%d", &val);
+      return val;
+    }
+
+    // 递归求解左右子表达式的值
+    int val1 = eval(p, op - 1);
+    int val2 = eval(op + 1, q);
+
+    // 根据运算符进行运算
+    switch (tokens[op].type) {
+      case '+':
+        return val1 + val2;
+      case '-':
+        return val1 - val2;
+      case '*':
+        return val1 * val2;
+      case '/':
+        return val1 / val2;
+      default:
+        return 0; // 出错处理，可以根据具体情况修改
+    }
   }
-  else if(check_parentheses(p,q)==true){
-    return eval(p+1,q-1);
-  }
-  return 0;
 }
+
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -154,5 +192,6 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  return eval(0, 1);
+  *success = true;
+  return eval(0, nr_token - 1);
 }
