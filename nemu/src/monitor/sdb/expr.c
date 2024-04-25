@@ -123,16 +123,25 @@ static bool make_token(char *e) {
 }
 
 static bool check_parentheses(int p, int q){
-  int i,cnt = 0;
-  for(i = p; i <= q; i++){
-    if(tokens[i].type == '(') 
-      cnt++;
-    else if(tokens[i].type == ')') 
-      cnt--;
-    if(cnt < 0) 
-      return false;
-  }
-  return (cnt == 0);
+    int i;
+    int stack_size = 0;
+
+    for (i = p; i <= q; i++) {
+        if (tokens[i].type == '(') {
+            // 左括号入栈
+            stack_size++;
+        } else if (tokens[i].type == ')') {
+            // 如果栈为空，或者栈顶元素不是左括号，括号顺序不匹配
+            if (stack_size == 0 || tokens[i].type != '(') {
+                return false;
+            }
+            // 左括号出栈
+            stack_size--;
+        }
+    }
+
+    // 如果栈不为空，表示还有未匹配的左括号
+    return (stack_size == 0);
 }
 
 int eval(int p, int q) {
