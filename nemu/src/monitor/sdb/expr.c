@@ -38,6 +38,7 @@ static struct rule {
   {"\\(", '('},
   {"\\)", ')'},
   {"/", '/'},
+  {"!", '!'},
   {"==", TK_EQ},
   {"!=", TK_NEQ},
   {"[0-9]+", TK_NUMBER},
@@ -46,7 +47,7 @@ static struct rule {
   {"&&", TK_AND},
   {"\\|\\|", TK_OR},
   {"0[xX][0-9a-fA-F]+", TK_HEX},
-  {"\\$[a-zA-Z]+[0-9]*", TK_REGISTER}, // reg
+  {"\\$(0|ra|tp|sp|a[0-7]|t[0-8]|rs|fp|s[0-8])", TK_REGISTER}, // reg
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -129,6 +130,23 @@ static bool check_parentheses(int p, int q) {
     return true;
 }
 
+static int evaluate_hexadecimal(const char *str) {
+    int val;
+    sscanf(str, "%x", &val);
+    return val;
+}
+
+static int evaluate_register(const char *str) {
+    if (strcmp(str, "$ra") == 0) {
+        return 0;
+    } else if (strcmp(str, "$sp") == 0) {
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
+
 int eval(int p, int q) {
     if (p > q) {
         return 0;
@@ -147,24 +165,18 @@ int eval(int p, int q) {
                 break;
             }
         }
-        if (op == -1) {
-            for (i = q; i >= p; i--) {
-                if (tokens[i].type == '(')
-                    level++;
-                else if (tokens[i].type == ')')
-                    level--;
-                else if (level == 0 &&
-                         (tokens[i].type == '*' || tokens[i].type == '/')) {
-                    op = i;
-                    break;
-                }
-            }
-        }
 
         if (op == -1) {
-            int val;
-            sscanf(tokens[p].str, "%d", &val);
-            return val;
+            // Handle hexadecimal and register expressions
+            if (tokens[p].type == TK_HEX) {
+                return evaluate_hexadecimal(tokens[p].str);
+            } else if (tokens[p].type == TK_REGISTER) {
+                return evaluate_register(tokens[p].str);
+            } else {
+                int val;
+                sscanf(tokens[p].str, "%d", &val);
+                return val;
+            }
         }
 
         int val1 = eval(p, op - 1);
