@@ -140,17 +140,23 @@ static bool check_parentheses(int p, int q) {
     return true;
 }
 
-extern const char *regs[];
 static int evaluate_register(const char *str) {
-    for (int i = 0; i < 32; i++) {
-        if (strcmp(str, regs[i]) == 0) {
-            return cpu.gpr[i];
-        }
+    if (strcmp(str, "$0") == 0) {
+        return cpu.gpr[0];
+    } else if (strcmp(str, "ra") == 0) {
+        return cpu.gpr[1];
+    } else if (strcmp(str, "tp") == 0) {
+        return cpu.gpr[2];
+    } else if (strcmp(str, "sp") == 0) {
+        return cpu.gpr[3];
+    } else if (strcmp(str, "a0") == 0) {
+        return cpu.gpr[4];
+    } else if (strcmp(str, "a1") == 0) {
+        return cpu.gpr[5];
+    } else {
+        return -1;
     }
-    printf("There is no such register, so for:");
-    return -1;
 }
-
 
 int eval(int p, int q) {
     if (p > q) {
