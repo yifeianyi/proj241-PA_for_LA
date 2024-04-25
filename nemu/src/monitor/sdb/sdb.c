@@ -60,7 +60,7 @@ static int cmd_p(char* args) {
   init_regex();
   int res = expr(args, &success);
   if (!success) {
-    puts("invalid expression");
+    puts("invalid expression!");
   } else {
     printf("res = %d\n", res);
   }
