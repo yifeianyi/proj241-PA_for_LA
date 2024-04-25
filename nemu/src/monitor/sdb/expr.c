@@ -139,51 +139,67 @@ static bool check_parentheses(int p, int q){
 }
 
 int eval(int p, int q) {
-  if (p > q) {
-    // 没有表达式
-    return 0;
-  } else if (check_parentheses(p, q)) {
-    // 去掉括号后递归求值
-    return eval(p + 1, q - 1);
-  } else {
-    // 找到最后一个运算符
-    int op = -1, level = 0, i;
-    for (i = q; i >= p; i--) {
-      if (tokens[i].type == ')' || tokens[i].type == '(')
-        level += (tokens[i].type == '(' ? 1 : -1);
-      else if (level == 0 && (tokens[i].type == '+' || tokens[i].type == '-' ||
-                               tokens[i].type == '*' || tokens[i].type == '/')) {
-        op = i;
-        break;
-      }
-    }
+    if (p > q) {
+        // 表达式为空，返回 0
+        return 0;
+    } else if (check_parentheses(p, q)) {
+        // 如果整个表达式被一对括号包围，则去掉括号继续递归计算
+        return eval(p + 1, q - 1);
+    } else {
+        // 查找最低优先级的运算符
+        int level = 0, op = -1, i;
+        for (i = q; i >= p; i--) {
+            if (tokens[i].type == '(')
+                level++;
+            else if (tokens[i].type == ')')
+                level--;
+            else if (level == 0 &&
+                     (tokens[i].type == '+' || tokens[i].type == '-')) {
+                op = i;
+                break;
+            }
+        }
+        if (op == -1) {
+            // 没有找到加减号，继续查找更低优先级的运算符
+            for (i = q; i >= p; i--) {
+                if (tokens[i].type == '(')
+                    level++;
+                else if (tokens[i].type == ')')
+                    level--;
+                else if (level == 0 &&
+                         (tokens[i].type == '*' || tokens[i].type == '/')) {
+                    op = i;
+                    break;
+                }
+            }
+        }
 
-    // 如果没有找到运算符，则将表达式转换为数值返回
-    if (op == -1) {
-      int val;
-      sscanf(tokens[p].str, "%d", &val);
-      return val;
-    }
+        if (op == -1) {
+            // 没有找到任何运算符，说明表达式是一个数值
+            int val;
+            sscanf(tokens[p].str, "%d", &val);
+            return val;
+        }
 
-    // 递归求解左右子表达式的值
-    int val1 = eval(p, op - 1);
-    int val2 = eval(op + 1, q);
-
-    // 根据运算符进行运算
-    switch (tokens[op].type) {
-      case '+':
-        return val1 + val2;
-      case '-':
-        return val1 - val2;
-      case '*':
-        return val1 * val2;
-      case '/':
-        return val1 / val2;
-      default:
-        return 0; // 出错处理，可以根据具体情况修改
+        // 递归计算左右两边的表达式，并根据运算符进行计算
+        int val1 = eval(p, op - 1);
+        int val2 = eval(op + 1, q);
+        switch (tokens[op].type) {
+            case '+':
+                return val1 + val2;
+            case '-':
+                return val1 - val2;
+            case '*':
+                return val1 * val2;
+            case '/':
+                return val1 / val2;
+            default:
+                return 0;
+        }
     }
-  }
 }
+
+
 
 
 word_t expr(char *e, bool *success) {
