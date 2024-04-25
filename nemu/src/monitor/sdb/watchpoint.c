@@ -16,17 +16,6 @@
 #include "sdb.h"
 #define NR_WP 32
 
-typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
-
-  /* TODO: Add more members if necessary */
-  bool use_flag;
-  char expr[50];
-  int old_value;
-  int new_value;
-} WP;
-
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
 
@@ -105,4 +94,18 @@ void create_watchpoint(char* args){
     //printf("Get expr value error when create watchpoint\n");
   }
   printf("Create watchpoint NO.%d success\n", p->NO);
+}
+
+/*scan watchpoint*/
+bool check_watchpoint(WP **point){
+  WP *cur = head;
+  bool success = true;
+  while(cur){
+    if(expr(cur->expr, &success)){
+      *point = cur;
+      return true;
+    }
+    cur = cur->next;
+  }
+  return false;
 }
