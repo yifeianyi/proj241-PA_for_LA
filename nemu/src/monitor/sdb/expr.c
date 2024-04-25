@@ -94,7 +94,7 @@ static bool make_token(char *e) {
         switch (rules[i].token_type) {
           case TK_NOTYPE:
             break;
-          case TK_HEX: // 处理十六进制数
+          case TK_HEX:
             tokens[nr_token].type = rules[i].token_type;
             strncpy(tokens[nr_token].str, substr_start + 2, substr_len - 2); // 跳过 "0x"
             tokens[nr_token].str[substr_len - 2] = '\0';
