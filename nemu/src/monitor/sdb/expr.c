@@ -143,8 +143,8 @@ static bool check_parentheses(int p, int q) {
 static int evaluate_register(const char *str) {
     if (strcmp(str, "$0") == 0) {
         return cpu.gpr[0];
-    } else if (strcmp(str, "$sp") == 0) {
-        return 0;
+    } else if (strcmp(str, "ra") == 0) {
+        return cpu.gpr[1];
     } else {
         return -1;
     }

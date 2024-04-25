@@ -62,7 +62,7 @@ static int cmd_p(char* args) {
   if (!success) {
     puts("invalid expression!");
   } else {
-    printf("res = %d\n", res);
+    printf("%s = %d\n", args, res);
   }
   return 0;
 }
