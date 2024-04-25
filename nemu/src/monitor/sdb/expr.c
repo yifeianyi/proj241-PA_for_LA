@@ -76,45 +76,62 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
+static bool is_hex_digit(char c) {
+    return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+}
+
 static bool make_token(char *e) {
-  int position = 0;
-  int i;
-  regmatch_t pmatch;
-  nr_token = 0;
+    int position = 0;
+    int i;
+    regmatch_t pmatch;
+    nr_token = 0;
 
-  while (e[position] != '\0') {
-    /* Try all rules one by one. */
-    for (i = 0; i < NR_REGEX; i ++) {
-      if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
-        char *substr_start = e + position;
-        int substr_len = pmatch.rm_eo;
+    while (e[position] != '\0') {
+        /* Try all rules one by one. */
+        for (i = 0; i < NR_REGEX; i++) {
+            if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
+                char *substr_start = e + position;
+                int substr_len = pmatch.rm_eo;
 
-        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-            i, rules[i].regex, position, substr_len, substr_len, substr_start);
+                Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+                    i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
-        position += substr_len;
+                position += substr_len;
 
-        switch (rules[i].token_type) {
-          case TK_NOTYPE:
-            break;
-          default:
-            tokens[nr_token].type = rules[i].token_type;
-            strncpy(tokens[nr_token].str, substr_start, substr_len);
-            tokens[nr_token].str[substr_len] = '\0';
-            nr_token++;
+                switch (rules[i].token_type) {
+                    case TK_NOTYPE:
+                        break;
+                    case TK_HEX: // 新增处理十六进制数字的情况
+                        // 确定十六进制数字的结束位置
+                        while (is_hex_digit(e[position])) {
+                            position++;
+                        }
+                        substr_len = position - (substr_start - e);
+
+                        // 处理结束后，将标记添加到 tokens 数组中
+                        tokens[nr_token].type = rules[i].token_type;
+                        strncpy(tokens[nr_token].str, substr_start, substr_len);
+                        tokens[nr_token].str[substr_len] = '\0';
+                        nr_token++;
+                        break;
+                    default:
+                        tokens[nr_token].type = rules[i].token_type;
+                        strncpy(tokens[nr_token].str, substr_start, substr_len);
+                        tokens[nr_token].str[substr_len] = '\0';
+                        nr_token++;
+                }
+
+                break;
+            }
         }
 
-        break;
-      }
+        if (i == NR_REGEX) {
+            printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
+            return false;
+        }
     }
 
-    if (i == NR_REGEX) {
-      printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
-      return false;
-    }
-  }
-
-  return true;
+    return true;
 }
 
 static bool check_parentheses(int p, int q) {
@@ -160,19 +177,26 @@ int eval(int p, int q) {
                       (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
                       || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
                 op = i;
+            } else if (level == 0 && tokens[i].type == TK_HEX) {
+                if (op == -1 || tokens[op].type == '+' || tokens[op].type == '-') {
+                    op = i;
+                } else if (tokens[op].type == '*' || tokens[op].type == '/') {
+                    op = i;
+                } else if (tokens[op].type == '!' || tokens[op].type == TK_AND || tokens[op].type == TK_OR) {
+                    op = i;
+                }
             }
-        }
-
-        if (tokens[p].type == TK_HEX) {
-                int val;
-                printf("%s\n",tokens[p].str);
-                sscanf(tokens[p].str, "%x", &val);
-                return val;
         }
 
         if (op == -1) {
             // Handle hexadecimal and register expressions
-            if (tokens[p].type == TK_REGISTER) {
+            if (tokens[p].type == TK_HEX) {
+                int val;
+                printf("%s\n",tokens[p].str);
+                sscanf(tokens[p].str, "%x", &val);
+                return val;
+                // return evaluate_hexadecimal(tokens[p].str);
+            } else if (tokens[p].type == TK_REGISTER) {
                 return evaluate_register(tokens[p].str);
             } else {
                 int val;
