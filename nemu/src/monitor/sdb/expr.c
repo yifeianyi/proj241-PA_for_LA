@@ -158,16 +158,8 @@ int eval(int p, int q) {
     // 如果没有找到运算符，则将表达式转换为数值返回
     if (op == -1) {
       int val;
-      if (tokens[p].type == TK_NUMBER) {
-        sscanf(tokens[p].str, "%d", &val);
-        return val;
-      } else if (tokens[p].type == TK_FLOAT) {
-        sscanf(tokens[p].str, "%d", &val);
-        return val;
-      } else {
-        // 错误处理
-        return 0;
-      }
+      sscanf(tokens[p].str, "%d", &val);
+      return val;
     }
 
     // 递归求解左右子表达式的值
