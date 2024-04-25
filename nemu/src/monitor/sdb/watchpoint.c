@@ -46,20 +46,39 @@ WP* new_wp(){
    return NULL;
 }
 
-void free_wp(WP *wp){
-  if(head -> NO == wp ->NO){
-      head->use_flag = false;
-      head = NULL;
-      printf("Delete watchpoint success\n");
-      return ;
+void free_wp(int no){
+  WP* p = head;
+  if(head == NULL){
+     printf("watchpoint list is empty\n");
+     assert(0);
   }
-  for(WP* p = head;p->next != NULL; p=p->next){
-    if(p -> next -> NO == wp->NO){
-      p->next = p->next->next;
-      p->next->use_flag = false;
-      printf("free success\n");
-      return ;
-    }
+  else if(p->NO == no){
+    head = head->next;
+    p->value = 0;
+    p->use_flag = false;
+    p->next = free_;
+    free_ = p;
+    printf("delete watchpoint No:%d\n", no);
+    return ;
+  }
+  else{
+      WP *q = head;
+      p = p -> next;
+      while(p!=NULL){
+          if(p->NO == no){
+             q->next = p->next;
+             p->value = 0;
+             p->use_flag = false;
+             p->next = free_;
+             printf("delete watchpoint No:%d\n", no);
+             return;
+          }else{
+             p = p->next;
+             q = q->next;
+          }
+      }
+      printf("watchpoint No:%d do not exist \n",no);
+      return;
   }
 }
 
@@ -67,8 +86,8 @@ void watchpoint_show(){
   bool flag = true;
   for(int i = 0;i<NR_WP;i++){
     if(wp_pool[i].use_flag){
-        printf("Watchpoint.No: %d, expr = %s, old_value = %d, new_value = %d\n",
-        wp_pool[i].NO,wp_pool[i].expr,wp_pool[i].old_value,wp_pool[i].new_value);
+        printf("Watchpoint.No: %d, expr = %s, value = %d\n",
+        wp_pool[i].NO,wp_pool[i].expr,wp_pool[i].value);
         flag = false;
     }
   }
@@ -78,7 +97,7 @@ void watchpoint_show(){
 void delete_watchpoint(int no){
     for(int i = 0;i<NR_WP;i++){
        if(wp_pool[i].NO == no){
-          free_wp(&wp_pool[i]);
+          free_wp(no);
           return ; 
        }
     }
@@ -89,7 +108,7 @@ void create_watchpoint(char* args){
   strcpy(p -> expr,args);
   bool success = false;
   int tmp = expr(p -> expr,&success);
-  if(success) p -> old_value = tmp;
+  if(success) p -> value = tmp;
   else {
     //printf("Get expr value error when create watchpoint\n");
   }

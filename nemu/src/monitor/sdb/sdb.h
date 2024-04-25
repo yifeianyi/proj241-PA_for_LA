@@ -25,8 +25,7 @@ typedef struct watchpoint {
   /* TODO: Add more members if necessary */
   bool use_flag;
   char expr[50];
-  int old_value;
-  int new_value;
+  int value;
 } WP;
 
 
