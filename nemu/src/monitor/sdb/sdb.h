@@ -33,5 +33,5 @@ word_t expr(char *e, bool *success);
 void watchpoint_show();
 void delete_watchpoint(int no);
 void create_watchpoint(char* args);
-bool check_watchpoint(WP **point);
+void check_watchpoint();
 #endif
