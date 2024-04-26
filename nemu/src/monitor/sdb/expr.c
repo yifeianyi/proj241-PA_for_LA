@@ -209,7 +209,11 @@ int eval(int p, int q) {
             case '*':
                 return val1 * val2;
             case '/':
+              if (val2 == 0) {
+                return -1;
+              } else {
                 return val1 / val2;
+              }
             case TK_AND:
               if (strcmp(tokens[op].str, "&&") == 0)
                 return val1 && val2;
