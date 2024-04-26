@@ -184,7 +184,15 @@ int eval(int p, int q) {
                 sscanf(tokens[p].str, "%x", &val);
                 return val;
             } else if (tokens[p].type == TK_REGISTER) {
-                return evaluate_register(tokens[p].str);
+              int substr_len = strlen(tokens[p].str);
+              char *substr_start = tokens[p].str;
+              if (substr_len > 1 && substr_start[0] == '$') {
+                substr_start++; // 跳过 $
+                substr_len--; // 长度减一
+              }
+              int val = evaluate_register(tokens[p].str);
+              printf("%s = 0x%x\n", tokens[p].str, val);
+              return val;
             } else {
                 int val;
                 sscanf(tokens[p].str, "%d", &val);
