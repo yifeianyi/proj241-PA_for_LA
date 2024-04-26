@@ -100,6 +100,17 @@ static bool make_token(char *e) {
             tokens[nr_token].str[substr_len - 2] = '\0';
             nr_token++;
             break;
+          case TK_REGISTER:
+            // 剥离 $ 符号
+            if (substr_len > 1 && substr_start[0] == '$') {
+              substr_start++; // 跳过 $
+              substr_len--; // 长度减一
+            }
+            tokens[nr_token].type = rules[i].token_type;
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
+            nr_token++;
+            break;
           default:
             tokens[nr_token].type = rules[i].token_type;
             strncpy(tokens[nr_token].str, substr_start, substr_len);
