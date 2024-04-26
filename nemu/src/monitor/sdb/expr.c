@@ -137,7 +137,7 @@ static bool check_parentheses(int p, int q) {
     return true;
 }
 
-static int evaluate_register(const char *str) {
+static word_t evaluate_register(const char *str) {
     bool success;
     word_t reg_value = isa_reg_str2val(str, &success);
     if (success) {
