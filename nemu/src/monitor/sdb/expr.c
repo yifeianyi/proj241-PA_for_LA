@@ -37,7 +37,6 @@ static struct rule {
   {"\\*", '*'},
   {"\\(", '('},
   {"\\)", ')'},
-  {"=", '='},
   {"/", '/'},
   {"!", '!'},
   {"==", TK_EQ},
@@ -173,7 +172,7 @@ int eval(int p, int q) {
                 level--;
             else if (level == 0 &&
                       (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
-                      || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR || tokens[i].type == '=')) {
+                      || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
                 op = i;
             }
         }
@@ -211,8 +210,6 @@ int eval(int p, int q) {
                 return val1 * val2;
             case '/':
                 return val1 / val2;
-            case '=':
-                return true;
             case TK_AND:
               if (strcmp(tokens[op].str, "&&") == 0)
                 return val1 && val2;
