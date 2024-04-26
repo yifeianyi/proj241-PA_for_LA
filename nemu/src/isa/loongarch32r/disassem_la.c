@@ -4,7 +4,7 @@ static uint32_t GetInst(char *inst, uint32_t code){
     // uint32_t opcode_31_10 = BITS(code, 31, 10);
     // uint32_t opcode_31_15 = BITS(code, 31, 15);
     // uint32_t opcode_31_18 = BITS(code, 31, 18);
-    // uint32_t opcode_31_20 = BITS(code, 31, 20);
+    // uint32_t opcode_31_20 = BITS(code, 31, 20); 
     // uint32_t opcode_31_22 = BITS(code, 31, 22);
     // uint32_t opcode_31_24 = BITS(code, 31, 24);
     uint32_t opcode_31_25 = BITS(code, 31, 25);
@@ -30,7 +30,7 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
             sprintf(p,"  %s, %d",regs[rd],imm);
             break;
         default:
-            sprintf(p,"%c",'\0');
+            sprintf(p, "%c", '\0');
             break;
         }
         strcat(inst,p);
