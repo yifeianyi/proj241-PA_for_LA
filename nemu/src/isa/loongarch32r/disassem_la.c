@@ -30,6 +30,7 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
             sprintf(p,"  %s, %d",regs[rd],imm);
             break;
         default:
+            sprintf(p,"%c",'\0');
             break;
         }
         strcat(inst,p);
