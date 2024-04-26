@@ -137,18 +137,16 @@ static bool check_parentheses(int p, int q) {
     return true;
 }
 
-extern const char *regs[];
-
 static int evaluate_register(const char *str) {
-    for (int i = 0; i < 32; i++) {
-        if (strcmp(str, regs[i]) == 0) {
-            return cpu.gpr[i];
-        }
+    bool success;
+    word_t reg_value = isa_reg_str2val(str, &success);
+    if (success) {
+        return reg_value;
+    } else {
+        // 如果没有找到匹配的寄存器，返回 -1
+        return -1;
     }
-    // 如果没有找到匹配的寄存器，返回 -1
-    return -1;
 }
-
 int eval(int p, int q) {
     if (p > q) {
         return 0;
