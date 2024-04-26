@@ -113,7 +113,7 @@ void create_watchpoint(char* args){
     printf("Get expr value error when create watchpoint\n");
   }
   printf("Create watchpoint NO.%d success\n", p->NO);
-  
+
 }
 
 /*scan watchpoint*/
@@ -123,10 +123,12 @@ void check_watchpoint(){
   while(cur!=NULL){
     int temp = expr(cur->expr,&success);
     if(!success){printf("The expression of watchpoint No%d is invalid\n",cur->NO);}
-    if(temp != cur->value){
-      printf("NO equal, cash ,watchpoint.NO%d expr:%s value:%d\n",cur->NO,cur->expr,cur->value);
-      cur->value = temp;
-      nemu_state.state = NEMU_STOP;
+    else{
+      if(temp != cur->value){
+        printf("NO equal, cash ,watchpoint.NO%d expr:%s value:%d\n",cur->NO,cur->expr,cur->value);
+        cur->value = temp;
+        nemu_state.state = NEMU_STOP;
+      }
     }
     cur = cur->next;
   }
