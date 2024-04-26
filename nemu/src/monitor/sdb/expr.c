@@ -191,7 +191,7 @@ int eval(int p, int q) {
                 substr_len--; // 长度减一
               }
               int val = evaluate_register(tokens[p].str);
-              printf("%s = 0x%x\n", tokens[p].str, val);
+              return val;
             } else {
                 int val;
                 sscanf(tokens[p].str, "%d", &val);
