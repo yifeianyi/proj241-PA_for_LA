@@ -44,7 +44,7 @@ static struct rule {
   {"0[xX][0-9a-fA-F]+", TK_HEX},
   {"[0-9]+", TK_NUMBER},
   {"[0-9]+\\.[0-9]+", TK_FLOAT},
-  {"[a-zA-Z_][a-zA-Z0-9_]*", TK_IDENTIFIER}, // 标识符（变量名等）
+  // {"[a-zA-Z_][a-zA-Z0-9_]*", TK_IDENTIFIER}, // 标识符（变量名等）
   {"&&", TK_AND},
   {"\\|\\|", TK_OR},
   {"\\$(0|ra|tp|sp|a[0-7]|t[0-8]|rs|fp|s[0-8])", TK_REGISTER}, // reg
