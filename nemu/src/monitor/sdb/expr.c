@@ -190,7 +190,7 @@ int eval(int p, int q) {
                       || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
                 // 计算运算符的优先级
                 int precedence = get_precedence(tokens[i].type);
-                if (precedence <= min_precedence) {
+                if (precedence < min_precedence) {
                     min_precedence = precedence;
                     op = i;
                     printf(" %s : %d \n", tokens[i].str, op);
