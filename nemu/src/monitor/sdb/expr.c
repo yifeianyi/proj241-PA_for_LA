@@ -165,38 +165,34 @@ int eval(int p, int q) {
         return eval(p + 1, q - 1);
     } else {
         int level = 0, op = -1, i;
-        int op_priority[128] = {0};
-        op_priority['+'] = op_priority['-'] = 1;
-        op_priority['*'] = op_priority['/'] = 2;
-        op_priority['!'] = 3;
-        op_priority[TK_AND] = op_priority[TK_OR] = 4;
-
-        int max_priority = -1;
-        int last_op = -1; // 记录上一个运算符的位置
         for (i = q; i >= p; i--) {
             if (tokens[i].type == '(')
                 level++;
             else if (tokens[i].type == ')')
                 level--;
-            else if (level == 0 && op_priority[tokens[i].type] > max_priority) {
+            else if (level == 0 &&
+                      (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
+                      || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
                 op = i;
-                max_priority = op_priority[tokens[i].type];
-            }
-            else if (level == 0 && op_priority[tokens[i].type] > 0) {
-                // 记录最后一个运算符的位置
-                last_op = i;
+                printf(" %s : %d \n", tokens[i].str, op);
             }
         }
 
-        // 如果没有找到运算符，处理数字或其他类型的表达式
         if (op == -1) {
+            // Handle hexadecimal and register expressions
             if (tokens[p].type == TK_HEX) {
                 int val;
                 sscanf(tokens[p].str, "%x", &val);
                 return val;
             } else if (tokens[p].type == TK_REGISTER) {
-                int val = evaluate_register(tokens[p].str);
-                return val;
+              int substr_len = strlen(tokens[p].str);
+              char *substr_start = tokens[p].str;
+              if (substr_len > 1 && substr_start[0] == '$') {
+                substr_start++; // 跳过 $
+                substr_len--; // 长度减一
+              }
+              int val = evaluate_register(tokens[p].str);
+              return val;
             } else {
                 int val;
                 sscanf(tokens[p].str, "%d", &val);
@@ -204,15 +200,8 @@ int eval(int p, int q) {
             }
         }
 
-        int val1 = eval(p, last_op - 1); // 从上一个运算符开始计算
-        int val2 = eval(last_op + 1, q); // 从下一个运算符开始计算
-
-        // 处理除数为零的情况
-        if (tokens[op].type == '/' && val2 == 0) {
-            printf("error: The divisor cannot be '0'\n");
-            return 0;
-        }
-
+        int val1 = eval(p, op - 1);
+        int val2 = eval(op + 1, q);
         switch (tokens[op].type) {
             case '+':
                 return val1 + val2;
@@ -221,7 +210,12 @@ int eval(int p, int q) {
             case '*':
                 return val1 * val2;
             case '/':
+              if (val2 == 0) {
+                printf("error: The divisor cannot be '0'\n");
+                return -1;
+              } else {
                 return val1 / val2;
+              }
             case TK_AND:
                 return val1 && val2;
             case TK_OR:
@@ -233,7 +227,6 @@ int eval(int p, int q) {
         }
     }
 }
-
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
