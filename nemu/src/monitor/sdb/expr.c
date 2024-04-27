@@ -193,7 +193,6 @@ int eval(int p, int q) {
                 if (precedence < min_precedence) {
                     min_precedence = precedence;
                     op = i;
-                    printf(" %s : %d \n", tokens[i].str, op);
                 }
             }
         }
