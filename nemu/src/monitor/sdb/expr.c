@@ -174,6 +174,7 @@ int eval(int p, int q) {
                       (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
                       || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
                 op = i;
+                printf(" %s : %d \n", tokens[i].str, op);
             }
         }
 
