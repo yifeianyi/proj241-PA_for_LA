@@ -14,25 +14,16 @@
 ***************************************************************************************/
 
 #include <isa.h>
-#include <memory/paddr.h>
-#include <memory/vaddr.h>
+
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
-#include <stdbool.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,TK_NEQ,
-  TK_POS,TK_NEG,
-  TK_DEREF,
-  TK_GT,TK_LT,TK_GE,TK_LE,
-  TK_AND,TK_OR,
-  TK_NUM,// 10 & 16
-  TK_REG,
-  //TK_VAR,
-  /* TODO: Add more token types */
-
+  TK_NOTYPE = 256, TK_EQ, TK_NEQ,
+  TK_NUMBER, TK_FLOAT, TK_IDENTIFIER,
+  TK_AND, TK_OR, TK_HEX, TK_REGISTER
 };
 
 static struct rule {
@@ -40,46 +31,29 @@ static struct rule {
   int token_type;
 } rules[] = {
 
-  /* TODO: Add more rules.
-   * Pay attention to the precedence level of different rules.
-   */
-
-  {" +", TK_NOTYPE},    // spaces
-  {"\\+", '+'},         // plus
-  {"\\-", '-'},         //minus
-  {"\\*", '*'},         //multiply
-  {"\\/", '/'},           //divide
-  {"<",TK_LT},
-  {">",TK_GT},
-  {"<=",TK_LE},
-  {">=",TK_GE},
-  {"==", TK_EQ},        // equal
-  {"!=",TK_NEQ},
-  {"&&",TK_AND},
-  {"\\|\\|",TK_OR},
+  {" +", TK_NOTYPE},
+  {"\\+", '+'},
+  {"\\-", '-'},
+  {"\\*", '*'},
   {"\\(", '('},
   {"\\)", ')'},
-  {"(0x)?[0-9a-fA-F]+", TK_NUM},
-  {"\\$(\\$)?\\w+", TK_REG},
-  //{"[A-Za-z_]\\w*", TK_VAR},
+  {"/", '/'},
+  {"!", '!'},
+  {"==", TK_EQ},
+  {"!=", TK_NEQ},
+  {"0[xX][0-9a-fA-F]+", TK_HEX},
+  {"[0-9]+", TK_NUMBER},
+  {"[0-9]+\\.[0-9]+", TK_FLOAT},
+  {"\\$(zero|0|ra|tp|sp|a[0-7]|t[0-8]|rs|fp|s[0-8])", TK_REGISTER}, // reg
+  {"[a-zA-Z_][a-zA-Z0-9_]*", TK_IDENTIFIER}, // 标识符（变量名等）
+  {"&&", TK_AND},
+  {"\\|\\|", TK_OR},
 };
-static int bound_types[] = {')',TK_NUM,TK_REG};
-static int nop_types[] = {'(',')',TK_NUM,TK_REG};
-static int unary_types[] = {TK_NEG,TK_POS,TK_DEREF};
-static bool matchtypes(int type,int types[],int len){
-  for(int i=0;i< len;i++){
-    if(type == types[i]) return true;
-  }
-  return false;
-}
 
 #define NR_REGEX ARRLEN(rules)
 
 static regex_t re[NR_REGEX] = {};
 
-/* Rules are used for many times.
- * Therefore we compile them only once before any usage.
- */
 void init_regex() {
   int i;
   char error_msg[128];
@@ -96,17 +70,16 @@ void init_regex() {
 
 typedef struct token {
   int type;
-  char str[100];
+  char str[32];
 } Token;
 
-static Token tokens[1000] __attribute__((used)) = {};
+static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 static bool make_token(char *e) {
   int position = 0;
   int i;
   regmatch_t pmatch;
-
   nr_token = 0;
 
   while (e[position] != '\0') {
@@ -116,42 +89,34 @@ static bool make_token(char *e) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
-        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-            i, rules[i].regex, position, substr_len, substr_len, substr_start);
-
         position += substr_len;
 
-        if(rules[i].token_type == TK_NOTYPE) break;
-        tokens[nr_token].type = rules[i].token_type;
-        /* TODO: Now a new token is recognized with rules[i]. Add codes
-         * to record the token in the array `tokens'. For certain types
-         * of tokens, some extra actions should be performed.
-         */
-
         switch (rules[i].token_type) {
-          case TK_NUM:
-          strncpy(tokens[nr_token].str,substr_start,substr_len);
-          tokens[nr_token].str[substr_len] = '\0';//avoid overflow
-          break;
-          case TK_REG:
-          //case TK_VAR:
-          strncpy(tokens[nr_token].str,substr_start+1,substr_len-1);
-          tokens[nr_token].str[substr_len-1] = '\0';//avoid overflow
-          break;
-          case '*':
-          case '+':
-          case '-':
-          if(nr_token==0 || !matchtypes(tokens[nr_token-1].type,bound_types,3)){
-              switch(rules[i].token_type){
-                case '-':tokens[nr_token].type = TK_NEG;break;
-                case '+':tokens[nr_token].type = TK_POS;break;
-                case '*':tokens[nr_token].type = TK_DEREF;break;
-              }
+          case TK_NOTYPE:
+            break;
+          case TK_HEX:
+            tokens[nr_token].type = rules[i].token_type;
+            strncpy(tokens[nr_token].str, substr_start + 2, substr_len - 2); // 跳过 "0x"
+            tokens[nr_token].str[substr_len - 2] = '\0';
+            nr_token++;
+            break;
+          case TK_REGISTER:
+            // 剥离 $ 符号
+            if (substr_len > 1 && substr_start[0] == '$') {
+              substr_start++; // 跳过 $
+              substr_len--; // 长度减一
             }
-          break;
+            tokens[nr_token].type = rules[i].token_type;
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
+            nr_token++;
+            break;
+          default:
+            tokens[nr_token].type = rules[i].token_type;
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
+            nr_token++;
         }
-        nr_token++;
-
 
         break;
       }
@@ -162,208 +127,113 @@ static bool make_token(char *e) {
       return false;
     }
   }
-
+  
   return true;
 }
 
-bool check_parentheses(int p,int q){
-  if(tokens[p].type=='(' && tokens[q].type==')'){
-    int cnt=0;
-    for(int i=p;i<=q;i++){
-      if(tokens[i].type=='('){
-        cnt++;
-      }
-      if(tokens[i].type==')'){
-        cnt--;
-      }
-      if(cnt == 0) return i==q;
+static bool check_parentheses(int p, int q) {
+    int i, cnt = 0;
+    if (tokens[p].type != '(' || tokens[q].type != ')') 
+        return false;
+    for (i = p; i <= q; i++) {
+        if (tokens[i].type == '(') 
+            cnt++;
+        else if (tokens[i].type == ')') 
+            cnt--;
+        if (cnt == 0 && i < q) 
+            return false;
     }
-  }
-  return false;
+    if (cnt < 0) 
+        return false;
+    return true;
 }
 
-int find(int p,int q){
-  int par=0;
-  int res=-1;
-  int priority=0;
-  for(int i=p;i<=q;i++){
-    /*if(tokens[i].type == TK_NUM){
-      continue;
-    }*/
-    if(tokens[i].type == '('){
-      par++;
-    }
-    else if(tokens[i].type == ')'){
-      if(par == 0){
+static word_t evaluate_register(const char *str) {
+    bool success;
+    word_t reg_value = isa_reg_str2val(str, &success);
+    if (success) {
+        return reg_value;
+    } else {
+        // 如果没有找到匹配的寄存器，返回 -1
         return -1;
-      }
-      par--;
     }
-    else if(matchtypes(tokens[i].type,nop_types,4)){
-      continue;
-    }
-    else if(par > 0){
-      continue;
-    }
-    else{
-      int tmp = 0;
-      switch(tokens[i].type){
-        case TK_NEG:
-        case TK_DEREF:
-        case TK_POS:
-        tmp = 1;break;
-        case '*':
-        case '/':
-        tmp = 2;break;
-        case '+':
-        case '-':
-        tmp = 3;break;
-        case TK_LT:
-        case TK_GT:
-        case TK_GE:
-        case TK_LE:
-        tmp = 4;break;
-        case TK_EQ:
-        case TK_NEQ:
-        tmp = 5;break;
-        case TK_AND:
-        tmp = 6;break;
-        case TK_OR:
-        tmp = 7;break;
-        default: return -1;
-      }
-      if(tmp>priority || (tmp==priority && !matchtypes(tokens[i].type,unary_types,3))){
-        priority = tmp;
-        res = i;
-      }
-    }
-  }
-  if(par !=0) {return -1;}
-  else{
-  return res;
-  }
 }
-
-word_t eval_operand(int i,bool *confirm){
-  switch(tokens[i].type){
-    case TK_NUM:
-    if(strncmp("0x",tokens[i].str,2)==0) return strtol(tokens[i].str,NULL,16);
-    else return strtol(tokens[i].str,NULL,10);
-    case TK_REG:
-    return isa_reg_str2val(tokens[i].str,confirm);
-    default: *confirm = false;
-    return 0;
-  }
-}
-//unary operator
-word_t calc1(int op,word_t val, bool *confirm){
-  switch(op){
-    case TK_NEG: return -val;
-    case TK_POS: return val;
-    case TK_DEREF: return vaddr_read(val,4);
-    default: *confirm = false;
-    return 0;
-  }
-  return 0;
-}
-
-word_t calc2(word_t val1,int op,word_t val2,bool *confirm){
-  switch(op){
-    case '+': return val1+val2;
-    case '-': return val1-val2;
-    case '*': return val1*val2;
-    case '/':if(val2==0){
-      *confirm = false;
-      return 0;
-    }
-    return val1 / val2;
-    case TK_AND: return val1 && val2;
-    case TK_OR: return val1 || val2;
-    case TK_EQ: return val1 == val2;
-    case TK_NEQ: return val1 != val2;
-    case TK_GT: return val1 > val2;
-    case TK_LT: return val1 < val2;
-    case TK_GE: return val1 >= val2;
-    case TK_LE: return val1 <= val2;
-    default: *confirm = false; return 0;
-  }
-}
-
-word_t eval(int p,int q,bool *confirm){
-  if(p > q){
-    *confirm = false;
-    return 0;
-    //bad expression
-  }
-  else if(p == q){
-    /*if(tokens[p].type!= TK_NUM){
-      *confirm = false;
-      Log("Error,don't input like '('");
-      return 0;
-    
-    }
-    word_t result = strtol(tokens[p].str,NULL,10);
-    return result;
-    //single token*/ 
-    return eval_operand(p,confirm);
-  }
-  else if(check_parentheses(p,q)==true){
-    return eval(p+1,q-1,confirm);
-  }
-  else{
-    int dom=find(p,q);
-    if(dom < 0){
-      *confirm =false;
-      return 0;
-    }
-    bool ok1,ok2;
-    ok1 = true;
-    ok2 = true;
-    word_t val1 = eval(p,dom-1,&ok1);
-    word_t val2 = eval(dom+1,q,&ok2);
-    
-    if(!ok2){
-      *confirm = false;
-      return 0;
-    }
-    if(ok1){
-      word_t ret=calc2(val1,tokens[dom].type,val2,confirm);
-      return ret;
-    }
-    else{
-      word_t ret=calc1(tokens[dom].type,val2,confirm);
-      return ret;
-    }
-
-    /*switch(tokens[dom].type){
-      case '+': return val1 + val2;
-      case '-': return val1 - val2;
-      case '*': return val1 * val2;
-      case '/': if(val2 == 0){
-        *confirm = false;
+int eval(int p, int q) {
+    if (p > q) {
         return 0;
-      }
-      return (sword_t)val1 / (sword_t)val2;
-      default: assert(0);
-    }*/
+    } else if (check_parentheses(p, q)) {
+        return eval(p + 1, q - 1);
+    } else {
+        int level = 0, op = -1, i;
+        for (i = q; i >= p; i--) {
+            if (tokens[i].type == '(')
+                level++;
+            else if (tokens[i].type == ')')
+                level--;
+            else if (level == 0 &&
+                      (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
+                      || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
+                op = i;
+                printf(" %s : %d \n", tokens[i].str, op);
+            }
+        }
 
-    //we should do more things here
-  }
+        if (op == -1) {
+            // Handle hexadecimal and register expressions
+            if (tokens[p].type == TK_HEX) {
+                int val;
+                sscanf(tokens[p].str, "%x", &val);
+                return val;
+            } else if (tokens[p].type == TK_REGISTER) {
+              int substr_len = strlen(tokens[p].str);
+              char *substr_start = tokens[p].str;
+              if (substr_len > 1 && substr_start[0] == '$') {
+                substr_start++; // 跳过 $
+                substr_len--; // 长度减一
+              }
+              int val = evaluate_register(tokens[p].str);
+              return val;
+            } else {
+                int val;
+                sscanf(tokens[p].str, "%d", &val);
+                return val;
+            }
+        }
+
+        int val1 = eval(p, op - 1);
+        int val2 = eval(op + 1, q);
+        switch (tokens[op].type) {
+            case '+':
+                return val1 + val2;
+            case '-':
+                return val1 - val2;
+            case '*':
+                return val1 * val2;
+            case '/':
+              if (val2 == 0) {
+                printf("error: The divisor cannot be '0'\n");
+                return -1;
+              } else {
+                return val1 / val2;
+              }
+            case TK_AND:
+                return val1 && val2;
+            case TK_OR:
+                return val1 || val2;
+            case '!':
+                return !val2;
+            default:
+                return 0;
+        }
+    }
 }
-
-
-
-
-
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
-  return eval(0,nr_token-1,success);
-  /* TODO: Insert codes to evaluate the expression. */
-  TODO();
 
-  return 0;
+  *success = true;
+  return eval(0, nr_token - 1);
 }
