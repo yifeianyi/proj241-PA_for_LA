@@ -164,23 +164,27 @@ int eval(int p, int q) {
     } else if (check_parentheses(p, q)) {
         return eval(p + 1, q - 1);
     } else {
-        int level = 0, i;
-        int last_op = -1; // 用于保存最后一个发现的运算符的位置
+        int level = 0, op = -1, i;
+        int op_priority[128] = {0}; // 定义运算符优先级数组
+        op_priority['+'] = op_priority['-'] = 1; // 设置加减法优先级为1
+        op_priority['*'] = op_priority['/'] = 2; // 设置乘除法优先级为2
+        op_priority['!'] = 3; // 设置逻辑非优先级为3
+        op_priority[TK_AND] = op_priority[TK_OR] = 4; // 设置逻辑与和逻辑或优先级为4
+        
+        int max_priority = -1; // 记录当前优先级最高的运算符
         for (i = q; i >= p; i--) {
             if (tokens[i].type == '(')
                 level++;
             else if (tokens[i].type == ')')
                 level--;
-            else if (level == 0 &&
-                      (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
-                      || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
-                // 更新最后一个运算符位置
-                last_op = i;
+            else if (level == 0 && op_priority[tokens[i].type] > max_priority) {
+                op = i;
+                max_priority = op_priority[tokens[i].type];
             }
         }
 
-        if (last_op == -1) {
-            // 没有找到运算符，处理表达式中的数字或其他情况
+        if (op == -1) {
+            // Handle hexadecimal and register expressions
             if (tokens[p].type == TK_HEX) {
                 int val;
                 sscanf(tokens[p].str, "%x", &val);
@@ -195,10 +199,9 @@ int eval(int p, int q) {
             }
         }
 
-        // 根据最后一个运算符的位置分割表达式并计算
-        int val1 = eval(p, last_op - 1);
-        int val2 = eval(last_op + 1, q);
-        switch (tokens[last_op].type) {
+        int val1 = eval(p, op - 1);
+        int val2 = eval(op + 1, q);
+        switch (tokens[op].type) {
             case '+':
                 return val1 + val2;
             case '-':
