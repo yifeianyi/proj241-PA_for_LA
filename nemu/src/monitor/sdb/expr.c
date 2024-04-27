@@ -179,8 +179,8 @@ int eval(int p, int q) {
         return eval(p + 1, q - 1);
     } else {
         int level = 0, op = -1, i;
-        int max_precedence = INT_MIN; // 记录最高优先级的运算符
-        for (i = p; i <= q; i++) {
+        int min_precedence = INT_MAX; // 记录最低优先级的运算符
+        for (i = q; i >= p; i--) {
             if (tokens[i].type == '(')
                 level++;
             else if (tokens[i].type == ')')
@@ -190,8 +190,8 @@ int eval(int p, int q) {
                       || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
                 // 计算运算符的优先级
                 int precedence = get_precedence(tokens[i].type);
-                if (precedence >= max_precedence) { // 改为 >=
-                    max_precedence = precedence;
+                if (precedence <= min_precedence) {
+                    min_precedence = precedence;
                     op = i;
                 }
             }
@@ -241,7 +241,6 @@ int eval(int p, int q) {
         }
     }
 }
-
 
 
 word_t expr(char *e, bool *success) {
