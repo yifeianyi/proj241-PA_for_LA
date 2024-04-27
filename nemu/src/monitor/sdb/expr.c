@@ -219,7 +219,7 @@ int eval(int p, int q) {
         switch (tokens[op].type) {
             case '+':
               printf("+\n");
-                if ((val2 > 0 && val1 > INT_MAX - val2) || (val2 < 0 && val1 < INT_MIN - val2)) {
+                if ((val2 > 0 && (val1 > INT_MAX - val2 || val1 > INT_MAX)) || (val2 < 0 && (val1 < INT_MIN - val2 || val1 < INT_MIN))) {
                     printf("error: Integer overflow detected in addition\n");
                     return -1;
                 } else {
