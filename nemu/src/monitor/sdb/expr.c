@@ -164,7 +164,8 @@ int eval(int p, int q) {
     } else if (check_parentheses(p, q)) {
         return eval(p + 1, q - 1);
     } else {
-        int level = 0, op = -1, i;
+        int level = 0, i;
+        int last_op = -1; // 用于保存最后一个发现的运算符的位置
         for (i = q; i >= p; i--) {
             if (tokens[i].type == '(')
                 level++;
@@ -173,26 +174,20 @@ int eval(int p, int q) {
             else if (level == 0 &&
                       (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
                       || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
-                op = i;
-                printf(" %s : %d \n", tokens[i].str, op);
+                // 更新最后一个运算符位置
+                last_op = i;
             }
         }
 
-        if (op == -1) {
-            // Handle hexadecimal and register expressions
+        if (last_op == -1) {
+            // 没有找到运算符，处理表达式中的数字或其他情况
             if (tokens[p].type == TK_HEX) {
                 int val;
                 sscanf(tokens[p].str, "%x", &val);
                 return val;
             } else if (tokens[p].type == TK_REGISTER) {
-              int substr_len = strlen(tokens[p].str);
-              char *substr_start = tokens[p].str;
-              if (substr_len > 1 && substr_start[0] == '$') {
-                substr_start++; // 跳过 $
-                substr_len--; // 长度减一
-              }
-              int val = evaluate_register(tokens[p].str);
-              return val;
+                int val = evaluate_register(tokens[p].str);
+                return val;
             } else {
                 int val;
                 sscanf(tokens[p].str, "%d", &val);
@@ -200,9 +195,10 @@ int eval(int p, int q) {
             }
         }
 
-        int val1 = eval(p, op - 1);
-        int val2 = eval(op + 1, q);
-        switch (tokens[op].type) {
+        // 根据最后一个运算符的位置分割表达式并计算
+        int val1 = eval(p, last_op - 1);
+        int val2 = eval(last_op + 1, q);
+        switch (tokens[last_op].type) {
             case '+':
                 return val1 + val2;
             case '-':
@@ -210,12 +206,12 @@ int eval(int p, int q) {
             case '*':
                 return val1 * val2;
             case '/':
-              if (val2 == 0) {
-                printf("error: The divisor cannot be '0'\n");
-                return -1;
-              } else {
-                return val1 / val2;
-              }
+                if (val2 == 0) {
+                    printf("error: The divisor cannot be '0'\n");
+                    return -1;
+                } else {
+                    return val1 / val2;
+                }
             case TK_AND:
                 return val1 && val2;
             case TK_OR:
