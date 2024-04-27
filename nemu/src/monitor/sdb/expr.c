@@ -165,41 +165,13 @@ int eval(int p, int q) {
         return eval(p + 1, q - 1);
     } else {
         int level = 0, op = -1, i;
-
         for (i = q; i >= p; i--) {
             if (tokens[i].type == '(')
                 level++;
             else if (tokens[i].type == ')')
                 level--;
             else if (level == 0 &&
-                      (tokens[i].type == '*' || tokens[i].type == '/')) {
-                op = i;
-                printf(" %s : %d \n", tokens[i].str, op);
-            }
-        }
-
-        // If no multiplication or division operators found, look for addition or subtraction
-        if (op == -1) {
-            for (i = q; i >= p; i--) {
-                if (tokens[i].type == '(')
-                    level++;
-                else if (tokens[i].type == ')')
-                    level--;
-                else if (level == 0 &&
-                          (tokens[i].type == '+' || tokens[i].type == '-')) {
-                    op = i;
-                    printf(" %s : %d \n", tokens[i].str, op);
-                }
-            }
-        }
-
-        for (i = q; i >= p; i--) {
-            if (tokens[i].type == '(')
-                level++;
-            else if (tokens[i].type == ')')
-                level--;
-            else if (level == 0 &&
-                      (tokens[i].type == '*' 
+                      (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
                       || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
                 op = i;
                 printf(" %s : %d \n", tokens[i].str, op);
