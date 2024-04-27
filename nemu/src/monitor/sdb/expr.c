@@ -221,6 +221,12 @@ int eval(int p, int q) {
             }
         }
 
+        long long temp1 = eval(p, op - 1);
+        long long temp2 = eval(op + 1, q);
+        if(temp1 >= INT_MAX || temp1 <= INT_MIN || temp2 >= INT_MAX || temp2 <= INT_MIN){
+            printf("error: Integer overflow detected in addition for val1\n");
+            return -1;
+        }
         int val1 = eval(p, op - 1);
         int val2 = eval(op + 1, q);
         switch (tokens[op].type) {
