@@ -161,15 +161,14 @@ static word_t evaluate_register(const char *str) {
 }
 
 int get_precedence(char op) {
-    // 返回运算符的优先级
     if (op == '*' || op == '/')
-        return 2; // 乘法和除法的优先级最高
+        return 2;
     else if (op == '+' || op == '-')
-        return 1; // 加法和减法的优先级较低
+        return 1;
     else if (op == '!' || op == TK_AND || op == TK_OR)
-        return 3; // 逻辑非、逻辑与和逻辑或的优先级
+        return 3;
     else
-        return 0; // 其他运算符的优先级默认为0
+        return 0;
 }
 
 
@@ -180,8 +179,8 @@ int eval(int p, int q) {
         return eval(p + 1, q - 1);
     } else {
         int level = 0, op = -1, i;
-        int min_precedence = INT_MAX; // 记录最低优先级的运算符
-        for (i = q; i >= p; i--) {
+        int max_precedence = INT_MIN; // 记录最高优先级的运算符
+        for (i = p; i <= q; i++) {
             if (tokens[i].type == '(')
                 level++;
             else if (tokens[i].type == ')')
@@ -191,8 +190,8 @@ int eval(int p, int q) {
                       || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
                 // 计算运算符的优先级
                 int precedence = get_precedence(tokens[i].type);
-                if (precedence <= min_precedence) {
-                    min_precedence = precedence;
+                if (precedence >= max_precedence) { // 改为 >=
+                    max_precedence = precedence;
                     op = i;
                 }
             }
