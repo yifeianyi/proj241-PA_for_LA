@@ -220,24 +220,24 @@ int eval(int p, int q) {
             case '+':
                 if ((val2 > 0 && val1 > INT_MAX - val2) || (val2 < 0 && val1 < INT_MIN - val2)) {
                     printf("error: Integer overflow detected in addition\n");
-                    return -1; // 返回一个错误值或者进行其他处理
+                    return val1%INT_MAX + val2%INT_MAX;
                 } else {
                     return val1 + val2;
                 }
             case '-':
                 if ((val2 > 0 && val1 < INT_MIN + val2) || (val2 < 0 && val1 > INT_MAX + val2)) {
                     printf("error: Integer overflow detected in subtraction\n");
-                    return -1; // 返回一个错误值或者进行其他处理
+                    return val1%INT_MAX - val2%INT_MAX;
                 } else {
                     return val1 - val2;
                 }
             case '*':
                 if (val1 > 0 && (val2 > INT_MAX / val1 || val2 < INT_MIN / val1)) {
                     printf("error: Integer overflow detected in multiplication\n");
-                    return -1; // 返回一个错误值或者进行其他处理
+                    return val1%INT_MAX * val2%INT_MAX;
                 } else if (val1 < 0 && (val2 < INT_MAX / val1 || val2 > INT_MIN / val1)) {
                     printf("error: Integer overflow detected in multiplication\n");
-                    return -1; // 返回一个错误值或者进行其他处理
+                    return val1%INT_MAX * val2%INT_MAX;
                 } else {
                     return val1 * val2;
                 }
