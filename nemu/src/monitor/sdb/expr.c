@@ -19,6 +19,7 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
+#include <limits.h>
 
 enum {
   TK_NOTYPE = 256, TK_EQ, TK_NEQ,
@@ -158,6 +159,20 @@ static word_t evaluate_register(const char *str) {
         return -1;
     }
 }
+
+int get_precedence(char op) {
+    // 返回运算符的优先级
+    if (op == '*' || op == '/')
+        return 2; // 乘法和除法的优先级最高
+    else if (op == '+' || op == '-')
+        return 1; // 加法和减法的优先级较低
+    else if (op == '!' || op == TK_AND || op == TK_OR)
+        return 3; // 逻辑非、逻辑与和逻辑或的优先级
+    else
+        return 0; // 其他运算符的优先级默认为0
+}
+
+
 int eval(int p, int q) {
     if (p > q) {
         return 0;
@@ -165,6 +180,7 @@ int eval(int p, int q) {
         return eval(p + 1, q - 1);
     } else {
         int level = 0, op = -1, i;
+        int min_precedence = INT_MAX; // 记录最低优先级的运算符
         for (i = q; i >= p; i--) {
             if (tokens[i].type == '(')
                 level++;
@@ -173,26 +189,25 @@ int eval(int p, int q) {
             else if (level == 0 &&
                       (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
                       || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
-                op = i;
-                printf(" %s : %d \n", tokens[i].str, op);
+                // 计算运算符的优先级
+                int precedence = get_precedence(tokens[i].type);
+                if (precedence <= min_precedence) {
+                    min_precedence = precedence;
+                    op = i;
+                }
             }
         }
 
         if (op == -1) {
-            // Handle hexadecimal and register expressions
+            // 处理数字和其他类型表达式
             if (tokens[p].type == TK_HEX) {
                 int val;
                 sscanf(tokens[p].str, "%x", &val);
                 return val;
             } else if (tokens[p].type == TK_REGISTER) {
-              int substr_len = strlen(tokens[p].str);
-              char *substr_start = tokens[p].str;
-              if (substr_len > 1 && substr_start[0] == '$') {
-                substr_start++; // 跳过 $
-                substr_len--; // 长度减一
-              }
-              int val = evaluate_register(tokens[p].str);
-              return val;
+                // 处理寄存器表达式
+                int val = evaluate_register(tokens[p].str);
+                return val;
             } else {
                 int val;
                 sscanf(tokens[p].str, "%d", &val);
@@ -210,12 +225,12 @@ int eval(int p, int q) {
             case '*':
                 return val1 * val2;
             case '/':
-              if (val2 == 0) {
-                printf("error: The divisor cannot be '0'\n");
-                return -1;
-              } else {
-                return val1 / val2;
-              }
+                if (val2 == 0) {
+                    printf("error: The divisor cannot be '0'\n");
+                    return -1;
+                } else {
+                    return val1 / val2;
+                }
             case TK_AND:
                 return val1 && val2;
             case TK_OR:
@@ -227,6 +242,7 @@ int eval(int p, int q) {
         }
     }
 }
+
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
