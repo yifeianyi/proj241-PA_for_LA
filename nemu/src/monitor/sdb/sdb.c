@@ -49,10 +49,6 @@ static int cmd_c(char *args) {
   return 0;
 }
 
-static int cmd_z(char *args) {
-  isa_reg_display();
-  return 0;
-}
 
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_QUIT;
@@ -106,7 +102,7 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   { "x", "Memory scanning",cmd_x},
-  { "z", "Memory scanning",cmd_z},
+
   /* TODO: Add more commands */
   { "p", "p expr", cmd_p },
   { "si", "Pause the program after executing N instructions in one step,\n      When N is not given, it defaults to 1", cmd_si},
