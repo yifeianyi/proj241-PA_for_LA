@@ -163,136 +163,68 @@ int eval(int p, int q) {
         return 0;
     } else if (check_parentheses(p, q)) {
         return eval(p + 1, q - 1);
-    }
-
-    int level = 0, op = -1, i;
-    // 首先查找 ! 运算符
-    for (i = q; i >= p; i--) {
-        if (tokens[i].type == '(')
-            level++;
-        else if (tokens[i].type == ')')
-            level--;
-        else if (level == 0 && tokens[i].type == '!') {
-            op = i;
-            break;
-        }
-    }
-    if (op != -1) {
-        int val2 = eval(op + 1, q);
-        return !val2;
-    }
-
-    // 接下来查找 == 和 != 运算符
-    for (i = q; i >= p; i--) {
-        if (tokens[i].type == '(')
-            level++;
-        else if (tokens[i].type == ')')
-            level--;
-        else if (level == 0 && (tokens[i].type == TK_EQ || tokens[i].type == TK_NEQ)) {
-            op = i;
-            break;
-        }
-    }
-    if (op != -1) {
-        int val1 = eval(p, op - 1);
-        int val2 = eval(op + 1, q);
-        if (tokens[op].type == TK_EQ) {
-            return val1 == val2;
-        } else {
-            return val1 != val2;
-        }
-    }
-
-    // 查找 && 运算符
-    for (i = q; i >= p; i--) {
-        if (tokens[i].type == '(')
-            level++;
-        else if (tokens[i].type == ')')
-            level--;
-        else if (level == 0 && tokens[i].type == TK_AND) {
-            op = i;
-            break;
-        }
-    }
-    if (op != -1) {
-        int val1 = eval(p, op - 1);
-        int val2 = eval(op + 1, q);
-        return val1 && val2;
-    }
-
-    // 查找 || 运算符
-    for (i = q; i >= p; i--) {
-        if (tokens[i].type == '(')
-            level++;
-        else if (tokens[i].type == ')')
-            level--;
-        else if (level == 0 && tokens[i].type == TK_OR) {
-            op = i;
-            break;
-        }
-    }
-    if (op != -1) {
-        int val1 = eval(p, op - 1);
-        int val2 = eval(op + 1, q);
-        return val1 || val2;
-    }
-
-    // 处理除法
-    for (i = p; i <= q; i++) {
-        if (tokens[i].type == '(')
-            level++;
-        else if (tokens[i].type == ')')
-            level--;
-        else if (level == 0 && tokens[i].type == '/') {
-            int val1 = eval(p, i - 1);
-            int val2 = eval(i + 1, q);
-            if (val2 == 0) {
-                printf("Error: Division by zero\n");
-                exit(1); // 可以选择退出程序或者返回特定值
+    } else {
+        int level = 0, op = -1, i;
+        for (i = q; i >= p; i--) {
+            if (tokens[i].type == '(')
+                level++;
+            else if (tokens[i].type == ')')
+                level--;
+            else if (level == 0 &&
+                      (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
+                      || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
+                op = i;
             }
-            return val1 / val2;
         }
-    }
 
-    // 处理寄存器
-    if (tokens[p].type == TK_REGISTER) {
-        int substr_len = strlen(tokens[p].str);
-        char *substr_start = tokens[p].str;
-        if (substr_len > 1 && substr_start[0] == '$') {
-          substr_start++; // 跳过 $
-          substr_len--; // 长度减一
-        }
-        int val = evaluate_register(tokens[p].str);
-        return val;
-    }
-
-    // 最后处理四则运算
-    int val = 0;
-    int sign = 1;
-    if (tokens[p].type == '-') {
-        sign = -1;
-        p++;
-    }
-    for (i = p; i <= q; i++) {
-        if (tokens[i].type == '(')
-            level++;
-        else if (tokens[i].type == ')')
-            level--;
-        else if (level == 0 && (tokens[i].type == '+' || tokens[i].type == '-')) {
-            int val1 = eval(p, i - 1);
-            int val2 = eval(i + 1, q);
-            if (tokens[i].type == '+') {
-                val = val1 + val2;
+        if (op == -1) {
+            // Handle hexadecimal and register expressions
+            if (tokens[p].type == TK_HEX) {
+                int val;
+                sscanf(tokens[p].str, "%x", &val);
+                return val;
+            } else if (tokens[p].type == TK_REGISTER) {
+              int substr_len = strlen(tokens[p].str);
+              char *substr_start = tokens[p].str;
+              if (substr_len > 1 && substr_start[0] == '$') {
+                substr_start++; // 跳过 $
+                substr_len--; // 长度减一
+              }
+              int val = evaluate_register(tokens[p].str);
+              return val;
             } else {
-                val = val1 - val2;
+                int val;
+                sscanf(tokens[p].str, "%d", &val);
+                return val;
             }
-            break;
+        }
+
+        int val1 = eval(p, op - 1);
+        int val2 = eval(op + 1, q);
+        switch (tokens[op].type) {
+            case '+':
+                return val1 + val2;
+            case '-':
+                return val1 - val2;
+            case '*':
+                return val1 * val2;
+            case '/':
+              if (val2 == 0) {
+                printf("error: The divisor cannot be '0'\n");
+                return -1;
+              } else {
+                return val1 / val2;
+              }
+            case TK_AND:
+                return val1 && val2;
+            case TK_OR:
+                return val1 || val2;
+            case '!':
+                return !val2;
+            default:
+                return 0;
         }
     }
-    if (i > q) {
-        sscanf(tokens[p].str, "%d", &val);
-    }
-    return val * sign;
 }
 
 word_t expr(char *e, bool *success) {
