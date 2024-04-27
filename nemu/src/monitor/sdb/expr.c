@@ -210,6 +210,7 @@ int eval(int p, int q) {
                 return val1 * val2;
             case '/':
               if (val2 == 0) {
+                printf("error: The divisor cannot be '0'");
                 return -1;
               } else {
                 return val1 / val2;
