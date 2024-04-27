@@ -171,8 +171,8 @@ int eval(int p, int q) {
             else if (tokens[i].type == ')')
                 level--;
             else if (level == 0 &&
-                      (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
-                      || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
+                    (tokens[i].type == '+' || tokens[i].type == '-' || tokens[i].type == '*' 
+                    || tokens[i].type == '/' || tokens[i].type == '!' || tokens[i].type == TK_AND || tokens[i].type == TK_OR)) {
                 op = i;
             }
         }
