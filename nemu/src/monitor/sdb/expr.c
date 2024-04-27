@@ -226,7 +226,6 @@ int eval(int p, int q) {
                     return val1 + val2;
                 }
             case '-':
-              printf("-\n");
                 if ((val2 > 0 && val1 < INT_MIN + val2) || (val2 < 0 && val1 > INT_MAX + val2)) {
                     printf("error: Integer overflow detected in subtraction\n");
                     return -1;
@@ -234,7 +233,6 @@ int eval(int p, int q) {
                     return val1 - val2;
                 }
             case '*':
-              printf("*\n");
                 if (val1 > 0 && (val2 > INT_MAX / val1 || val2 < INT_MIN / val1)) {
                     printf("error: Integer overflow detected in multiplication\n");
                     return -1;
@@ -245,16 +243,15 @@ int eval(int p, int q) {
                     return val1 * val2;
                 }
             case '/':
-              printf("/\n");
-              if (val2 == 0) {
-                  printf("error: The divisor cannot be '0'\n");
-                  return -1;
-              } else if (val1 == INT_MIN && val2 == -1) {
-                  printf("error: Integer overflow detected in division\n");
-                  return -1; // 返回一个错误值或者进行其他处理
-              } else {
-                  return val1 / val2;
-              }
+                if (val2 == 0) {
+                    printf("error: The divisor cannot be '0'\n");
+                    return -1;
+                } else if (val1 == INT_MIN && val2 == -1) {
+                    printf("error: Integer overflow detected in division\n");
+                    return -1;
+                } else {
+                    return val1 / val2;
+                }
             case TK_AND:
                 return val1 && val2;
             case TK_OR:
@@ -266,6 +263,7 @@ int eval(int p, int q) {
         }
     }
 }
+
 
 
 word_t expr(char *e, bool *success) {
