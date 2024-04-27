@@ -222,25 +222,49 @@ int eval(int p, int q) {
         }
 
         
-        long long val1 = eval(p, op - 1);
-        long long val2 = eval(op + 1, q);
+        int val1 = eval(p, op - 1);
+        int val2 = eval(op + 1, q);
         switch (tokens[op].type) {
             case '+':
-                
+                if ((val1 > 0 && val2 > INT_MAX - val1) || 
+                    (val1 < 0 && val2 < INT_MIN - val1)) {
+                    printf("error: Integer overflow detected in addition for val1\n");
+                    return -1;
+                }
+                if ((val2 > 0 && (val1 > INT_MAX - val2 || val1 > INT_MAX)) || 
+                    (val2 < 0 && (val1 < INT_MIN - val2 || val1 < INT_MIN))) {
+                    printf("error: Integer overflow detected in addition\n");
+                    return -1;
+                } else {
                     return val1 + val2;
-                
+                }
             case '-':
-                
+                if ((val2 > 0 && val1 < INT_MIN + val2) || (val2 < 0 && val1 > INT_MAX + val2)) {
+                    printf("error: Integer overflow detected in subtraction\n");
+                    return -1;
+                } else {
                     return val1 - val2;
-                
+                }
             case '*':
-                
+                if (val1 > 0 && (val2 > INT_MAX / val1 || val2 < INT_MIN / val1)) {
+                    printf("error: Integer overflow detected in multiplication\n");
+                    return -1;
+                } else if (val1 < 0 && (val2 < INT_MAX / val1 || val2 > INT_MIN / val1)) {
+                    printf("error: Integer overflow detected in multiplication\n");
+                    return -1;
+                } else {
                     return val1 * val2;
-                
+                }
             case '/':
-                
+                if (val2 == 0) {
+                    printf("error: The divisor cannot be '0'\n");
+                    return -1;
+                } else if (val1 == INT_MIN && val2 == -1) {
+                    printf("error: Integer overflow detected in division\n");
+                    return -1;
+                } else {
                     return val1 / val2;
-                
+                }
             case TK_AND:
                 return val1 && val2;
             case TK_OR:
