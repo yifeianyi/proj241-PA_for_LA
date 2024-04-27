@@ -165,13 +165,14 @@ int eval(int p, int q) {
         return eval(p + 1, q - 1);
     } else {
         int level = 0, op = -1, i;
-        int op_priority[128] = {0}; // 定义运算符优先级数组
-        op_priority['+'] = op_priority['-'] = 1; // 设置加减法优先级为1
-        op_priority['*'] = op_priority['/'] = 2; // 设置乘除法优先级为2
-        op_priority['!'] = 3; // 设置逻辑非优先级为3
-        op_priority[TK_AND] = op_priority[TK_OR] = 4; // 设置逻辑与和逻辑或优先级为4
-        
-        int max_priority = -1; // 记录当前优先级最高的运算符
+        int op_priority[128] = {0};
+        op_priority['+'] = op_priority['-'] = 1;
+        op_priority['*'] = op_priority['/'] = 2;
+        op_priority['!'] = 3;
+        op_priority[TK_AND] = op_priority[TK_OR] = 4;
+
+        int max_priority = -1;
+        int last_op = -1; // 记录上一个运算符的位置
         for (i = q; i >= p; i--) {
             if (tokens[i].type == '(')
                 level++;
@@ -181,10 +182,14 @@ int eval(int p, int q) {
                 op = i;
                 max_priority = op_priority[tokens[i].type];
             }
+            else if (level == 0 && op_priority[tokens[i].type] > 0) {
+                // 记录最后一个运算符的位置
+                last_op = i;
+            }
         }
 
+        // 如果没有找到运算符，处理数字或其他类型的表达式
         if (op == -1) {
-            // Handle hexadecimal and register expressions
             if (tokens[p].type == TK_HEX) {
                 int val;
                 sscanf(tokens[p].str, "%x", &val);
@@ -199,8 +204,8 @@ int eval(int p, int q) {
             }
         }
 
-        int val1 = eval(p, op - 1);
-        int val2 = eval(op + 1, q);
+        int val1 = eval(p, last_op - 1); // 从上一个运算符开始计算
+        int val2 = eval(last_op + 1, q); // 从下一个运算符开始计算
 
         // 处理除数为零的情况
         if (tokens[op].type == '/' && val2 == 0) {
@@ -228,6 +233,7 @@ int eval(int p, int q) {
         }
     }
 }
+
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
