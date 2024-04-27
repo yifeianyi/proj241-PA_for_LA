@@ -209,7 +209,14 @@ int eval(int p, int q) {
                 return val;
             } else {
                 int val;
-                sscanf(tokens[p].str, "%d", &val);
+                long long temp;
+                sscanf(tokens[p].str, "%lld", &temp);
+                if(temp >= INT_MAX || temp <= INT_MIN){
+                  printf("error: Integer overflow detected in addition for val1\n");
+                  return -1;
+                }else{
+                  sscanf(tokens[p].str, "%d", &val);
+                }
                 return val;
             }
         }
