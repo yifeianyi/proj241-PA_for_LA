@@ -252,7 +252,7 @@ int eval(int p, int q) {
                     printf("error: Integer overflow detected in multiplication\n");
                     return -1;
                 } else {
-                    return val1 * val2;
+                    return val1%INT_MAX * val2%INT_MAX;
                 }
             case '/':
                 if (val2 == 0) {
