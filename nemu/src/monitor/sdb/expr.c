@@ -216,6 +216,7 @@ int eval(int p, int q) {
                 }else{
                   sscanf(tokens[p].str, "%d", &val);
                 }
+                printf("%d\n",val);
                 return val;
             }
         }
