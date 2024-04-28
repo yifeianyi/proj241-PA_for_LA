@@ -71,10 +71,10 @@ void init_regex() {
 
 typedef struct token {
   int type;
-  char str[32];
+  char str[64];
 } Token;
 
-static Token tokens[32] __attribute__((used)) = {};
+static Token tokens[64] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 static bool make_token(char *e) {
@@ -216,7 +216,6 @@ int eval(int p, int q) {
                 }else{
                   sscanf(tokens[p].str, "%d", &val);
                 }
-                printf("%d\n",val);
                 return val;
             }
         }
