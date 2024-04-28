@@ -168,8 +168,6 @@ int get_precedence(char op) {
     else
         return 0;
 }
-
-
 int eval(int p, int q) {
     if (p > q) {
         return 0;
@@ -274,9 +272,6 @@ int eval(int p, int q) {
         }
     }
 }
-
-
-
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
