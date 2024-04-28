@@ -3,6 +3,6 @@
     #include <isa-def.h>
     #include "../local-include/reg.h"
 
-    #define PCADDU12I 14
+    #define PCADDU12I 0x0e
 
 #endif

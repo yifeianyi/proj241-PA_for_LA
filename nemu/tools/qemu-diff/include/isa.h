@@ -30,7 +30,8 @@
 #define ISA_QEMU_BIN "qemu-system-i386"
 #define ISA_QEMU_ARGS
 #elif defined(CONFIG_ISA_loongarch32r)
-
+#define ISA_QEMU_BIN "qemu-system-i386" //这里还没处理.
+#define ISA_QEMU_ARGS
 #else
 
 #error Unsupport ISA
@@ -52,6 +53,7 @@ union isa_gdb_regs {
     uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi;
     uint32_t eip, eflags;
     uint32_t cs, ss, ds, es, fs, gs;
+#elif defined(CONFIG_ISA_loongarch32r)
 #endif
   };
   struct {
