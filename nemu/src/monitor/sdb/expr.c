@@ -170,7 +170,6 @@ int get_precedence(char op) {
     else
         return 0;
 }
-
 int eval(int p, int q) {
     if (p > q) {
         return 0;
@@ -203,9 +202,14 @@ int eval(int p, int q) {
                 sscanf(tokens[p].str, "%x", &val);
                 return val;
             } else if (tokens[p].type == TK_REGISTER) {
-                // 处理寄存器表达式
-                int val = evaluate_register(tokens[p].str);
-                return val;
+              int substr_len = strlen(tokens[p].str);
+              char *substr_start = tokens[p].str;
+              if (substr_len > 1 && substr_start[0] == '$') {
+                substr_start++; // 跳过 $
+                substr_len--; // 长度减一
+              }
+              int val = evaluate_register(tokens[p].str);
+              return val;
             } else {
                 int val;
                 long long temp=0;
