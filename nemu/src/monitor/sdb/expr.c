@@ -212,7 +212,7 @@ int eval(int p, int q) {
                 sscanf(tokens[p].str, "%lld", &temp);
                 if(temp >= INT_MAX || temp <= INT_MIN){
                   printf("error: Spill values are detected\n");
-                  return (temp % INT_MAX);
+                  return -1;
                 }else{
                   sscanf(tokens[p].str, "%d", &val);
                 }
@@ -252,7 +252,7 @@ int eval(int p, int q) {
                     printf("error: Integer overflow detected in multiplication\n");
                     return -1;
                 } else {
-                    return val1%INT_MAX * val2%INT_MAX;
+                    return val1 * val2;
                 }
             case '/':
                 if (val2 == 0) {
