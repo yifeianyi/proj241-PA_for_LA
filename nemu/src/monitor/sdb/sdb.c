@@ -49,10 +49,19 @@ static int cmd_c(char *args) {
   return 0;
 }
 
-
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_QUIT;
   return -1;
+}
+extern const char* regs[];
+bool contains_register(const char* input) {
+    size_t len = ARRLEN(regs);
+    for (size_t i = 0; i < sizeof(regs) / sizeof(regs[0]); ++i) {
+        if (strstr(input, regs[i]) != NULL) {
+            return true;
+        }
+    }
+    return false;
 }
 
 static int cmd_p(char* args) {
@@ -62,7 +71,10 @@ static int cmd_p(char* args) {
   if (!success) {
     puts("invalid expression!");
   } else {
-    printf("%s = %d\n", args, res);
+    if(contains_register(args))
+      printf("%s = 0x%08X\n", args, res);
+    else
+      printf("%s = %d\n", args, res);
   }
   return 0;
 }
@@ -89,7 +101,33 @@ static int cmd_x(char *args){
      sscanf(args,"%d",&step);
    cpu_exec(step);
    return 0;
- }
+}
+
+static int cmd_d(char* args){
+  if(args == NULL){
+      printf("No args\n");
+  }else{
+      delete_watchpoint(atoi(args));
+  }
+  return 0;
+}
+
+static int cmd_w(char *args){
+    create_watchpoint(args);
+    return 0;
+
+}
+
+static int cmd_info(char *args){
+  if(args == NULL){
+    printf("no element\n");
+  }else if(strcmp(args,"r") == 0){
+    isa_reg_display();
+  }else if(strcmp(args,"w") == 0){
+    watchpoint_show();
+  }
+  return 0;
+}
 
 static int cmd_help(char *args);
 
@@ -104,6 +142,11 @@ static struct {
   { "x", "Memory scanning",cmd_x},
   
   /* TODO: Add more commands */
+
+  { "info","if you input second element is r,you can know the regs status,\n\t else if you input second element is w ,you can know watchpoint informeation",cmd_info},
+  { "w", "set watchpoint",cmd_w},
+  { "d", "delete watchpoint",cmd_d},
+
   { "p", "p expr", cmd_p },
   { "si", "Pause the program after executing N instructions in one step,\n      When N is not given, it defaults to 1", cmd_si},
 };
