@@ -92,10 +92,9 @@ static bool make_token(char *e) {
 
         position += substr_len;
 
-        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-            i, rules[i].regex, position, substr_len, substr_len, substr_start);
-
         switch (rules[i].token_type) {
+          case TK_NOTYPE:
+            break;
           case TK_HEX:
             tokens[nr_token].type = rules[i].token_type;
             strncpy(tokens[nr_token].str, substr_start + 2, substr_len - 2); // 跳过 "0x"
@@ -171,6 +170,8 @@ int get_precedence(char op) {
     else
         return 0;
 }
+
+
 int eval(int p, int q) {
     if (p > q) {
         return 0;
@@ -208,8 +209,8 @@ int eval(int p, int q) {
                 return val;
             } else {
                 int val;
-                long temp=0;
-                sscanf(tokens[p].str, "%ld", &temp);
+                long long temp=0;
+                sscanf(tokens[p].str, "%lld", &temp);
                 if(temp >= INT_MAX || temp <= INT_MIN){
                   printf("error: Spill values are detected\n");
                   return -1;
@@ -275,6 +276,9 @@ int eval(int p, int q) {
         }
     }
 }
+
+
+
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
