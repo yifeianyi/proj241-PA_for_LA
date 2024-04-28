@@ -43,7 +43,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
   //#ifdef CONFIG_WATCHPOINT
   //scan watchpoint
-  void check_watchpoint();
+  check_watchpoint();
   //#endif
 }
 
