@@ -122,12 +122,11 @@ void check_watchpoint(){
   WP *cur = head;
   while(cur!=NULL){
     int temp = expr(cur->expr,&success);
-    //if(!success){printf("The expression of watchpoint No%d is invalid\n",cur->NO);}
     if(temp != cur->old_value){
       cur->new_value = temp;
       printf(" old_value:0x%08d\n new_value:0x%08X\n",cur->old_value,cur->new_value);
       nemu_state.state = NEMU_STOP;
-      cur->old_value = temp;
+      cur->old_value = cur->new_value;
     }
     
     cur = cur->next;
