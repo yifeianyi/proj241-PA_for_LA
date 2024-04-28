@@ -208,15 +208,14 @@ int eval(int p, int q) {
                 return val;
             } else {
                 int val;
-                sscanf(tokens[p].str, "%d", &val);
-                /*long long temp=0;
+                long long temp=0;
                 sscanf(tokens[p].str, "%lld", &temp);
                 if(temp >= INT_MAX || temp <= INT_MIN){
                   printf("error: Spill values are detected\n");
                   return -1;
                 }else{
                   sscanf(tokens[p].str, "%d", &val);
-                }*/
+                }
                 return val;
             }
         }
