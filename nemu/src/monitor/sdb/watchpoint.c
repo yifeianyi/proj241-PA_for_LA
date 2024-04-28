@@ -134,3 +134,17 @@ void check_watchpoint(){
   }
 
 }
+
+void breakpoint(){
+  bool success = false;
+  WP *cur = head;
+  while(cur!=NULL){
+    int temp = expr(cur->expr,&success);
+    if(temp == cur->old_value){
+      cur->new_value = temp;
+      printf(" old_value:0x%08d\n new_value:0x%08X\n",cur->old_value,cur->new_value);
+      nemu_state.state = NEMU_STOP;
+      cur->old_value = temp;
+    }
+  }
+}
