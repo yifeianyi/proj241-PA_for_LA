@@ -212,7 +212,7 @@ int eval(int p, int q) {
                 long long temp;
                 sscanf(tokens[p].str, "%lld", &temp);
                 if(temp >= INT_MAX || temp <= INT_MIN){
-                  printf("error: Integer overflow detected in addition for val1\n");
+                  printf("error: Spill values are detected\n");
                   return -1;
                 }else{
                   sscanf(tokens[p].str, "%d", &val);
@@ -228,7 +228,7 @@ int eval(int p, int q) {
             case '+':
                 if ((val1 > 0 && val2 > INT_MAX - val1) || 
                     (val1 < 0 && val2 < INT_MIN - val1)) {
-                    printf("error: Integer overflow detected in addition for val1\n");
+                    printf("error: Integer overflow detected in addition\n");
                     return -1;
                 }
                 if ((val2 > 0 && (val1 > INT_MAX - val2 || val1 > INT_MAX)) || 
