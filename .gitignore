@@ -9,5 +9,5 @@
 !README.md
 !.gitignore
 !init.sh
-!/do/*
+!/doc/*
 /fceux-am
