@@ -44,10 +44,10 @@ static struct rule {
   {"0[xX][0-9a-fA-F]+", TK_HEX},
   {"[0-9]+", TK_NUMBER},
   {"[0-9]+\\.[0-9]+", TK_FLOAT},
+  {"\\$(zero|0|ra|tp|sp|a[0-7]|t[0-8]|rs|fp|s[0-8])", TK_REGISTER}, // reg
   {"[a-zA-Z_][a-zA-Z0-9_]*", TK_IDENTIFIER}, // 标识符（变量名等）
   {"&&", TK_AND},
   {"\\|\\|", TK_OR},
-  {"\\$(0|ra|tp|sp|a[0-7]|t[0-8]|rs|fp|s[0-8])", TK_REGISTER}, // reg
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -100,6 +100,17 @@ static bool make_token(char *e) {
             tokens[nr_token].str[substr_len - 2] = '\0';
             nr_token++;
             break;
+          case TK_REGISTER:
+            // 剥离 $ 符号
+            if (substr_len > 1 && substr_start[0] == '$') {
+              substr_start++; // 跳过 $
+              substr_len--; // 长度减一
+            }
+            tokens[nr_token].type = rules[i].token_type;
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
+            nr_token++;
+            break;
           default:
             tokens[nr_token].type = rules[i].token_type;
             strncpy(tokens[nr_token].str, substr_start, substr_len);
@@ -116,7 +127,7 @@ static bool make_token(char *e) {
       return false;
     }
   }
-
+  
   return true;
 }
 
@@ -137,18 +148,16 @@ static bool check_parentheses(int p, int q) {
     return true;
 }
 
-extern const char *regs[];
-
-static int evaluate_register(const char *str) {
-    for (int i = 0; i < 32; i++) {
-        if (strcmp(str, regs[i]) == 0) {
-            return cpu.gpr[i];
-        }
+static word_t evaluate_register(const char *str) {
+    bool success;
+    word_t reg_value = isa_reg_str2val(str, &success);
+    if (success) {
+        return reg_value;
+    } else {
+        // 如果没有找到匹配的寄存器，返回 -1
+        return -1;
     }
-    // 如果没有找到匹配的寄存器，返回 -1
-    return -1;
 }
-
 int eval(int p, int q) {
     if (p > q) {
         return 0;
@@ -175,7 +184,14 @@ int eval(int p, int q) {
                 sscanf(tokens[p].str, "%x", &val);
                 return val;
             } else if (tokens[p].type == TK_REGISTER) {
-                return evaluate_register(tokens[p].str);
+              int substr_len = strlen(tokens[p].str);
+              char *substr_start = tokens[p].str;
+              if (substr_len > 1 && substr_start[0] == '$') {
+                substr_start++; // 跳过 $
+                substr_len--; // 长度减一
+              }
+              int val = evaluate_register(tokens[p].str);
+              return val;
             } else {
                 int val;
                 sscanf(tokens[p].str, "%d", &val);
@@ -193,7 +209,12 @@ int eval(int p, int q) {
             case '*':
                 return val1 * val2;
             case '/':
+              if (val2 == 0) {
+                printf("error: The divisor cannot be '0'\n");
+                return -1;
+              } else {
                 return val1 / val2;
+              }
             case TK_AND:
               if (strcmp(tokens[op].str, "&&") == 0)
                 return val1 && val2;
@@ -203,7 +224,6 @@ int eval(int p, int q) {
             case '!':
               if (strcmp(tokens[op].str, "!") == 0)
                 return !val2;
-
             default:
                 return 0;
         }
