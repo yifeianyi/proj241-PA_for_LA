@@ -144,7 +144,7 @@ static bool check_parentheses(int p, int q) {
         if (cnt == 0 && i < q) 
             return false;
     }
-    if (cnt < 0) 
+    if (cnt < 0)
         return false;
     return true;
 }
@@ -170,7 +170,6 @@ int get_precedence(char op) {
     else
         return 0;
 }
-
 
 int eval(int p, int q) {
     if (p > q) {
@@ -276,9 +275,6 @@ int eval(int p, int q) {
         }
     }
 }
-
-
-
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
