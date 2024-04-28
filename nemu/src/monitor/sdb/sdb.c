@@ -53,14 +53,9 @@ static int cmd_q(char *args) {
   nemu_state.state = NEMU_QUIT;
   return -1;
 }
-
+extern const char* regs[];
 bool contains_register(const char* input) {
-    const char* regs[] = {
-        "zero", "ra", "tp", "sp", "a0", "a1", "a2", "a3",
-        "a4", "a5", "a6", "a7", "t0", "t1", "t2", "t3",
-        "t4", "t5", "t6", "t7", "t8", "rs", "fp", "s0",
-        "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"
-    };
+    size_t len = ARRLEN(regs);
     for (size_t i = 0; i < sizeof(regs) / sizeof(regs[0]); ++i) {
         if (strstr(input, regs[i]) != NULL) {
             return true;
