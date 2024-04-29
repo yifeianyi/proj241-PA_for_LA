@@ -92,7 +92,7 @@ static bool make_token(char *e) {
 
         position += substr_len;
 
-        if(nr_token >= sizeof(tokens)){
+        if(nr_token >= sizeof(tokens)-1){
           printf("The expr too long!\n");
           return false;
         }
