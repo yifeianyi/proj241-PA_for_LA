@@ -1,4 +1,5 @@
-CROSS_COMPILE := loongarch32r-linux-gnusf-
+CROSS_COMPILE := $(LA32R)/bin/loongarch32r-linux-gnusf-
 COMMON_FLAGS  := -fno-pic
-CFLAGS        += $(COMMON_FLAGS) -static
+LA32R_INC     := -I/home/ysyx/Desktop/la32r-toolchains/install/lib/gcc/loongarch32r-linux-gnusf/8.3.0/include
+CFLAGS        += $(COMMON_FLAGS) -static -I$(LA32R_INC)
 ASFLAGS       += $(COMMON_FLAGS) -O0
