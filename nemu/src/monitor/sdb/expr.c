@@ -92,6 +92,11 @@ static bool make_token(char *e) {
 
         position += substr_len;
 
+        if(nr_token >= sizeof(tokens)){
+          printf("The expr too long!\n");
+          return false;
+        }
+
         switch (rules[i].token_type) {
           case TK_NOTYPE:
             break;
