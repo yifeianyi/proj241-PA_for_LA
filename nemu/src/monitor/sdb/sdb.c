@@ -60,6 +60,7 @@ bool contains_register(const char* input) {
     for (size_t i = 0; i < len; ++i) {
         if (strstr(input, regs[i]) != NULL) {
             return true;
+            printf("yes\n");
         }
     }
     return false;
