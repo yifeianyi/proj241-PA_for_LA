@@ -92,8 +92,6 @@ static bool make_token(char *e) {
 
         position += substr_len;
 
-        
-
         switch (rules[i].token_type) {
           case TK_NOTYPE:
             break;
@@ -122,6 +120,9 @@ static bool make_token(char *e) {
         }
 
         break;
+      }
+      if(nr_token >= 64){
+        return false;
       }
     }
 
