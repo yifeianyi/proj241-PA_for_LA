@@ -122,6 +122,7 @@ static bool make_token(char *e) {
         break;
       }
       if(nr_token >= 64){
+        printf("The exrp too long!\n");
         return false;
       }
     }
