@@ -56,7 +56,7 @@ static int cmd_q(char *args) {
 
 extern const char* regs[];
 bool contains_register(const char* input) {
-    size_t len = sizeof(*regs)/(*regs[0]);
+    size_t len = sizeof(*regs)/sizeof(regs[0]);
     for (size_t i = 0; i < len; ++i) {
         if (strstr(input, regs[i]) != NULL) {
             return true;
