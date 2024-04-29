@@ -86,16 +86,17 @@ static bool make_token(char *e) {
   while (e[position] != '\0') {
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i ++) {
+      if(nr_token >= sizeof(tokens)-1){
+          printf("The expr too long!\n");
+          return false;
+        }
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
         position += substr_len;
 
-        if(nr_token >= sizeof(tokens)-1){
-          printf("The expr too long!\n");
-          return false;
-        }
+        
 
         switch (rules[i].token_type) {
           case TK_NOTYPE:
