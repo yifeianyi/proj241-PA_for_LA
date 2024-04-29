@@ -198,7 +198,7 @@ int eval(int p, int q) {
         }
 
         if (op == -1) {
-            if (q - p > 100) { // Adjust the threshold as needed
+            if (q - p >= 64) { // Adjust the threshold as needed
               printf("Expression is too long. Returning 0. Warning: Expression is lengthy.\n");
               return 0;
             }
