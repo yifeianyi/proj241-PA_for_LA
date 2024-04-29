@@ -53,10 +53,11 @@ static int cmd_q(char *args) {
   nemu_state.state = NEMU_QUIT;
   return -1;
 }
+
 extern const char* regs[];
+extern const int reg_len;
 bool contains_register(const char* input) {
-    size_t len = ARRLEN(regs);
-    for (size_t i = 0; i < sizeof(regs) / sizeof(regs[0]); ++i) {
+    for (size_t i = 0; i < reg_len; ++i) {
         if (strstr(input, regs[i]) != NULL) {
             return true;
         }
@@ -140,7 +141,7 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   { "x", "Memory scanning",cmd_x},
-  
+
   /* TODO: Add more commands */
 
   { "info","if you input second element is r,you can know the regs status,\n\t else if you input second element is w ,you can know watchpoint informeation",cmd_info},
