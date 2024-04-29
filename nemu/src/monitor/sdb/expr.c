@@ -86,10 +86,6 @@ static bool make_token(char *e) {
   while (e[position] != '\0') {
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i ++) {
-      if(nr_token >= sizeof(tokens)-1){
-          printf("The expr too long!\n");
-          return false;
-        }
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
@@ -202,6 +198,10 @@ int eval(int p, int q) {
         }
 
         if (op == -1) {
+            if (q - p > 100) { // Adjust the threshold as needed
+              printf("Expression is too long. Returning 0. Warning: Expression is lengthy.\n");
+              return 0;
+            }
             // 处理数字和其他类型表达式
             if (tokens[p].type == TK_HEX) {
                 int val;
