@@ -24,19 +24,20 @@ const char *regs[] = {
 };
 
 void isa_reg_display() {
-    for (int i = 0; i < 32; i++) {
-        printf("%s = 0x%x\n", regs[i], cpu.gpr[i]);
-    }
-    printf("pc = 0x%x\n", cpu.pc);
+  int length = ARRLEN(regs);
+  for(int i = 0; i<length; i++){
+    printf("reg $%s ---> 0x%08X\n",regs[i],gpr(i));
+  }
+
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-    *success = true;
-    for (int i = 0; i < 32; i++) {
-        if (strcmp(s, regs[i]) == 0) {
-            return cpu.gpr[i];
-        }
+  *success = true;
+  for(int i = 0;i<32;i++){
+    if(strcmp(s,regs[i]) == 0){
+      return gpr(i);
     }
-    *success = false;
-    return 0;
+  }
+  *success = false;
+  return 0;
 }
