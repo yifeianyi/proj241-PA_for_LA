@@ -22,7 +22,7 @@ static const uint32_t img [] = {
   0x1c00000c,  // pcaddu12i $t0,0
   0x29804180,  // st.w $zero,$t0,16
   0x28804184,  // ld.w $a0,$t0,16
-  0x28000901,  
+  0x28400901,  
   0x002a0000,  // break 0 (used as nemu_trap)
   0xdeadbeef,  // some data
 };
