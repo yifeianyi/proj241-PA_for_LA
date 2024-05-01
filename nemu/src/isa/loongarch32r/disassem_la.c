@@ -103,7 +103,7 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         uint16_t hint = 0;
         uint8_t op = 0;
         rj = SEXT(BITS(code, 9, 5),5);
-        rd = BITS(code, 4, 0);
+        rd = SEXT(BITS(code, 4, 0),5);
         rk = SEXT(BITS(code, 14,10),5);
         
         uint32_t uimm = 0;
