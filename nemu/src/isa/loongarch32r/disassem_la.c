@@ -48,7 +48,7 @@ static uint32_t GetInst(char *inst, uint32_t code){
     else if(opcode_31_15 == MOD_WU){strcpy(inst, "MOD.WU");return TYPE_3R;}
     else if(opcode_31_15 == SLL_W){strcpy(inst, "SLL.W");return TYPE_3R;}
     else if(opcode_31_15 == SRL_W){strcpy(inst, "SRL.W");return TYPE_3R;}
-    else if(opcode_31_15 == SRA_W){strcpy(inst, "SRA.WU");return TYPE_3R;}
+    else if(opcode_31_15 == SRA_W){strcpy(inst, "SRA.W");return TYPE_3R;}
     else if(opcode_31_15 == DBAR){strcpy(inst, "DBAR");return TYPE_LANZAN;}
     else if(opcode_31_15 == IBAR){strcpy(inst, "IBAR");return TYPE_LANZAN;}
     else if(opcode_31_15 == IDLE){strcpy(inst, "IDLE");return TYPE_ID;}
