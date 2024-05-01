@@ -108,7 +108,7 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         
         uint32_t uimm = 0;
         int imm = 0;
-        int offs = 0;
+        int32_t offs = 0;
         int level = 0;
         switch (type)
         {
