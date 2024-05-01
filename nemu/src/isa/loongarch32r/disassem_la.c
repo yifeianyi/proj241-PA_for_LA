@@ -163,13 +163,13 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         case TYPE_2RI14_1:
             if(BITS(code,9,5) == 0){
                 csr = SEXT(BITS(code,23,10),14); 
-                sprintf(p,"CSRRD $%s $%s",regs[rd],regs[csr]);
+                sprintf(p,"CSRRD $%s %d",regs[rd],csr);
             }else if(BITS(code,9,5) == 1){
                 csr = SEXT(BITS(code,23,10),14);
-                sprintf(p,"CSRWR $%s $%s",regs[rd],regs[csr]);
+                sprintf(p,"CSRWR $%s %d",regs[rd],csr);
             }else{
                 csr = SEXT(BITS(code,23,10),14);
-                sprintf(p,"CSRXCHG $%s $%s",regs[rd],regs[csr]);
+                sprintf(p,"CSRXCHG $%s $%s %d",regs[rd],regs[rj],csr);
             }
             break;
         case TYPE_S:
