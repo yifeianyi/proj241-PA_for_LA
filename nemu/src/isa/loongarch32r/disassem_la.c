@@ -123,6 +123,7 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         case TYPE_2RI12_U:
             uimm = SEXT(BITS(code, 21, 10), 12);
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],uimm);
+            break;
         case TYPE_2RI12_CP:
             imm = SEXT(BITS(code, 21, 10), 12);
             code = BITS(code, 4, 0);
