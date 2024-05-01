@@ -177,7 +177,7 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
             sprintf(p," %d",imm);
             break;
         case TYPE_I26:
-            offs = SEXT(BITS(code,25,10),15)+(BITS(code,9,0)<<15);
+            offs = BITS(code,25,10)+(BITS(code,9,0)<<15);
             sprintf(p," %d",offs);
             break;
         case TYPE_LANZAN:
