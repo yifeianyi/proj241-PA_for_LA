@@ -31,10 +31,64 @@ static char *code_format =
 "  return 0; "
 "}";
 
-static void gen_rand_expr() {
-  buf[0] = '\0';
+// 选择一个0到n-1之间的随机数
+static int choose(int n) {
+    return rand() % n;
 }
 
+// 生成一个随机数字并将其追加到buf中
+static void gen_num() {
+    int num = rand() % 100 + 1; // 生成1到100之间的随机数
+    char term[32];
+    snprintf(term, sizeof(term), "%d", num);
+    strcat(buf, term);
+}
+
+// 将字符ch追加到buf中
+static void gen(char ch) {
+    char term[2];
+    term[0] = ch;
+    term[1] = '\0';
+    strcat(buf, term);
+}
+
+// 生成一个随机运算符并将其追加到buf中
+static void gen_rand_op() {
+    char op;
+    switch (choose(4)) {
+        case 0:
+            op = '+';
+            break;
+        case 1:
+            op = '-';
+            break;
+        case 2:
+            op = '*';
+            break;
+        case 3:
+            op = '/';
+            break;
+    }
+    gen(op);
+}
+
+void gen_rand_expr() {
+    switch (choose(3)) {
+        case 0:
+            gen_num();
+            break;
+        case 1:
+            gen('(');
+            gen_rand_expr();
+            gen(')');
+            break;
+        default:
+            gen_rand_expr();
+            gen_rand_op();
+            gen_rand_expr();
+            break;
+    }
+}
 int main(int argc, char *argv[]) {
   int seed = time(0);
   srand(seed);
@@ -62,7 +116,8 @@ int main(int argc, char *argv[]) {
     int result;
     ret = fscanf(fp, "%d", &result);
     pclose(fp);
-
+    if(strlen(buf) >= 72)
+        return 0;
     printf("%u %s\n", result, buf);
   }
   return 0;

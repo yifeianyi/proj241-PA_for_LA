@@ -14,10 +14,10 @@ static uint32_t GetInst(char *inst, uint32_t code){
     if (opcode_31_25 == PCADDU12I){strcpy(inst, "pcaddu12i");return TYPE_1RI20;}
     else if(opcode_31_25 == LU12I_W){strcpy(inst, "LU12I.w");return TYPE_1RI20;}
 
-    else if(opcode_31_22 == ST_W){strcpy(inst, "ST.w");return TYPE_2RI12;}
+    else if(opcode_31_22 == ST_W){strcpy(inst, "ST.W");return TYPE_2RI12;}
     else if(opcode_31_22 == ST_B){strcpy(inst, "ST.B");return TYPE_2RI12;}
     else if(opcode_31_22 == ST_H){strcpy(inst, "ST.H");return TYPE_2RI12;}
-    else if(opcode_31_22 == ADDI_W){strcpy(inst, "ADDI.w");return TYPE_2RI12;}
+    else if(opcode_31_22 == ADDI_W){strcpy(inst, "ADDI.W");return TYPE_2RI12;}
     else if(opcode_31_22 == SLTI){strcpy(inst, "SLTI");return TYPE_2RI12;}
     else if(opcode_31_22 == SLTUI){strcpy(inst, "SLTUI");return TYPE_2RI12;}
     else if(opcode_31_22 == ANDI){strcpy(inst, "ANDI");return TYPE_2RI12;}
@@ -31,8 +31,8 @@ static uint32_t GetInst(char *inst, uint32_t code){
     else if(opcode_31_22 == CAROP){strcpy(inst, "CACOP");return TYPE_2RI12_CP;}
     else if(opcode_31_22 == PRELD){strcpy(inst, "PRELD");return TYPE_2RI12_PR;}
 
-    else if(opcode_31_15 == ADD_W){strcpy(inst, "ADD.w");return TYPE_3R;}
-    else if(opcode_31_15 == SUB_W){strcpy(inst, "SUB.w");return TYPE_3R;}
+    else if(opcode_31_15 == ADD_W){strcpy(inst, "ADD.W");return TYPE_3R;}
+    else if(opcode_31_15 == SUB_W){strcpy(inst, "SUB.W");return TYPE_3R;}
     else if(opcode_31_15 == STL){strcpy(inst, "STL");return TYPE_3R;}
     else if(opcode_31_15 == SLTU){strcpy(inst, "STLU");return TYPE_3R;}
     else if(opcode_31_15 == NOR){strcpy(inst, "NOR");return TYPE_3R;}
@@ -48,7 +48,7 @@ static uint32_t GetInst(char *inst, uint32_t code){
     else if(opcode_31_15 == MOD_WU){strcpy(inst, "MOD.WU");return TYPE_3R;}
     else if(opcode_31_15 == SLL_W){strcpy(inst, "SLL.W");return TYPE_3R;}
     else if(opcode_31_15 == SRL_W){strcpy(inst, "SRL.W");return TYPE_3R;}
-    else if(opcode_31_15 == SRA_W){strcpy(inst, "SRA.W");return TYPE_3R;}
+    else if(opcode_31_15 == SRA_W){strcpy(inst, "SRA.WU");return TYPE_3R;}
     else if(opcode_31_15 == DBAR){strcpy(inst, "DBAR");return TYPE_LANZAN;}
     else if(opcode_31_15 == IBAR){strcpy(inst, "IBAR");return TYPE_LANZAN;}
     else if(opcode_31_15 == IDLE){strcpy(inst, "IDLE");return TYPE_ID;}
@@ -102,13 +102,13 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         uint8_t csr = 0;
         uint16_t hint = 0;
         uint8_t op = 0;
-        rj = SEXT(BITS(code, 9, 5),5);
-        rd = SEXT(BITS(code, 4, 0),5);
-        rk = SEXT(BITS(code, 14,10),5);
+        rj = BITS(code, 9, 5);
+        rd = BITS(code, 4, 0);
+        rk = BITS(code, 14,10);
         
         uint32_t uimm = 0;
         int imm = 0;
-        int32_t offs = 0;
+        int offs = 0;
         int level = 0;
         switch (type)
         {
@@ -117,28 +117,27 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
             sprintf(p,"  $%s, %d",regs[rd],imm);
             break;
         case TYPE_2RI12:
-            imm = SEXT(BITS(code, 21, 10), 12);
+            imm = SEXT(BITS(code, 21, 10),32);
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],imm);
             break;
         case TYPE_2RI12_U:
-            uimm = SEXT(BITS(code, 21, 10), 12);
+            uimm = BITS(code, 21, 10);
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],uimm);
-            break;
         case TYPE_2RI12_CP:
-            imm = SEXT(BITS(code, 21, 10), 12);
+            imm = BITS(code, 21, 10);
             code = BITS(code, 4, 0);
             sprintf(p,"  %d,$%s,%d",code,regs[rj],imm);
             break;
         case TYPE_2RI12_PR:
-            imm = SEXT(BITS(code, 21, 10), 12);
-            hint = SEXT(BITS(code, 4, 0),5);
+            imm = BITS(code, 21, 10);
+            hint = BITS(code, 4, 0);
             sprintf(p,"  %d,$%s,%d",hint,regs[rj],imm);
             break;
         case TYPE_3R:
             sprintf(p,"  $%s,$%s,$%s",regs[rd],regs[rj],regs[rk]);
             break;
         case TYPE_3R_U:
-            uimm = SEXT(BITS(code, 14,10),5);
+            uimm = BITS(code, 14,10);
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],uimm);
             break;
         case TYPE_2R:
@@ -153,27 +152,27 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
             sprintf(p,"  $%s",regs[rd]);
             break;
         case TYPE_2RI16:
-            offs = SEXT(BITS(code,25,10),15); 
-            sprintf(p,"  $%s,$%s,%d",regs[rj],regs[rd],offs);
+            offs = BITS(code,25,10); 
+            sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],offs);
             break;
         case TYPE_2RI14:
-            imm = SEXT(BITS(code,23,10),14);
+            imm = BITS(code,23,10);
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],imm);
             break;
         case TYPE_2RI14_1:
             if(BITS(code,9,5) == 0){
-                csr = SEXT(BITS(code,23,10),14); 
+                csr = BITS(code,23,10); 
                 sprintf(p,"CSRRD $%s %d",regs[rd],csr);
             }else if(BITS(code,9,5) == 1){
-                csr = SEXT(BITS(code,23,10),14);
+                csr = BITS(code,23,10);
                 sprintf(p,"CSRWR $%s %d",regs[rd],csr);
             }else{
-                csr = SEXT(BITS(code,23,10),14);
+                csr = BITS(code,23,10);
                 sprintf(p,"CSRXCHG $%s $%s %d",regs[rd],regs[rj],csr);
             }
             break;
         case TYPE_S:
-            imm = SEXT(BITS(code,14,0),15);
+            imm = BITS(code,14,0);
             sprintf(p," %d",imm);
             break;
         case TYPE_I26:
@@ -185,11 +184,11 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
             sprintf(p," %d",hint);
             break;
         case TYPE_ID:
-            level = SEXT(BITS(code,14,0),15);
+            level = BITS(code,14,0);
             sprintf(p," %d",level);
             break;
         case TYPE_IN:
-            op = SEXT(BITS(code,4,0),5);
+            op = BITS(code,4,0);
             sprintf(p," %d $%s $%s",op,regs[rj],regs[rk]);
             break;
         default:
