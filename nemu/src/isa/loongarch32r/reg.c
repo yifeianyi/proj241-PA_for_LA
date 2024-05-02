@@ -26,6 +26,7 @@ const int reg_len = ARRLEN(regs);
 
 void isa_reg_display() {
   int length = ARRLEN(regs);
+  printf("reg $pc ---> 0x%08X\n",cpu.pc);
   for(int i = 0; i<length; i++){
     printf("reg $%s ---> 0x%08X\n",regs[i],gpr(i));
   }
