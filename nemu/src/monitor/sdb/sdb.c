@@ -62,9 +62,9 @@ bool contains_register(const char* input) {
             return true;
         }
     }
-     if(strcmp(input,"pc")){
-       return true;
-     }
+//     if(strcmp(input,"pc")){
+//       return true;
+//     }
     return false;
 }
 
