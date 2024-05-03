@@ -33,11 +33,11 @@ typedef struct {
 #define isa_mmu_check(vaddr, len, type) (MMU_DIRECT)
 enum {
   TYPE_2R   ,   TYPE_3R    ,        TYPE_4R,
-  TYPE_2RI8 ,   TYPE_2RI12 ,        TYPE_2RI14,
-  TYPE_2RI16,   TYPE_1RI20 ,        TYPE_1RI21,  TYPE_2RI14_1,
+  TYPE_2RI8 ,   TYPE_2RI12 ,        TYPE_2RI14,  TYPE_CSRXCHG,
+  TYPE_2RI16,   TYPE_1RI20 ,        TYPE_1RI21,  TYPE_1RI14,
   TYPE_N,       TYPE_S     ,        TYPE_I26,    TYPE_LANZAN, 
-  TYPE_2RUI5,   TYPE_2RI12_CPROP,   TYPE_IDLE,   TYPE_INVTLB,
-  TYPE_2RUI12,  TYPE_2RI12_PRELD,   NONE_TYPE,   TYPE_2R_1,// none
+  TYPE_2RUI5,   TYPE_CPROP,   TYPE_IDLE,   TYPE_INVTLB,
+  TYPE_2RUI12,  TYPE_PRELD,   NONE_TYPE,   TYPE_1R,// none
 };
 
 
