@@ -136,6 +136,11 @@ config TRACE_START
   int "When tracing is enabled (unit: number of instructions)"
   default 0
 
+config MTRACE
+  depends on TRACE
+  bool "Enable memory tracer"
+  default y
+
 config TRACE_END
   depends on TRACE
   int "When tracing is disabled (unit: number of instructions)"
