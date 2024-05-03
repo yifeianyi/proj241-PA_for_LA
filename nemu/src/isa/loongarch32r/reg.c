@@ -25,8 +25,7 @@ const char *regs[] = {
 const int reg_len = ARRLEN(regs);
 
 void isa_reg_display() {
-  int length = ARRLEN(regs);
-  for(int i = 0; i<length; i++){
+  for(int i = 0; i<reg_len; i++){
     printf("reg $%s ---> 0x%08X\n",regs[i],gpr(i));
   }
 
