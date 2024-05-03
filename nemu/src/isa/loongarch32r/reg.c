@@ -25,11 +25,12 @@ const char *regs[] = {
 const int reg_len = ARRLEN(regs);
 
 void isa_reg_display() {
-  int length = ARRLEN(regs);
-  printf("reg $pc ---> 0x%08X\n",cpu.pc);
-  for(int i = 0; i<length; i++){
-    printf("reg $%s ---> 0x%08X\n",regs[i],gpr(i));
+  printf("pc:" FMT_PADDR "\n",cpu.pc);
+  for(int i=0;i<reg_len;i++){
+    if(i%4==0 && i!=0)printf("\n");
+    printf("%3s:" FMT_PADDR " \t\t",regs[i], gpr(i));
   }
+  printf("\n");
 
 }
 
