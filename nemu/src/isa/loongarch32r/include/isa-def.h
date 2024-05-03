@@ -40,5 +40,6 @@ enum {
   TYPE_2RI12_U, TYPE_2RI12_PR,  NONE_TYPE,   TYPE_2R_1,// none
 };
 
+
 #endif
 
