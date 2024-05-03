@@ -73,11 +73,13 @@ static void exec_once(Decode *s, vaddr_t pc) {
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen);
 #else
-  void disassem_la(char *str, uint64_t pc, uint32_t code);
-  disassem_la(p, s->pc, s->isa.inst.val);
+  void disassem_la(char *str, uint32_t code);
+  disassem_la(p, s->isa.inst.val);
 #endif
 #endif
 }
+
+
 
 static void execute(uint64_t n) {
   Decode s;
@@ -133,4 +135,5 @@ void cpu_exec(uint64_t n) {
       // fall through
     case NEMU_QUIT: statistic();
   }
+  
 }
