@@ -76,6 +76,11 @@ static void exec_once(Decode *s, vaddr_t pc) {
   void disassem_la(char *str, uint32_t code);
   disassem_la(p, s->isa.inst.val);
 #endif
+
+#ifdef CONFIG_ITRACE_IRINGBUF
+  push_to_iringbuf(s->logbuf,s->pc);
+#endif
+
 #endif
 }
 
@@ -127,6 +132,9 @@ void cpu_exec(uint64_t n) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
 
     case NEMU_END: case NEMU_ABORT:
+  #ifdef CONFIG_ITRACE_IRINGBUF
+    if(nemu_state.state == NEMU_ABORT || nemu_state.halt_ret != 0 )print_iringbuf();
+  #endif
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
