@@ -63,6 +63,9 @@ bool contains_register(const char* input) {
             return true;
         }
     }
+     if(strstr(input, "pc") != NULL){
+       return true;
+     }
     return false;
 }
 
