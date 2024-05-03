@@ -28,8 +28,8 @@ static uint32_t GetInst(char *inst, uint32_t code){
     else if(opcode_31_22 == LD_W){strcpy(inst, "LD.W");return TYPE_2RI12;}
     else if(opcode_31_22 == LD_BU){strcpy(inst,"LD.BU");return TYPE_2RI12;}
     else if(opcode_31_22 == LD_HU){strcpy(inst, "LD.HU");return TYPE_2RI12;}
-    else if(opcode_31_22 == CAROP){strcpy(inst, "CACOP");return TYPE_2RI12_CPROP;}
-    else if(opcode_31_22 == PRELD){strcpy(inst, "PRELD");return TYPE_2RI12_PRELD;}
+    else if(opcode_31_22 == CAROP){strcpy(inst, "CACOP");return TYPE_CPROP;}
+    else if(opcode_31_22 == PRELD){strcpy(inst, "PRELD");return TYPE_PRELD;}
 
     else if(opcode_31_15 == ADD_W){strcpy(inst, "ADD.W");return TYPE_3R;}
     else if(opcode_31_15 == SUB_W){strcpy(inst, "SUB.W");return TYPE_3R;}
@@ -67,16 +67,16 @@ static uint32_t GetInst(char *inst, uint32_t code){
 
     else if(opcode_31_24 == LL_W){strcpy(inst, "LL.W");return TYPE_2RI14;}
     else if(opcode_31_24 == SC_W){strcpy(inst, "SC.W");return TYPE_2RI14;}
-    else if(opcode_31_24 == CSRRD){return TYPE_2RI14_1;}
-    else if(opcode_31_24 == CSRWR){return TYPE_2RI14_1;}
-    else if(opcode_31_24 == CSRXCHG){return TYPE_2RI14_1;}
+    else if(opcode_31_24 == CSRRD){return TYPE_1RI14;}
+    else if(opcode_31_24 == CSRWR){return TYPE_1RI14;}
+    else if(opcode_31_24 == CSRXCHG){return TYPE_2RI14;}
 
     else if(opcode_31_15 == Break){strcpy(inst, "break");return TYPE_S;}
     else if(opcode_31_15 == SYSCALL){strcpy(inst, "syscall");return TYPE_S;}
 
-    else if(opcode_31_10 == RDCNTVL_W){strcpy(inst, "");return TYPE_2R;}
-    else if(opcode_31_10 == RDCNTID_W){strcpy(inst, "");return TYPE_2R;}
-    else if(opcode_31_10 == RDCNTVH_W){strcpy(inst, "RDCNTVH.W");return TYPE_2R_1;}
+    else if(opcode_31_10 == RDCNTVL_W){strcpy(inst, "");return TYPE_1R;}
+    else if(opcode_31_10 == RDCNTID_W){strcpy(inst, "");return TYPE_1R;}
+    else if(opcode_31_10 == RDCNTVH_W){strcpy(inst, "RDCNTVH.W");return TYPE_1R;}
     else if(opcode_31_10 == TLBSRCH){strcpy(inst, "TLBSRCH");return NONE_TYPE;}
     else if(opcode_31_10 == TLBRD){strcpy(inst, "TLBRD");return NONE_TYPE;}
     else if(opcode_31_10 == TLBWR){strcpy(inst, "TLBWR");return NONE_TYPE;}
@@ -123,12 +123,12 @@ void disassem_la(char *str, uint32_t code){
         case TYPE_2RUI12:
             uimm = BITS(code, 21, 10);
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],uimm);
-        case TYPE_2RI12_CPROP:
+        case TYPE_CPROP:
             imm = BITS(code, 21, 10);
             code = BITS(code, 4, 0);
             sprintf(p,"  %d,$%s,%d",code,regs[rj],imm);
             break;
-        case TYPE_2RI12_PRELD:
+        case TYPE_PRELD:
             imm = BITS(code, 21, 10);
             hint = BITS(code, 4, 0);
             sprintf(p,"  %d,$%s,%d",hint,regs[rj],imm);
@@ -140,35 +140,36 @@ void disassem_la(char *str, uint32_t code){
             uimm = BITS(code, 14,10);
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],uimm);
             break;
-        case TYPE_2R:
+        case TYPE_1R:
             if(BITS(code,4,0) == 0){
                 sprintf(p,"RDCNTID.W  $%s",regs[rj]);
             }
             if(BITS(code,4,0) != 0 && BITS(code,9,5) == 0){
                 sprintf(p,"RDCNTVL.W  $%s",regs[rd]);
             }
-            break;
-        case TYPE_2R_1:
-            sprintf(p,"  $%s",regs[rd]);
+            if(BITS(code,13,10) == 9 && BITS(code,4,0) != 0){
+                sprintf(p," $%s",regs[rd]);
+            }
             break;
         case TYPE_2RI16:
             offs = BITS(code,25,10); 
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],offs);
             break;
         case TYPE_2RI14:
+            if(BITS(code,9,5) != 1 || BITS(code,9,5) != 0){
+                csr = BITS(code,23,10); 
+                sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],csr);
+            }
             imm = BITS(code,23,10);
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],imm);
             break;
-        case TYPE_2RI14_1:
+        case TYPE_1RI14:
             if(BITS(code,9,5) == 0){
                 csr = BITS(code,23,10); 
                 sprintf(p,"CSRRD $%s %d",regs[rd],csr);
             }else if(BITS(code,9,5) == 1){
                 csr = BITS(code,23,10);
                 sprintf(p,"CSRWR $%s %d",regs[rd],csr);
-            }else{
-                csr = BITS(code,23,10);
-                sprintf(p,"CSRXCHG $%s $%s %d",regs[rd],regs[rj],csr);
             }
             break;
         case TYPE_S:
