@@ -31,4 +31,14 @@ typedef struct {
 } loongarch32r_ISADecodeInfo;
 
 #define isa_mmu_check(vaddr, len, type) (MMU_DIRECT)
+//===================================================================================
+enum {
+  TYPE_2R   ,   TYPE_3R    ,    TYPE_4R,
+  TYPE_2RI8 ,   TYPE_2RI12 ,    TYPE_2RI14,
+  TYPE_2RI16,   TYPE_1RI20 ,    TYPE_1RI21,  TYPE_2RI14_1,
+  TYPE_N,       TYPE_S     ,    TYPE_I26,    TYPE_LANZAN, 
+  TYPE_3R_U,    TYPE_2RI12_CP,  TYPE_ID,     TYPE_IN,
+  TYPE_2RI12_U, TYPE_2RI12_PR,  NONE_TYPE,   TYPE_2R_1,// none
+};
+
 #endif
