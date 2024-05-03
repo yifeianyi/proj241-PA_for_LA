@@ -89,8 +89,8 @@ static uint32_t GetInst(char *inst, uint32_t code){
 
     else { strcpy(inst,"\0");return TYPE_N;}
 }
-void disassem_la(char *str, uint64_t pc, uint32_t code){
-        
+void disassem_la(char *str, uint32_t code){
+        //获取指令
         char inst[30];
         uint32_t type =  GetInst(inst,code);
         Assert(inst!=NULL,"GetInst false.");

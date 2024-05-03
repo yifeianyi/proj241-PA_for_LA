@@ -30,9 +30,9 @@ static inline const char* reg_name(int idx) {
   return regs[check_reg_idx(idx)];
 }
 
-//===================================================================================
-
-
+#define R(i) gpr(i)
+#define Mr vaddr_read
+#define Mw vaddr_write
 
 #endif
 
