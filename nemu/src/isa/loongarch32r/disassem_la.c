@@ -83,9 +83,9 @@ static uint32_t GetInst(char *inst, uint32_t code){
     else if(opcode_31_10 == TLBFILL){strcpy(inst, "TLBFILL");return NONE_TYPE;}
     else if(opcode_31_10 == ERTN){strcpy(inst, "ERTN");return NONE_TYPE;}
 
-    else if(opcode_31_15 == SLLI_W){strcpy(inst, "SLLI.W");return TYPE_3R_U;}
-    else if(opcode_31_15 == SRLI_W){strcpy(inst, "SRLI.W");return TYPE_3R_U;}
-    else if(opcode_31_15 == SRAI_W){strcpy(inst, "SRAI.W");return TYPE_3R_U;}
+    else if(opcode_31_15 == SLLI_W){strcpy(inst, "SLLI.W");return TYPE_2R_U;}
+    else if(opcode_31_15 == SRLI_W){strcpy(inst, "SRLI.W");return TYPE_2R_U;}
+    else if(opcode_31_15 == SRAI_W){strcpy(inst, "SRAI.W");return TYPE_2R_U;}
 
     else { strcpy(inst,"\0");return TYPE_N;}
 }
@@ -136,7 +136,7 @@ void disassem_la(char *str, uint64_t pc, uint32_t code){
         case TYPE_3R:
             sprintf(p,"  $%s,$%s,$%s",regs[rd],regs[rj],regs[rk]);
             break;
-        case TYPE_3R_U:
+        case TYPE_2R_U:
             uimm = BITS(code, 14,10);
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],uimm);
             break;
