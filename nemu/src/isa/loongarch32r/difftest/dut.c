@@ -19,17 +19,23 @@
 void diff_compare_regsdisplay(CPU_state *ref_r,int idx){
   for (int i = 0; i < 32; i++)
   {
-    if(i%3==0 && i!=0)printf("\n");
+    if(i%4==0 && i!=0)printf("\n");
     if(i==idx){
-      printf("\033[31m%4s:  dut = "FMT_PADDR"\t  ref = "FMT_PADDR"\033[37m \033[0m\t", reg_name(i), gpr(i),ref_r->gpr[i]);
+      printf("\033[31m%4s:  dut="FMT_PADDR"\t  ref="FMT_PADDR"\033[37m \033[0m\t", reg_name(i), gpr(i),ref_r->gpr[i]);
     }
     else{
-      printf("%4s:  dut = "FMT_PADDR"\t  ref = "FMT_PADDR"\t", reg_name(i), gpr(i),ref_r->gpr[i]);
+      printf("%4s:  dut="FMT_PADDR"\t  ref="FMT_PADDR"\t", reg_name(i), gpr(i),ref_r->gpr[i]);
     }
   }
   printf("\n");
 }
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
+    if(ref_r->pc != pc){
+      Log("PC is error!!!");
+      printf("\033[31mPC:\n\tdut:"FMT_PADDR" \n\tref:"FMT_PADDR"\033[37m \033[0m\n",pc,ref_r->pc);
+      diff_compare_regsdisplay(ref_r,-1);
+      return false;
+    }
     for(int i=0;i<32;i++){
     if(ref_r->gpr[i] != gpr(i))
     {

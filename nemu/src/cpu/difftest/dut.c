@@ -92,10 +92,20 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 }
 
 static void checkregs(CPU_state *ref, vaddr_t pc) {
+  // if(ref->pc != pc){
+  //     Log("PC is error!!!");
+  //     printf("PC:\n\tdut:"FMT_PADDR" \n\tref:"FMT_PADDR"\n",pc,ref->pc);
+      
+  //   }
+  // Log("ref_pc:"FMT_PADDR"\tdut_pc:"FMT_PADDR,ref->pc,pc);
   if (!isa_difftest_checkregs(ref, pc)) {
+    // Log("ref_pc:"FMT_PADDR"\tdut_pc:"FMT_PADDR,ref->pc,cpu.pc);
     nemu_state.state = NEMU_ABORT;
     nemu_state.halt_pc = pc;
-    isa_reg_display();
+#ifdef CONFIG_ITRACE_IRINGBUF
+    print_iringbuf();
+#endif
+    assert(0);
   }
 }
 
@@ -103,10 +113,11 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
   CPU_state ref_r;
 
   if (skip_dut_nr_inst > 0) {
+    printf("In skip dut_inst\n");
     ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
     if (ref_r.pc == npc) {
       skip_dut_nr_inst = 0;
-      checkregs(&ref_r, npc);
+      checkregs(&ref_r, pc);
       return;
     }
     skip_dut_nr_inst --;
@@ -124,8 +135,8 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
 
   ref_difftest_exec(1);
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-
-  checkregs(&ref_r, pc);
+  // Log("ref_pc:"FMT_PADDR"\tdut_pc:"FMT_PADDR,ref_r.pc,npc);
+  checkregs(&ref_r, npc);
 }
 #else
 void init_difftest(char *ref_so_file, long img_size, int port) { }
