@@ -46,5 +46,7 @@ $(clean-tools):
 	-@$(MAKE) -s -C $@ clean
 clean-tools: $(clean-tools)
 clean-all: clean distclean clean-tools
-
+cpu-test:
+	@$(MAKE) -C $(NEMU_HOME)/../am-kernels/tests/cpu-tests ARCH=loongarch32r-nemu run
+ 
 .PHONY: run gdb run-env clean-tools clean-all $(clean-tools)
