@@ -124,7 +124,7 @@ void check_watchpoint(){
     int temp = expr(cur->expr,&success);
     if(temp != cur->old_value){
       cur->new_value = temp;
-      printf(" old_value:0x%08d\n new_value:0x%08X\n",cur->old_value,cur->new_value);
+      printf(" old_value:0x%08x\n new_value:0x%08X\n",cur->old_value,cur->new_value);
       nemu_state.state = NEMU_STOP;
       cur->old_value = cur->new_value;
     }
