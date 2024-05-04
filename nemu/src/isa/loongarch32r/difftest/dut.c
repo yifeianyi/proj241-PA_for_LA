@@ -30,6 +30,12 @@ void diff_compare_regsdisplay(CPU_state *ref_r,int idx){
   printf("\n");
 }
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
+    if(ref_r->pc != pc){
+      Log("PC is error!!!");
+      printf("\033[31mPC:\n\tdut:"FMT_PADDR" \n\tref:"FMT_PADDR"\033[37m \033[0m\n",pc,ref_r->pc);
+      diff_compare_regsdisplay(ref_r,-1);
+      return false;
+    }
     for(int i=0;i<32;i++){
     if(ref_r->gpr[i] != gpr(i))
     {

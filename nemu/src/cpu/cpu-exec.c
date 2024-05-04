@@ -39,6 +39,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
+
+  // Log("ref_pc:"FMT_PADDR"\tdut_pc:"FMT_PADDR,_this->pc, dnpc);
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
   #ifdef CONFIG_WATCHPOINT
@@ -87,17 +89,23 @@ static void exec_once(Decode *s, vaddr_t pc) {
 
 
 static void execute(uint64_t n) {
-  Decode s;
+  Decode s;//
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
+
   //========= Debug =================
-  /*
+  /*==================================
    * 
+   *  ref当前的pc还未执行
+   *  dut已经执行完毕，pc已更新 . 即：cpu.pc的值已更新
+   *
   ************************************/
-CPU_state ref_r;
-ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-Log("ref_pc:"FMT_PADDR"\tdut_pc:"FMT_PADDR,ref_r.pc,cpu.pc);
+// CPU_state ref_r;
+// ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
+// Log("ref_pc:"FMT_PADDR"\tdut_pc:"FMT_PADDR,ref_r.pc,cpu.pc);
   //========= Debug =================
+
+
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
     if (nemu_state.state != NEMU_RUNNING) break;

@@ -123,6 +123,7 @@ void disassem_la(char *str, uint32_t code){
         case TYPE_2RUI12:
             uimm = BITS(code, 21, 10);
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],uimm);
+            break;
         case TYPE_CPROP:
             imm = BITS(code, 21, 10);
             code = BITS(code, 4, 0);
