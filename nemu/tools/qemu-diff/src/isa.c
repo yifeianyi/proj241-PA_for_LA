@@ -52,6 +52,7 @@ static uint8_t mbr[] = {
   0x17, 0x00, 0x2c, 0x7c, 0x00, 0x00
 };
 
+// x86 走BIOS的标准，所以需要先设置一下引导扇区的代码.
 void init_isa() {
   // put the MBR code to QEMU to enable protected mode
   bool ok = gdb_memcpy_to_qemu(0x7c00, mbr, sizeof(mbr));
@@ -71,6 +72,8 @@ void init_isa() {
 }
 
 #else
+
+#define RESET_ADDR 0x80000000
 
 void init_isa() {
 }
