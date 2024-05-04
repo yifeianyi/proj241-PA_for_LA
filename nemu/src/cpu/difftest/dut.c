@@ -92,12 +92,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 }
 
 static void checkregs(CPU_state *ref, vaddr_t pc) {
-  // if(ref->pc != pc){
-  //     Log("PC is error!!!");
-  //     printf("PC:\n\tdut:"FMT_PADDR" \n\tref:"FMT_PADDR"\n",pc,ref->pc);
-      
-  //   }
-  // Log("ref_pc:"FMT_PADDR"\tdut_pc:"FMT_PADDR,ref->pc,pc);
+
   if (!isa_difftest_checkregs(ref, pc)) {
     // Log("ref_pc:"FMT_PADDR"\tdut_pc:"FMT_PADDR,ref->pc,cpu.pc);
     nemu_state.state = NEMU_ABORT;
@@ -105,7 +100,6 @@ static void checkregs(CPU_state *ref, vaddr_t pc) {
 #ifdef CONFIG_ITRACE_IRINGBUF
     print_iringbuf();
 #endif
-    assert(0);
   }
 }
 
