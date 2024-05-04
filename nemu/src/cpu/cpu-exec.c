@@ -90,6 +90,14 @@ static void execute(uint64_t n) {
   Decode s;
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
+  //========= Debug =================
+  /*
+   * 
+  ************************************/
+CPU_state ref_r;
+ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
+Log("ref_pc:"FMT_PADDR"\tdut_pc:"FMT_PADDR,ref_r.pc,cpu.pc);
+  //========= Debug =================
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
     if (nemu_state.state != NEMU_RUNNING) break;

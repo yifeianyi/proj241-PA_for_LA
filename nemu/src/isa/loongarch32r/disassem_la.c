@@ -117,7 +117,7 @@ void disassem_la(char *str, uint32_t code){
             sprintf(p,"  $%s, %d",regs[rd],imm);
             break;
         case TYPE_2RI12:
-            imm = SEXT(BITS(code, 21, 10),32);
+            imm = SEXT(BITS(code, 21, 10),12);
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],(int32_t)imm);
             break;
         case TYPE_2RUI12:
@@ -177,8 +177,8 @@ void disassem_la(char *str, uint32_t code){
             sprintf(p," %d",imm);
             break;
         case TYPE_I26:
-            offs = BITS(code,25,10)+(BITS(code,9,0)<<15);
-            sprintf(p," %d",offs);
+            offs = SEXT(BITS(code,25,10)|(BITS(code,9,0)<<16),26);
+            sprintf(p," %d(0x%x)",offs,offs);
             break;
         case TYPE_LANZAN:
             hint = BITS(code,14,0);
