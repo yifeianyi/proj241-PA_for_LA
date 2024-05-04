@@ -44,6 +44,22 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
   } else {
     memcpy(dut, &qemu_r, DIFFTEST_REG_SIZE);
   }
+  //========= test ================
+// const char *regs[] = {
+//    "0", "ra", "tp", "sp", "a0", "a1", "a2", "a3",
+//   "a4", "a5", "a6", "a7", "t0", "t1", "t2", "t3",
+//   "t4", "t5", "t6", "t7", "t8", "rs", "fp", "s0",
+//   "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8",
+// };
+// printf("before get regs\n");
+//   gdb_getregs(&qemu_r);
+//   printf("pc:0x%08x\n",qemu_r.pc);
+//   for(int i=0;i<32;i++){
+//     if(i%4==0 && i!=0)printf("\n");
+//     printf("%3s:" "0x%08x" " \t\t",regs[i],qemu_r.gpr[i]);
+//   }
+//   printf("\n");
+//   printf("After get regs\n");
 }
 
 __EXPORT void difftest_exec(uint64_t n) {
@@ -76,6 +92,8 @@ __EXPORT void difftest_init(int port) {
     }
 
     close(STDIN_FILENO);
+
+    //启动 qemu
     execlp(ISA_QEMU_BIN, ISA_QEMU_BIN, ISA_QEMU_ARGS "-S", "-gdb", buf, "-nographic",
         "-serial", "none", "-monitor", "none", NULL);
     perror("exec");
@@ -83,7 +101,7 @@ __EXPORT void difftest_init(int port) {
   }
   else {
     // father
-
+    //连接qemu
     gdb_connect_qemu(port);
     printf("Connect to QEMU with %s successfully\n", buf);
 
