@@ -37,6 +37,10 @@ run: run-env
 	$(call git_commit, "run NEMU")
 	$(NEMU_EXEC)
 
+runb: run-env
+	$(call git_commit, "run NEMU")
+	$(NEMU_EXEC) -b
+
 gdb: run-env
 	$(call git_commit, "gdb NEMU")
 	gdb -s $(BINARY) --args $(NEMU_EXEC)
@@ -46,8 +50,10 @@ $(clean-tools):
 	-@$(MAKE) -s -C $@ clean
 clean-tools: $(clean-tools)
 clean-all: clean distclean clean-tools
+
 cpu-test:
 	@$(MAKE) -C $(NEMU_HOME)/../am-kernels/tests/cpu-tests ARCH=$(GUEST_ISA)-nemu run
+cpu-testb:
+	@$(MAKE) -C $(NEMU_HOME)/../am-kernels/tests/cpu-tests ARCH=$(GUEST_ISA)-nemu runb
 
-
-.PHONY: run gdb run-env clean-tools clean-all $(clean-tools) cpu-test
+.PHONY: run runb gdb run-env clean-tools clean-all $(clean-tools) cpu-test cpu-testb
