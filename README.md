@@ -8,7 +8,7 @@ proj241-PA_for_LA
 
 ## 项目目标：
 
-
+.
 ## 项目管理 & 团队协作：
 
 - [项目管理与协作细节](https://hxu6i1coj1.feishu.cn/base/WWjRbUz3taGa0UsBuEycoVapngk?table=tbl6xudDrnehQGnQ&view=veweOItODk)：涵盖本项目的所有推进细节。
