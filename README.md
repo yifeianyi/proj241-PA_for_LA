@@ -36,7 +36,7 @@ proj241-PA_for_LA
 ### PA2
 - [ ] 基础设施
   - [x] LA32r反汇编器
-  - [ ] iringbuf
+  - [x] iringbuf
   - [x] mtrace
   - [ ] LA32r difftest适配
   - [ ] difftest
@@ -73,4 +73,6 @@ proj241-PA_for_LA
 - [南大PA文档]()
 - [2022年OS大赛开源作品]()
 - [la32r 工具链]()
+- [la32 gdb安装](https://blog.csdn.net/greenmoss/article/details/127800221)
 - [计算机体系结构基础]()
+- [基于QMP实现对qemu虚拟机进行交互](https://zhuanlan.zhihu.com/p/56887210)
