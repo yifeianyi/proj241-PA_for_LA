@@ -26,7 +26,6 @@ proj241-PA_for_LA
     - 简易LA32r反汇编器: llvm 不支持
     - qemu-system-loongarch32 difftest适配笔记
   - 实现笔记:
-    - 
 - 实验讲义：
   - [PA_for_LA_Tutorial](NULL):ToDo
 
