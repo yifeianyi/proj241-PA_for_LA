@@ -97,9 +97,6 @@ static void checkregs(CPU_state *ref, vaddr_t pc) {
     // Log("ref_pc:"FMT_PADDR"\tdut_pc:"FMT_PADDR,ref->pc,cpu.pc);
     nemu_state.state = NEMU_ABORT;
     nemu_state.halt_pc = pc;
-#ifdef CONFIG_ITRACE_IRINGBUF
-    print_iringbuf();
-#endif
   }
 }
 
