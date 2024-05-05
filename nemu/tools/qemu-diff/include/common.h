@@ -28,8 +28,7 @@ typedef uint32_t paddr_t;
 
 #include "isa.h"
 #include "protocol.h"
-<<<<<<< HEAD
 #include "trace.h"
-=======
->>>>>>> main
+
+
 #endif
