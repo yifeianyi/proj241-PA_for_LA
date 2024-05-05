@@ -92,6 +92,7 @@ static struct gdb_conn* gdb_begin(int fd) {
   return conn;
 }
 
+//c语言 socket 网络编程的内容.
 struct gdb_conn* gdb_begin_inet(const char *addr, uint16_t port) {
   // fill the socket information
   struct sockaddr_in sa = {
