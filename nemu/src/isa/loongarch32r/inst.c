@@ -22,6 +22,7 @@
 
 #define src2R()  do { *src2 = R(rk); } while (0)
 #define src1R()  do { *src1 = R(rj); } while (0)
+#define uimm12() do { *imm = SEXT(BITS(i, 21, 10),12); } while (0)
 #define simm12() do { *imm = SEXT(BITS(i, 21, 10),12); } while (0)
 #define simm20() do { *imm = SEXT(BITS(i, 24, 5), 20) << 12; } while(0)
 #define simm26() do { *imm = SEXT((BITS(i,25,10) | (BITS(i,9,0)<<16)),26); } while(0)
@@ -41,7 +42,7 @@ static void decode_operand(Decode *s, int *rd_, word_t *src1, word_t *src2, word
     case TYPE_3R:      src1R();  src2R();   break;
     case TYPE_I26:     simm26();            break;
     case TYPE_2RI16:   src1R();  simm16();  break;
-    case TYPE_2RUI5:   simm5();  src1R();   break;
+    case TYPE_2RUI5:   uimm5();  src1R();   break;
     case TYPE_LANZAN:  hint16();            break; 
   }
 }
