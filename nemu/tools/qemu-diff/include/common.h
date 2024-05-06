@@ -30,5 +30,4 @@ typedef uint32_t paddr_t;
 #include "protocol.h"
 #include "trace.h"
 
-
 #endif
