@@ -1,10 +1,10 @@
 #ifndef __TRACE__
 #define __TRACE__
-#include <common.h>
+#include "common.h"
 
-
-void push_to_iringbuf(const char *logbuf,vaddr_t pc);
+#define word_t uint32_t
+void push_to_iringbuf(const char *logbuf,paddr_t pc);
 void print_iringbuf(void);
-void mtrace(vaddr_t addr, int len, word_t data,char op);
-
+void mtrace(paddr_t addr, int len, word_t data,char op);
+#undef word_t
 #endif
