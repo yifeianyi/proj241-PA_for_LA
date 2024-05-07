@@ -109,7 +109,7 @@ run的全都队
 
 ## 参考资料
 - [南大PA文档2023](https://nju-projectn.github.io/ics-pa-gitbook/ics2023/)
-- [2022年OS大赛开源作品:la-sel4](https://github.com/oscomp/proj97-la-seL4)
+- [2022年OS大赛开源作品:la-sel4](https://github.com/tyyteam/la-seL4)
 - [2022年OS大赛开源作品:rCore的龙芯平台移植](https://github.com/Godones/rCoreloongArch)
 - [la32r 工具链](https://gitee.com/loongson-edu/la32r-toolchains)
 - [la32 gdb安装](https://blog.csdn.net/greenmoss/article/details/127800221)
