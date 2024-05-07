@@ -56,4 +56,5 @@ cpu-test:
 cpu-testb:
 	@$(MAKE) -C $(NEMU_HOME)/../am-kernels/tests/cpu-tests ARCH=$(GUEST_ISA)-nemu runb
 
-.PHONY: run runb gdb run-env clean-tools clean-all $(clean-tools) cpu-test cpu-testb
+
+.PHONY: run gdb run-env clean-tools clean-all $(clean-tools) cpu-test
