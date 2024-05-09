@@ -34,9 +34,9 @@ run的全都队
 ## 项目管理 & 团队协作：
 |        | 分工 | 开发日志 | 联系方式 |
 | :----: | :-----: | :----: | :------: |
-| 李宗逸 | 统筹规划、资料调研、架构适配、写LA版的Tutorial | [Dev_lzy](https://gitlab.eduxiji.net/T202412059992867/project2210132-237696/-/wikis/Dev_log/lzy) | QQ：910002662 |
-| 刘奕钊 | 完成loongarch架构的PA实验、校对Tutorial | [Dev_lyz](https://gitlab.eduxiji.net/T202412059992867/project2210132-237696/-/wikis/Dev_log/lyz) | QQ：1428828189 |
-| 李智峰 | 完成loongarch架构的PA实验、校对Tutorial | [Dev_lzf](https://gitlab.eduxiji.net/T202412059992867/project2210132-237696/-/wikis/Dev_log/lzf) | QQ：1186288906          |
+| 李宗逸 | 统筹规划、资料调研、架构适配、写LA版的Tutorial | [Dev_lzy](https://github.com/yifeianyi/proj241-PA_for_LA/wiki/Dev_lzy) | QQ：910002662 |
+| 刘奕钊 | 完成loongarch架构的PA实验、校对Tutorial | [Dev_lyz](https://github.com/lemonsuqing/proj241-PA_for_LA/wiki/Dev_lyz) | QQ：1428828189 |
+| 李智峰 | 完成loongarch架构的PA实验、校对Tutorial | [Dev_lzf](https://github.com/LiZhiFeng1111111/proj241-PA_for_LA/wiki/Dev_lzf) | QQ：1186288906          |
 
 
 
@@ -77,7 +77,7 @@ run的全都队
   - [x] difftest
   - [ ] dtrace
   - [ ] ftrace
-- [ ] 添加基础指令
+- [x] 添加基础指令
 - [x] 简易标准库实现
 - [ ] 外设支持
   - [ ] 串口
@@ -109,9 +109,10 @@ run的全都队
 
 ## 参考资料
 - [南大PA文档2023](https://nju-projectn.github.io/ics-pa-gitbook/ics2023/)
-- [2022年OS大赛开源作品:la-sel4](https://github.com/oscomp/proj97-la-seL4)
+- [2022年OS大赛开源作品:la-sel4](https://github.com/tyyteam/la-seL4)
 - [2022年OS大赛开源作品:rCore的龙芯平台移植](https://github.com/Godones/rCoreloongArch)
 - [la32r 工具链](https://gitee.com/loongson-edu/la32r-toolchains)
 - [la32 gdb安装](https://blog.csdn.net/greenmoss/article/details/127800221)
 - [计算机体系结构基础](https://foxsen.github.io/archbase/)
 - [基于QMP实现对qemu虚拟机进行交互](https://zhuanlan.zhihu.com/p/56887210)
+- 一生一芯双周分享会(nemu部分):[视频回放](https://space.bilibili.com/238318574?spm_id_from=333.788.0.0)、[相关主题的分享文档](https://docs.qq.com/sheet/DU05xUmxjWmFvaXhj?tab=8nd1jt&login_t=1715061395395)
