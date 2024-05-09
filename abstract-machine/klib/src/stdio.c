@@ -38,11 +38,6 @@ static int itoa(int n,char* s,int base)
   return i;
 }
 
-int printf(const char *fmt, ...) {
-  
-  panic("Not implemented");
-}
-
 int vsprintf(char *out, const char *fmt, va_list ap) {
   
   char *start = out;
@@ -63,6 +58,12 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
         out += strlen(out);
         }
         break;
+    case 'c':
+        {
+        char c = (char)va_arg(ap, int);
+				*out++ = c;
+        }
+				break;
      }
     }
    }
@@ -89,11 +90,20 @@ int sprintf(char *out, const char *fmt, ...) {
      case 's':
         {
         char *s = va_arg(pArgs,char*);
+        
         strcpy(out,s);
         out += strlen(out);
+        
         }
         break;
+    case 'c':
+        {
+        char c = (char)va_arg(pArgs, int);
+				*out++ = c;
+        }
+				break;
      }
+     
     }
    }
     *out = '\0';
@@ -101,7 +111,22 @@ int sprintf(char *out, const char *fmt, ...) {
 
     return out - start;
  // panic("Not implemented");              
-}              
+}
+
+int printf(const char *fmt, ...) {
+  
+  char buf[2048];
+	va_list ap;
+	va_start(ap, fmt);
+
+	int res = vsprintf(buf, fmt, ap);
+	putstr(buf);
+
+	va_end(ap);
+	return res;
+  
+  //panic("Not implemented");
+}
            
 int snprintf(char *out, size_t n, const char *fmt, ...) {
   panic("Not implemented");
