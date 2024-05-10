@@ -6,11 +6,11 @@ void __am_timer_init() {
   outl(RTC_ADDR+4,0);     // 向64位的时钟数据寄存器地址的高32位写入0
 }
 
+
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
-  //uptime->us = 0;
-  uptime->us = inl(RTC_ADDR+4);             //读取64位时钟数据寄存器的高32位
-  uptime->us = (uptime->us) << 32;          
-  uptime->us = uptime->us + inl(RTC_ADDR);  //读取64位时钟数据寄存器的低32位
+  uptime->us = (uint64_t)inl(RTC_ADDR+4);
+  uptime->us = (uptime->us)<<32; 
+  uptime->us = uptime->us + (uint64_t)inl(RTC_ADDR);
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {
