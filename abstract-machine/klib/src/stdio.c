@@ -38,10 +38,6 @@ static int itoa(int n,char* s,int base)
   return i;
 }
 
-int printf(const char *fmt, ...) {
-  
-  panic("Not implemented");
-}
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
   
@@ -63,13 +59,33 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
         out += strlen(out);
         }
         break;
+      case 'c':
+       {
+          char c = (char)va_arg(ap,int);
+          *out++ = c;
+       }
+       break;
      }
+     
     }
    }
     *out = '\0';
 
     return out - start;
  // panic("Not implemented");
+}
+
+int printf(const char *fmt, ...) {
+  char buf[1024];
+	va_list ap;
+	va_start(ap, fmt);
+
+	int res = vsprintf(buf, fmt, ap);
+	putstr(buf);
+
+	va_end(ap);
+	return res;
+  //panic("Not implemented");
 }
 
 int sprintf(char *out, const char *fmt, ...) {
