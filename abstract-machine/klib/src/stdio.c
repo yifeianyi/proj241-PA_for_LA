@@ -127,20 +127,6 @@ int sprintf(char *out, const char *fmt, ...) {
  // panic("Not implemented");              
 }
 
-int printf(const char *fmt, ...) {
-  
-  char buf[2048];
-	va_list ap;
-	va_start(ap, fmt);
-
-	int res = vsprintf(buf, fmt, ap);
-	putstr(buf);
-
-	va_end(ap);
-	return res;
-  
-  //panic("Not implemented");
-}
            
 int snprintf(char *out, size_t n, const char *fmt, ...) {
   panic("Not implemented");
