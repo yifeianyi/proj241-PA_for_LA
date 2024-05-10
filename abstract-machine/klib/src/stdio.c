@@ -38,10 +38,6 @@ static int itoa(int n,char* s,int base)
   return i;
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 int vsprintf(char *out, const char *fmt, va_list ap) {
   
   char *start = out;
