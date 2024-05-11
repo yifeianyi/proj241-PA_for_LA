@@ -13,7 +13,7 @@
     #define ADD_W     0x20
     #define SUB_W     0x22
     #define ADDI_W    0x0A
-    #define LU12I_W   0x0E
+    #define LU12I_W   0x0A
     #define STL       0x24
     #define SLTU      0x25
     #define SLTI      0x08
