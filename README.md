@@ -76,22 +76,21 @@ run的全都队
   - [x] mtrace
   - [x] LA32r difftest适配
   - [x] difftest
-  - [ ] dtrace
+  - [x] dtrace
   - [ ] ftrace
 - [x] 添加基础指令
 - [x] 简易标准库实现
 - [ ] 外设支持
-  - [ ] 串口
-  - [ ] 时钟
-  - [ ] VGA
+  - [x] 串口
+  - [x] 时钟
+  - [x] VGA
   - [ ] 声卡
 
 ### PA3
-- [ ] 支持上下文切换
+- [ ] 实现异常响应机制
 - [ ] 模拟Cache
 - [ ] Loader 实现
 - [ ] 系统调用支持
-  - [ ] yield
   - [ ] exit
   - [ ] write
   - [ ] brk
@@ -107,6 +106,8 @@ run的全都队
   - [ ] strace
   - [ ] 快照实现
 ### PA4
+- [ ] 实现 am 上下文切换
+- [ ] 跑通 RT-Thread
 
 ## 参考资料
 - [南大PA文档2023](https://nju-projectn.github.io/ics-pa-gitbook/ics2023/)
