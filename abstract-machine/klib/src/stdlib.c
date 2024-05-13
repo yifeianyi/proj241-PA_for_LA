@@ -4,6 +4,8 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 static unsigned long int next = 1;
+static char* start_addr;
+static bool init_flag = 0;
 
 int rand(void) {
   // RAND_MAX assumed to be 32767
@@ -35,8 +37,17 @@ void *malloc(size_t size) {
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
   panic("Not implemented");
+
+  if(!init_flag) {
+  	start_addr = (void*)ROUNDUP(heap.start, 8);
+	init_flag = true;
+  }
+  size = (size_t)ROUNDUP(size, 8);
+  char* old = start_addr;
+  start_addr += size;
+
 #endif
-  return NULL;
+  return old;
 }
 
 void free(void *ptr) {

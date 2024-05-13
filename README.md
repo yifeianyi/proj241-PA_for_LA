@@ -34,9 +34,9 @@ run的全都队
 ## 项目管理 & 团队协作：
 |        | 分工 | 开发日志 | 联系方式 |
 | :----: | :-----: | :----: | :------: |
-| 李宗逸 | 统筹规划、资料调研、架构适配、写LA版的Tutorial | [Dev_lzy](https://github.com/yifeianyi/proj241-PA_for_LA/wiki/Dev_lzy) | QQ：910002662 |
-| 刘奕钊 | 完成loongarch架构的PA实验、校对Tutorial | [Dev_lyz](https://github.com/lemonsuqing/proj241-PA_for_LA/wiki/Dev_lyz) | QQ：1428828189 |
-| 李智峰 | 完成loongarch架构的PA实验、校对Tutorial | [Dev_lzf](https://github.com/LiZhiFeng1111111/proj241-PA_for_LA/wiki/Dev_lzf) | QQ：1186288906          |
+| 李宗逸 | 统筹规划、资料调研、架构适配 | [Dev_lzy](https://github.com/yifeianyi/proj241-PA_for_LA/wiki/Dev_lzy) | QQ：910002662 |
+| 刘奕钊 | 完成loongarch架构的PA实验 | [Dev_lyz](https://github.com/lemonsuqing/proj241-PA_for_LA/wiki/Dev_lyz) | QQ：1428828189 |
+| 李智峰 | 完成loongarch架构的PA实验 | [Dev_lzf](https://github.com/LiZhiFeng1111111/proj241-PA_for_LA/wiki/Dev_lzf) | QQ：1186288906          |
 
 
 
@@ -47,8 +47,9 @@ run的全都队
 - 技术文档
   - 适配文档：
     - [ ] [loongarch32r工具配置]()
-    - [ ] [简易LA32r反汇编器](): llvm 不支持 la32r，无法在itrace中记录汇编代码，故此需求应运而生。
+    - [ ] [简易LA32r反汇编器](): 由于llvm 不支持la32r，为了itrace中能记录汇编代码，此需求应运而生。
     - [ ] [qemu-system-loongarch32 difftest适配笔记]()
+    - [ ] [la32-qemu bug分析报告]()
   - 实现笔记：
   - 团队分享:
     - [ ] PA Makefile构成分析
@@ -75,22 +76,21 @@ run的全都队
   - [x] mtrace
   - [x] LA32r difftest适配
   - [x] difftest
-  - [ ] dtrace
+  - [x] dtrace
   - [ ] ftrace
 - [x] 添加基础指令
 - [x] 简易标准库实现
 - [ ] 外设支持
-  - [ ] 串口
-  - [ ] 时钟
-  - [ ] VGA
+  - [x] 串口
+  - [x] 时钟
+  - [x] VGA
   - [ ] 声卡
 
 ### PA3
-- [ ] 支持上下文切换
+- [ ] 实现异常响应机制
 - [ ] 模拟Cache
 - [ ] Loader 实现
 - [ ] 系统调用支持
-  - [ ] yield
   - [ ] exit
   - [ ] write
   - [ ] brk
@@ -106,6 +106,8 @@ run的全都队
   - [ ] strace
   - [ ] 快照实现
 ### PA4
+- [ ] 实现 am 上下文切换
+- [ ] 跑通 RT-Thread
 
 ## 参考资料
 - [南大PA文档2023](https://nju-projectn.github.io/ics-pa-gitbook/ics2023/)
