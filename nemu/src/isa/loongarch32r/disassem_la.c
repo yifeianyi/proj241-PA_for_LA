@@ -78,8 +78,8 @@ static uint32_t GetInst(char *inst, uint32_t code){
     else if(opcode_31_24 == LL_W){strcpy(inst, "LL.W");return TYPE_2RI14;}
     else if(opcode_31_24 == SC_W){strcpy(inst, "SC.W");return TYPE_2RI14;}
     else if(opcode_31_24 == CSRRD && opcode_csr == 0){strcpy(inst, "csrrd"); return TYPE_CSR;}
-    else if(opcode_31_24 == CSRWR && opcode_csr == 1){strcpy(inst, "csrrd"); return TYPE_CSR;}
-    else if(opcode_31_24 == CSRXCHG && (opcode_csr != 1 && opcode_csr == 0)){return TYPE_CSR;}
+    else if(opcode_31_24 == CSRWR && opcode_csr == 1){strcpy(inst, "csrwr"); return TYPE_CSR;}
+    else if(opcode_31_24 == CSRXCHG && (opcode_csr != 1 && opcode_csr == 0)){strcpy(inst, "csrxchg"); return TYPE_CSR;}
 
     else if(opcode_31_15 == Break){strcpy(inst, "break");return TYPE_S;}
     else if(opcode_31_15 == SYSCALL){strcpy(inst, "syscall");return TYPE_S;}
