@@ -78,7 +78,7 @@ static uint32_t GetInst(char *inst, uint32_t code){
     else if(opcode_31_15 == Break){strcpy(inst, "break");return TYPE_S;}
     else if(opcode_31_15 == SYSCALL){strcpy(inst, "syscall");return TYPE_S;}
 
-    /*need to modify*/
+    /*modify finish*/
     else if(opcode_31_10 == RDCNTVL_W && opcode_9_5 == 0 ){strcpy(inst, "rdcntvl.w");return TYPE_1R;}
     else if(opcode_31_10 == RDCNTID_W && opcode_4_0 == 0){strcpy(inst, "rdcntid.w");return TYPE_1R;}
     else if(opcode_31_10 == RDCNTVH_W && opcode_9_5 == 0){strcpy(inst, "RDCNTVH.W");return TYPE_1R;}
