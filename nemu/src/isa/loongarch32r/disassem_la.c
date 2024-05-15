@@ -1,15 +1,25 @@
 #include<disassem_la.h>
 #include <isa.h>
 extern const char *regs[];
+static char* csr_name(int csr_id){
+    switch (csr_id)
+    {
+    case CSR_CRMD: return "CRMD";
+    case CSR_PRMD: return "PRMD";
+    case CSR_ESTAT:return "ESTAT";
+    case CSR_ERA:  return "ERA";
+    case CSR_EENTRY:return "EENTRY";
+    default:return NULL;
+    }
+}
 static uint32_t GetInst(char *inst, uint32_t code){
     uint32_t opcode_31_10 = BITS(code, 31, 10);
     uint32_t opcode_31_15 = BITS(code, 31, 15);
-    // uint32_t opcode_31_18 = BITS(code, 31, 18);
-    // uint32_t opcode_31_20 = BITS(code, 31, 20);
     uint32_t opcode_31_22 = BITS(code, 31, 22);
     uint32_t opcode_31_24 = BITS(code, 31, 24);
     uint32_t opcode_31_25 = BITS(code, 31, 25);
     uint32_t opcode_31_26 = BITS(code, 31, 26);
+    uint32_t opcode_csr   = BITS(code,  9,  5);
     
     if (opcode_31_25 == PCADDU12I){strcpy(inst, "pcaddu12i");return TYPE_1RI20;}
     else if(opcode_31_25 == LU12I_W){strcpy(inst, "LU12I.w");return TYPE_1RI20;}
@@ -67,9 +77,9 @@ static uint32_t GetInst(char *inst, uint32_t code){
 
     else if(opcode_31_24 == LL_W){strcpy(inst, "LL.W");return TYPE_2RI14;}
     else if(opcode_31_24 == SC_W){strcpy(inst, "SC.W");return TYPE_2RI14;}
-    else if(opcode_31_24 == CSRRD){return TYPE_1RI14;}
-    else if(opcode_31_24 == CSRWR){return TYPE_1RI14;}
-    else if(opcode_31_24 == CSRXCHG){return TYPE_2RI14;}
+    else if(opcode_31_24 == CSRRD && opcode_csr == 0){strcpy(inst, "csrrd"); return TYPE_CSR;}
+    else if(opcode_31_24 == CSRWR && opcode_csr == 1){strcpy(inst, "csrrd"); return TYPE_CSR;}
+    else if(opcode_31_24 == CSRXCHG && (opcode_csr != 1 && opcode_csr == 0)){return TYPE_CSR;}
 
     else if(opcode_31_15 == Break){strcpy(inst, "break");return TYPE_S;}
     else if(opcode_31_15 == SYSCALL){strcpy(inst, "syscall");return TYPE_S;}
@@ -91,15 +101,15 @@ static uint32_t GetInst(char *inst, uint32_t code){
 }
 void disassem_la(char *str, uint32_t code){
         //获取指令
-        char inst[30];
+        char inst[30]="";
         uint32_t type =  GetInst(inst,code);
         Assert(inst!=NULL,"GetInst false.");
 
-        char p[20];
+        char p[30];
         uint8_t rd = 0;
         uint8_t rj = 0;
         uint8_t rk = 0;
-        uint8_t csr = 0;
+        uint8_t csr_id = 0;
         uint16_t hint = 0;
         uint8_t op = 0;
         rj = BITS(code, 9, 5);
@@ -157,21 +167,14 @@ void disassem_la(char *str, uint32_t code){
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],offs);
             break;
         case TYPE_2RI14:
-            if(BITS(code,9,5) != 1 || BITS(code,9,5) != 0){
-                csr = BITS(code,23,10); 
-                sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],csr);
-            }
             imm = BITS(code,23,10);
             sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],imm);
             break;
-        case TYPE_1RI14:
-            if(BITS(code,9,5) == 0){
-                csr = BITS(code,23,10); 
-                sprintf(p,"CSRRD $%s %d",regs[rd],csr);
-            }else if(BITS(code,9,5) == 1){
-                csr = BITS(code,23,10);
-                sprintf(p,"CSRWR $%s %d",regs[rd],csr);
-            }
+        case TYPE_CSR:
+            csr_id = BITS(code,23,10); 
+            char *name = csr_name(csr_id);
+            if(name==NULL)sprintf(name,"csr(%d)",csr_id);
+            sprintf(p," $%s %s",regs[rd],name);
             break;
         case TYPE_S:
             imm = BITS(code,14,0);

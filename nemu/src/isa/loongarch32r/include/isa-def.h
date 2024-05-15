@@ -18,6 +18,13 @@
 
 #include <common.h>
 
+enum{
+  CSR_CRMD, CSR_PRMD,
+  CSR_ESTAT = 0x5,
+  CSR_ERA,
+  CSR_EENTRY = 0xc,
+};
+
 typedef struct {
   word_t gpr[32];
   vaddr_t pc;
@@ -34,7 +41,7 @@ typedef struct {
 enum {
   TYPE_2R   ,   TYPE_3R    ,        TYPE_4R,
   TYPE_2RI8 ,   TYPE_2RI12 ,        TYPE_2RI14,  TYPE_CSRXCHG,
-  TYPE_2RI16,   TYPE_1RI20 ,        TYPE_1RI21,  TYPE_1RI14,
+  TYPE_2RI16,   TYPE_1RI20 ,        TYPE_1RI21,  TYPE_CSR,
   TYPE_N,       TYPE_S     ,        TYPE_I26,    TYPE_LANZAN, 
   TYPE_2RUI5,   TYPE_CPROP,   TYPE_IDLE,   TYPE_INVTLB,
   TYPE_2RUI12,  TYPE_PRELD,   NONE_TYPE,   TYPE_1R,// none
