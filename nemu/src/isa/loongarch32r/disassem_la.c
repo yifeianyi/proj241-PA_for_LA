@@ -120,52 +120,52 @@ void disassem_la(char *str, uint32_t code){
         {
         case TYPE_1RI20:
             imm = SEXT(BITS(code, 24, 5), 20) << 12;
-            sprintf(p,"  $%s, %d",regs[rd],imm);
+            sprintf(p,"  %s, %d",regs[rd],imm);
             break;
         case TYPE_2RI12:
             imm = SEXT(BITS(code, 21, 10),12);
-            sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],(int32_t)imm);
+            sprintf(p,"  %s,%s,%d",regs[rd],regs[rj],(int32_t)imm);
             break;
         case TYPE_2RUI12:
             uimm = BITS(code, 21, 10);
-            sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],uimm);
+            sprintf(p,"  %s,%s,%d",regs[rd],regs[rj],uimm);
             break;
         case TYPE_CPROP:
             imm = BITS(code, 21, 10);
             code = BITS(code, 4, 0);
-            sprintf(p,"  %d,$%s,%d",code,regs[rj],imm);
+            sprintf(p,"  %d,%s,%d",code,regs[rj],imm);
             break;
         case TYPE_PRELD:
             imm = BITS(code, 21, 10);
             hint = BITS(code, 4, 0);
-            sprintf(p,"  %d,$%s,%d",hint,regs[rj],imm);
+            sprintf(p,"  %d,%s,%d",hint,regs[rj],imm);
             break;
         case TYPE_3R:
-            sprintf(p,"  $%s,$%s,$%s",regs[rd],regs[rj],regs[rk]);
+            sprintf(p,"  %s,%s,%s",regs[rd],regs[rj],regs[rk]);
             break;
         case TYPE_2RUI5:
             uimm = BITS(code, 14,10);
-            sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],uimm);
+            sprintf(p,"  %s,%s,%d",regs[rd],regs[rj],uimm);
             break;
         case TYPE_1R:
             if(BITS(code,4,0) == 0){
-                sprintf(p," $%s",regs[rj]);
+                sprintf(p," %s",regs[rj]);
             }
             if(BITS(code,4,0) != 0 && BITS(code,9,5) == 0){
-                sprintf(p," $%s",regs[rd]);
+                sprintf(p," %s",regs[rd]);
             }
             break;
         case TYPE_2RI16:
             offs = BITS(code,25,10); 
-            sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],offs);
+            sprintf(p,"  %s,%s,%d",regs[rd],regs[rj],offs);
             break;
         case TYPE_2RI14:
             imm = BITS(code,23,10);
-            sprintf(p,"  $%s,$%s,%d",regs[rd],regs[rj],imm);
+            sprintf(p,"  %s,%s,%d",regs[rd],regs[rj],imm);
             break;
         case TYPE_1RI14:
             csr = BITS(code,23,10); 
-            sprintf(p," $%s %d",regs[rd],csr);
+            sprintf(p," %s %d",regs[rd],csr);
             break;
         case TYPE_S:
             imm = BITS(code,14,0);
@@ -185,7 +185,7 @@ void disassem_la(char *str, uint32_t code){
             break;
         case TYPE_INVTLB:
             op = BITS(code,4,0);
-            sprintf(p," %d $%s $%s",op,regs[rj],regs[rk]);
+            sprintf(p," %d %s %s",op,regs[rj],regs[rk]);
             break;
         default:
             sprintf(p,"%c",'\0');
