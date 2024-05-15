@@ -81,7 +81,7 @@ static uint32_t GetInst(char *inst, uint32_t code){
     /*modify finish*/
     else if(opcode_31_10 == RDCNTVL_W && opcode_9_5 == 0 ){strcpy(inst, "rdcntvl.w");return TYPE_1R;}
     else if(opcode_31_10 == RDCNTID_W && opcode_4_0 == 0){strcpy(inst, "rdcntid.w");return TYPE_1R;}
-    else if(opcode_31_10 == RDCNTVH_W && opcode_9_5 == 0){strcpy(inst, "RDCNTVH.W");return TYPE_1R;}
+    else if(opcode_31_10 == RDCNTVH_W && opcode_9_5 == 0){strcpy(inst, "rdcntvh.w");return TYPE_1R;}
 
     else if(opcode_31_10 == TLBSRCH){strcpy(inst, "tlbsrch");return NONE_TYPE;}
     else if(opcode_31_10 == TLBRD){strcpy(inst, "tlbrd");return NONE_TYPE;}
