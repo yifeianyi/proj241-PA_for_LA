@@ -1,11 +1,20 @@
 #include<disassem_la.h>
 #include <isa.h>
 extern const char *regs[];
+static char* csr_name(int csr_id){
+    switch (csr_id)
+    {
+    case CSR_CRMD: return "CRMD";
+    case CSR_PRMD: return "PRMD";
+    case CSR_ESTAT:return "ESTAT";
+    case CSR_ERA:  return "ERA";
+    case CSR_EENTRY:return "EENTRY";
+    default:return NULL;
+    }
+}
 static uint32_t GetInst(char *inst, uint32_t code){
     uint32_t opcode_31_10 = BITS(code, 31, 10);
     uint32_t opcode_31_15 = BITS(code, 31, 15);
-    // uint32_t opcode_31_18 = BITS(code, 31, 18);
-    // uint32_t opcode_31_20 = BITS(code, 31, 20);
     uint32_t opcode_31_22 = BITS(code, 31, 22);
     uint32_t opcode_31_24 = BITS(code, 31, 24);
     uint32_t opcode_31_25 = BITS(code, 31, 25);
@@ -67,6 +76,7 @@ static uint32_t GetInst(char *inst, uint32_t code){
     else if(opcode_31_26 == B){strcpy(inst, "b");return TYPE_I26;}
     else if(opcode_31_26 == BL){strcpy(inst, "bl");return TYPE_I26;}
 
+
     else if(opcode_31_24 == LL_W){strcpy(inst, "ll.w");return TYPE_2RI14;}
     else if(opcode_31_24 == SC_W){strcpy(inst, "sc.w");return TYPE_2RI14;}
 
@@ -74,6 +84,7 @@ static uint32_t GetInst(char *inst, uint32_t code){
     else if(opcode_31_24 == CSRRD && opcode_9_5 == 0){strcpy(inst,"csrrd");return TYPE_1RI14;}
     else if(opcode_31_24 == CSRWR && opcode_9_5 == 1){strcpy(inst,"csrwr");return TYPE_1RI14;}
     else if(opcode_31_24 == CSRXCHG && opcode_9_5 != 0 && opcode_9_5 != 1){strcpy(inst,"csrxchg");return TYPE_2RI14;}
+
 
     else if(opcode_31_15 == Break){strcpy(inst, "break");return TYPE_S;}
     else if(opcode_31_15 == SYSCALL){strcpy(inst, "syscall");return TYPE_S;}
@@ -97,15 +108,15 @@ static uint32_t GetInst(char *inst, uint32_t code){
 }
 void disassem_la(char *str, uint32_t code){
         //获取指令
-        char inst[30];
+        char inst[30]="";
         uint32_t type =  GetInst(inst,code);
         Assert(inst!=NULL,"GetInst false.");
 
-        char p[20];
+        char p[30];
         uint8_t rd = 0;
         uint8_t rj = 0;
         uint8_t rk = 0;
-        uint8_t csr = 0;
+        uint8_t csr_id = 0;
         uint16_t hint = 0;
         uint8_t op = 0;
         rj = BITS(code, 9, 5);
