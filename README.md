@@ -87,8 +87,7 @@ run的全都队
   - [ ] 声卡
 
 ### PA3
-- [ ] 实现异常响应机制
-- [ ] 模拟Cache
+- [x] 实现异常响应机制
 - [ ] Loader 实现
 - [ ] 系统调用支持
   - [ ] exit
@@ -102,12 +101,12 @@ run的全都队
   - [ ] 实现定点数库fixedptc
 - [ ] 跑通仙剑奇侠传
 - [ ] 基础设施
-  - [ ] etrace
+  - [x] etrace
   - [ ] strace
   - [ ] 快照实现
 ### PA4
-- [ ] 实现 am 上下文切换
-- [ ] 跑通 RT-Thread
+- [ ] yield-os 实现上下文切换
+- [ ] 跑通 native RT-Thread
 
 ## 参考资料
 - [南大PA文档2023](https://nju-projectn.github.io/ics-pa-gitbook/ics2023/)
