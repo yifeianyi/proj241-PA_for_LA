@@ -8,8 +8,11 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     uintptr_t ecode = 0;
+    ecode = c->estat;
+    printf("ESTAT: %d \n",c->estat);
     switch (ecode) {
-      default: ev.event = EVENT_ERROR; break;
+      case 0xB0000: ev.event = EVENT_YIELD; break;
+      default: ev.event = EVENT_ERROR;break;
     }
 
     c = user_handler(ev, c);

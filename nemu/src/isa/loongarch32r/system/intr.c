@@ -22,12 +22,11 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   cpu.era = epc;
   cpu.estat = NO<<16;
 #ifdef CONFIG_ETRACE
-  printf("test testtest.\n");
+  printf("test testtest. ESTAT:%d ERA:%d\n",cpu.estat,cpu.era);
 #endif
   return cpu.eentry;
 }
 
 word_t isa_query_intr() {
-
   return cpu.era;
 }

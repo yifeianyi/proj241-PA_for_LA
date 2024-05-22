@@ -64,6 +64,24 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
           *out++ = c;
        }
        break;
+    case 'p':
+       {
+           uintptr_t value = (uintptr_t)va_arg(ap, void*);
+          *out++ = '0';
+          *out++ = 'x';
+          for (int i = sizeof(void*) * 2 - 1; i >= 0; --i) {
+            // 获得当前十六进制位的字符
+            int current_digit = (value >> (4 * i)) & 0xF;
+            if (current_digit <= 9) {
+                // '0'到'9'之间
+                *out++ = '0' + current_digit;
+            } else {
+                // 'a'到'f'之间
+                *out++ = 'a' + (current_digit - 10);
+            }
+         }
+       }
+       break;
      }
      
     }
@@ -75,7 +93,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 }
 
 int printf(const char *fmt, ...) {
-  char buf[1024];
+  char buf[2048];
 	va_list ap;
 	va_start(ap, fmt);
 
