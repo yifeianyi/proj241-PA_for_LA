@@ -16,6 +16,7 @@ f(30) f(31)
 #define OFFSET_ESTAT  (32 * 4)
 #define OFFSET_PRMD   (33 * 4)
 #define OFFSET_ERA    (34 * 4)
+#define OFFSET_ENTRY  (35 * 4)
 
 #define CSR_ESTAT  0x5
 #define CSR_PRMD  0x1
@@ -35,13 +36,10 @@ __am_asm_trap:
   st.w $t0, $sp, OFFSET_ESTAT
   st.w $t1, $sp, OFFSET_PRMD
   st.w $t2, $sp, OFFSET_ERA
-
-  csrrd    $t2, CSR_ERA            // 从 CSR_ERA 寄存器读取例外返回地址到 t2 寄存器
-  addi.w   $t2, $t2, 4             // 将 t2 寄存器的值（异常返回地址）加上 4
-  st.w     $t2, $sp, OFFSET_ERA    // 把新的返回地址值存回栈中相应的位置
   
   move $a0, $sp
   bl __am_irq_handle
+  move $sp, $a0
 
   ld.w $t1, $sp, OFFSET_PRMD
   ld.w $t2, $sp, OFFSET_ERA

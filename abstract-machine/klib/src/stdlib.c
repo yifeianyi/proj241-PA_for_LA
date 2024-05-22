@@ -50,6 +50,7 @@ void *malloc(size_t size) {
   }
 
   char *allocated = start_addr;
+
   start_addr += size;
 
   return allocated;

@@ -56,7 +56,6 @@ static int cmd_q(char *args) {
 
 extern const char* regs[];
 extern const int reg_len;
-extern const int reg_len;
 bool contains_register(const char* input) {
     for (size_t i = 0; i < reg_len; ++i) {
         if (strstr(input, regs[i]) != NULL) {
