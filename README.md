@@ -77,7 +77,7 @@ run的全都队
   - [x] LA32r difftest适配
   - [x] difftest
   - [x] dtrace
-  - [ ] ftrace
+  - [x] ftrace
 - [x] 添加基础指令
 - [x] 简易标准库实现
 - [ ] 外设支持
@@ -105,7 +105,7 @@ run的全都队
   - [ ] strace
   - [ ] 快照实现
 ### PA4
-- [ ] yield-os 实现上下文切换
+- [x] yield-os 实现上下文切换
 - [ ] 跑通 native RT-Thread
 
 ## 参考资料
