@@ -36,7 +36,7 @@ __am_asm_trap:
   st.w $t0, $sp, OFFSET_ESTAT
   st.w $t1, $sp, OFFSET_PRMD
   st.w $t2, $sp, OFFSET_ERA
-
+  
   move $a0, $sp
   bl __am_irq_handle
   move $sp, $a0
