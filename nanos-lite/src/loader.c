@@ -4,6 +4,7 @@
 
 /* new insert: EM_Loogarch32r */
 #define EM_Loongarch32r 258
+#define PT_LOAD          1
 
 #ifdef __LP64__
 # define Elf_Ehdr Elf64_Ehdr
@@ -30,81 +31,27 @@
 /*===============================================*/
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
-  //TODO();
-  char buf[64];
-
-  /*===== check magic number ====*/
-  ramdisk_read(buf, 0, 8);
-  uint64_t magic_number = 0;
-  for (int i = 0; i < 8; ++i) magic_number = (magic_number << 8) + buf[i];
-  assert(magic_number == 0x7f454c4601010100);
-  
-  /*==== check machine architecture ====*/
-  ramdisk_read(buf, 18, 2);
-  uint16_t type = 0;
-  for (int i = 1; i >= 0; --i) type = (type << 8) + buf[i];
-  //printf("%d\n",type);
-  assert(type == EXPECT_TYPE);
-
-  /*==== get entry point address ====*/
-  uintptr_t entry_point_address = 0;
-  ramdisk_read(buf, 24, 4);
-  for (int i = 3; i >= 0; --i) entry_point_address = (entry_point_address << 8) + buf[i];
-
-  /*==== get program header basic infos ====*/
-  uint32_t pg_header_index  = 0;       
-  uint32_t pg_header_len    = 0;
-  uint32_t pg_header_number = 0;
-  
-  ramdisk_read(buf, 28, 4);
-  for(int i = 3; i >= 0; --i) pg_header_index = (pg_header_index << 8) + buf[i];
-  ramdisk_read(buf, 42, 2);
-  for(int i = 1; i >= 0; --i) pg_header_len   = (pg_header_len << 8) + buf[i];
-  ramdisk_read(buf, 44, 4);
-  for(int i = 1; i >= 0; --i) pg_header_number = (pg_header_number << 8) + buf[i];
-
-  /*==== handle program header=====*/
-  for(int i = 0; i < pg_header_number; ++i){
-    uint32_t type = 0;
-    uint32_t base = pg_header_index + i * pg_header_len;
-    ramdisk_read(buf, base, 4);
-    for(int i = 3;i >= 0;--i) type = (type << 8) + buf[i];
-
-    // judeg LOAD
-    if(type == 1)  
-    {
-      printf("come in\n");
-
-      uint32_t offset   = 0;
-      uint32_t virtAddr = 0;
-      uint32_t fileSiz  = 0;
-      uint32_t memSiz   = 0;
-
-      ramdisk_read(buf, base + 4, 4);
-      for (int i = 3; i >= 0; --i) offset = (offset << 8) + buf[i];
-      ramdisk_read(buf, base + 8, 4);
-      for (int i = 3; i >= 0; --i) virtAddr = (virtAddr << 8) + buf[i];
-      ramdisk_read(buf, base + 16, 4);
-      for (int i = 3; i >= 0; --i) fileSiz = (fileSiz << 8) + buf[i];
-      ramdisk_read(buf, base + 20, 4);
-      for (int i = 3; i >= 0; --i) memSiz = (memSiz << 8) + buf[i];
-
-      printf("tend to handle\n");
-
-      char *buf_malloc = (char*)malloc(fileSiz * sizeof(char) + 1);
-      ramdisk_read(buf_malloc, offset, fileSiz);
-
-      printf("read finish\n");
-
-      memcpy((void *)virtAddr, buf_malloc, fileSiz);
-      memset((void *)(virtAddr + fileSiz), 0, memSiz - fileSiz);
-
-      printf("finish handle\n");
+  Elf_Ehdr eh;
+  ramdisk_read(&eh, 0, sizeof(Elf_Ehdr));
+  // check elf
+  assert((*(uint32_t *)eh.e_ident == 0x464c457f));
+  // check ISA
+  assert(eh.e_machine == EM_Loongarch32r);
+ 
+  Elf_Phdr ph[eh.e_phnum];
+  ramdisk_read(ph, eh.e_phoff, sizeof(Elf_Phdr)*eh.e_phnum);
+  for (int i = 0; i < eh.e_phnum; i++) {
+    if (ph[i].p_type == PT_LOAD) {
+      
+      ramdisk_read((void*)ph[i].p_vaddr, ph[i].p_offset, ph[i].p_memsz);
+      
+      memset((void*)(ph[i].p_vaddr+ph[i].p_filesz), 0, ph[i].p_memsz - ph[i].p_filesz);
     }
   }
-  
-  return entry_point_address;
+  return eh.e_entry;
 }
+
+
 
 void naive_uload(PCB *pcb, const char *filename) {
   uintptr_t entry = loader(pcb, filename);

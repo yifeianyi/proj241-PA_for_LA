@@ -6,10 +6,11 @@ void init_ramdisk(void);
 void init_irq(void);
 void init_fs(void);
 void init_proc(void);
+void yield(void);
 
 int main() {
-  //extern const char logo[];
-  //printf("%s", logo);
+  extern const char logo[];
+  printf("%s", logo);
   Log("'Hello World!' from Nanos-lite");
   Log("Build time: %s, %s", __TIME__, __DATE__);
 
