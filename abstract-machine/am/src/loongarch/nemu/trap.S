@@ -16,6 +16,7 @@ f(30) f(31)
 #define OFFSET_ESTAT  (32 * 4)
 #define OFFSET_PRMD   (33 * 4)
 #define OFFSET_ERA    (34 * 4)
+#define OFFSET_ENTRY  (35 * 4)
 
 #define CSR_ESTAT  0x5
 #define CSR_PRMD  0x1
@@ -35,9 +36,10 @@ __am_asm_trap:
   st.w $t0, $sp, OFFSET_ESTAT
   st.w $t1, $sp, OFFSET_PRMD
   st.w $t2, $sp, OFFSET_ERA
-
+  
   move $a0, $sp
   bl __am_irq_handle
+  move $sp, $a0
 
   ld.w $t1, $sp, OFFSET_PRMD
   ld.w $t2, $sp, OFFSET_ERA

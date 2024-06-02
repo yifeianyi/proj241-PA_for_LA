@@ -28,6 +28,7 @@ enum{
 typedef struct {
   word_t gpr[32];
   vaddr_t pc;
+  word_t era,estat,prmd,eentry;
 } loongarch32r_CPU_state;
 
 // decode

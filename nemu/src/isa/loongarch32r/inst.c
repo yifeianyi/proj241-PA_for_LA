@@ -30,11 +30,12 @@
 #define uimm5()  do { *imm = SEXT(BITS(i,14,10),5);} while (0)
 #define hint16() do { *imm = SEXT(BITS(i,15,0),16);} while(0)
 
-static void decode_operand(Decode *s, int *rd_, word_t *src1, word_t *src2, word_t *imm, int type) {
+static void decode_operand(Decode *s, int *rd_, int *csr_id, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
   int rj = BITS(i, 9, 5);
   int rk = BITS(i,14,10);
   *rd_ = BITS(i, 4, 0);
+  *csr_id = BITS(i,23,10);
   switch (type) {
     case TYPE_1RI20:   simm20(); src1R();   break;
     case TYPE_2RI12:   simm12(); src1R();   break;
@@ -48,8 +49,45 @@ static void decode_operand(Decode *s, int *rd_, word_t *src1, word_t *src2, word
   }
 }
 
+static void csrwr_op(int rd, int csr_id){
+  word_t *CSR = NULL;
+  switch (csr_id)
+  {
+  case CSR_PRMD: CSR = &cpu.prmd; break;
+  case CSR_ESTAT: CSR = &cpu.estat; break;
+  case CSR_ERA: CSR = &cpu.era; break;
+  case CSR_EENTRY:CSR = &cpu.eentry; break;//暂不处理。
+  default:
+#ifdef CONFIG_ITRACE_IRINGBUF
+  print_iringbuf();
+#endif
+    Assert(0,"csr_id is error, CSR_ID = %d",csr_id);
+    break;
+  }
+  word_t t = *CSR;
+  *CSR = R(rd);
+  R(rd) = t;
+}
+static void csrrd_op(int rd, int csr_id){
+  word_t *CSR = NULL;
+  switch (csr_id)
+  {
+  case CSR_PRMD: CSR = &cpu.prmd; break;
+  case CSR_ESTAT: CSR = &cpu.estat; break;
+  case CSR_ERA: CSR = &cpu.era; break;
+  case CSR_EENTRY:CSR = &cpu.eentry; break;//暂不处理。
+  default:
+#ifdef CONFIG_ITRACE_IRINGBUF
+  print_iringbuf();
+#endif
+    Assert(0,"csr_id is error, CSR_ID = %d",csr_id);
+    break;
+  }
+
+  R(rd) = *CSR;
+}
 static int decode_exec(Decode *s) {
-  int rd = 0;
+  int rd = 0 , csr_id = 0;
   word_t src1 = 0, src2 = 0, imm = 0;
   uint64_t temp = 0;
   int32_t  tmp = 0;
@@ -58,11 +96,17 @@ static int decode_exec(Decode *s) {
 
 #define INSTPAT_INST(s) ((s)->isa.inst.val)
 #define INSTPAT_MATCH(s, name, type, ... /* execute body */ ) { \
-  decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
+  decode_operand(s, &rd, &csr_id, &src1, &src2, &imm, concat(TYPE_, type)); \
   __VA_ARGS__ ; \
 }
 #define  GRLEN 32
   INSTPAT_START();
+  INSTPAT("0000010 0???? ????? ????? 00001 ?????" , csrwr    , CSR   , csrwr_op(rd,csr_id));
+  INSTPAT("0000010 0???? ????? ????? 00000 ?????" , csrrd    , CSR   , csrrd_op(rd,csr_id));
+  INSTPAT("0000011 00100 10000 01110 00000 00000" , ertn     , CSR   , s->dnpc = isa_query_intr());
+  INSTPAT("0000000 00010 10110 ????? ????? ?????" , syscall  , N     , s->dnpc = isa_raise_intr(0xB,s->pc));
+
+  //==================================================================================================
   INSTPAT("0001110 ????? ????? ????? ????? ?????" , pcaddu12i, 1RI20 , R(rd) = s->pc + SEXT(imm<<12,GRLEN));
   INSTPAT("0001010 ????? ????? ????? ????? ?????" , LU12I.W  , 1RI20 , R(rd) = imm<<12);
 
@@ -71,7 +115,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000000 1000000????? ????? ?????"   , DIV.W    , 3R    , R(rd) = (signed)src1 / (signed)src2);
   INSTPAT("0000000000 1000001????? ????? ?????"   , MOD.W    , 3R    , R(rd) = (signed)src1 % (signed)src2);
   
-  INSTPAT("0000001010 ???????????? ????? ?????"   , ADDI.w   , 2RI12 , R(rd) = src1 + SEXT((signed)imm,GRLEN));//Log("R(%d):%08x, imm:%08x, R(X)=%08x",rd,R(rd),imm,imm+R(rd));
+  INSTPAT("0000001010 ???????????? ????? ?????"   , ADDI.w   , 2RI12 , R(rd) = src1 + SEXT((signed)imm,GRLEN));
   INSTPAT("0000000000 0101010????? ????? ?????"   , or       ,  3R   , R(rd) = src1 | src2;);
 
   INSTPAT("0000001110 ???????????? ????? ?????"   , ORI      , 2RUI12 , R(rd) = src1 | SEXT((unsigned)(imm & 0xFFF),GRLEN));
@@ -80,6 +124,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("010101???? ??????? ????? ????? ?????"  , bl       , I26   , R(1)  = s->pc + 4; s->dnpc = s->pc + SEXT(imm<<2, GRLEN); 
     f_trace_call(s->pc, s->dnpc);
   );
+
 
   INSTPAT("0010100010 ???????????? ????? ?????"   , ld.w     , 2RI12 , R(rd) = Mr(src1 + (signed)imm, 4));
   INSTPAT("0010100001 ???????????? ????? ?????"   , ld.h     , 2RI12 , R(rd) = SEXT(Mr(src1 + SEXT(imm,GRLEN), 2),16));
@@ -111,7 +156,7 @@ static int decode_exec(Decode *s) {
 
   INSTPAT("0000000001 0000001????? ????? ?????"   , SLLI.W   , 2RUI5    ,R(rd) = (unsigned)src1 << (unsigned)imm);
   INSTPAT("0000000001 0001001????? ????? ?????"   , SRLI.W   , 2RUI5    ,R(rd) = (unsigned)src1 >> (unsigned)imm);
-  INSTPAT("0000000001 0010001????? ????? ?????"   , SRAI.W   , 2RUI5    ,R(rd) = src1 >> (unsigned)imm);
+  INSTPAT("0000000001 0010001????? ????? ?????"   , SRAI.W   , 2RUI5    ,R(rd) = src1>> (unsigned)imm );
 
   INSTPAT("0000000000 0101010????? ????? ?????"   , or       , 3R    , R(rd) = src1 | src2);
   INSTPAT("0000000000 0101011????? ????? ?????"   , xor      , 3R    , R(rd) = src1 ^ src2;);//Log("inst_xor:src1:%08x, src2:%08x",src1,src2)
@@ -143,7 +188,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0011100000 1110100????? ????? ?????"   , DBAR     , LANZAN , imm = 0);
   INSTPAT("0011100000 1110101????? ????? ?????"   , IBAR     , LANZAN , imm = 0);
 
-  INSTPAT("0000 0000 0010 10100 ????? ????? ?????", break    , N    , NEMUTRAP(s->pc, R(4))); // R(4) is $a0
+  INSTPAT("0000 0000 0010 10100 ????? ????? ?????", break    , N    , NEMUTRAP(s->pc, R(4));if(R(4)!=0)isa_reg_display()); // R(4) is $a0
   INSTPAT("????????????????? ????? ????? ?????"   , inv      , N     , INV(s->pc));
   INSTPAT_END();
 

@@ -14,15 +14,26 @@
 ***************************************************************************************/
 
 #include <isa.h>
+#define SYSCALL_num 452
 
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   /* TODO: Trigger an interrupt/exception with ``NO''.
    * Then return the address of the interrupt/exception vector.
    */
+  cpu.era = epc;
+  cpu.estat = NO<<16;
+  // if(NO < SYSCALL_num){
+  //   cpu.estat = NO<<16;
+  // }else{
+  //   cpu.estat = -1<<16;
+  // }
 
-  return 0;
+#ifdef CONFIG_ETRACE
+  //printf("test testtest.\n");
+#endif
+  return cpu.eentry;
 }
 
 word_t isa_query_intr() {
-  return INTR_EMPTY;
+  return cpu.era;
 }

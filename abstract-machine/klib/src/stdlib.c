@@ -4,8 +4,8 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 static unsigned long int next = 1;
-static char* start_addr;
-static bool init_flag = 0;
+static char* start_addr = NULL;
+static bool init_flag = false;
 
 int rand(void) {
   // RAND_MAX assumed to be 32767
@@ -36,18 +36,26 @@ void *malloc(size_t size) {
   // Therefore do not call panic() here, else it will yield a dead recursion:
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
-  panic("Not implemented");
+  //panic("Not implemented");
 
   if(!init_flag) {
-  	start_addr = (void*)ROUNDUP(heap.start, 8);
-	init_flag = true;
+  	start_addr = (char*)ROUNDUP((uintptr_t)heap.start, 8);
+	  init_flag = true;
   }
-  size = (size_t)ROUNDUP(size, 8);
-  char* old = start_addr;
+  size = ROUNDUP(size, 8);
+
+  if (start_addr + size > (char*)heap.end) {
+    // 内存不足，返回 NULL
+    return NULL;
+  }
+
+  char *allocated = start_addr;
+
   start_addr += size;
 
+  return allocated;
 #endif
-  return old;
+  return NULL;
 }
 
 void free(void *ptr) {

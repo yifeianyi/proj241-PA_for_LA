@@ -182,6 +182,10 @@ config DTRACE_COND
   string "Only trace device when the condition is true"
   default "true"
 
+config ETRACE
+  bool "Enable etrace"
+  default y
+
 config DIFFTEST
   depends on TARGET_NATIVE_ELF
   bool "Enable differential testing"

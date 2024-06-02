@@ -6,6 +6,7 @@ void init_ramdisk(void);
 void init_irq(void);
 void init_fs(void);
 void init_proc(void);
+void yield(void);
 
 int main() {
   extern const char logo[];
@@ -34,4 +35,5 @@ int main() {
 #endif
 
   panic("Should not reach here");
+  
 }
