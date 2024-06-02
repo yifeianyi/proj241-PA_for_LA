@@ -283,5 +283,6 @@ int main() {
         }
     }
     fclose(file);
+    printf("All tests passed\n");
     return 0;
 }
