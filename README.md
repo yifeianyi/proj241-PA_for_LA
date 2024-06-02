@@ -38,10 +38,7 @@ run的全都队
 | 刘奕钊 | 完成loongarch架构的PA实验 | [Dev_lyz](https://github.com/lemonsuqing/proj241-PA_for_LA/wiki/Dev_lyz) | QQ：1428828189 |
 | 李智峰 | 完成loongarch架构的PA实验 | [Dev_lzf](https://github.com/LiZhiFeng1111111/proj241-PA_for_LA/wiki/Dev_lzf) | QQ：1186288906          |
 
-
-
 - [项目管理与协作细节](https://hxu6i1coj1.feishu.cn/base/WWjRbUz3taGa0UsBuEycoVapngk?table=tbl6xudDrnehQGnQ&view=veweOItODk)：涵盖本项目的所有推进细节。
-- [git 协同开发流程](): 本团队在该项目中使用git进行协作开发的经验总结。
 
 ## 文档与演示
 - 技术文档
@@ -49,17 +46,24 @@ run的全都队
     - [ ] [loongarch32r工具配置]()
     - [ ] [简易LA32r反汇编器](): 由于llvm 不支持la32r，为了itrace中能记录汇编代码，此需求应运而生。
     - [ ] [qemu-system-loongarch32 difftest适配笔记]()
-    - [ ] [la32-qemu bug分析报告]()
+    - [x] [la32-qemu bug分析报告](/doc/la32-QEMU%20bug分析报告.pdf)
   - 实现笔记：
-  - 团队分享:
-    - [ ] PA Makefile构成分析
-    - [ ] nemu 框架代码分析
-    - [ ] 运行时环境 am 源码分析
-    - [ ] nanos 启动流程分析
-- 实验讲义：
-  - [PA_for_LA_Tutorial](NULL):ToDo
+    - [IOE的外设实现](https://ebsidb6m9g.feishu.cn/wiki/WdsDwlEcqiMEMzkrKOjcfjdDnKd?from=from_copylink)  
+    - [基于AM裸机的运行过程分析](https://ebsidb6m9g.feishu.cn/wiki/CmANwfLV4ipZnWkNtCzcYFffn9f?from=from_copylink)
+    - [nemu的框架代码](https://ebsidb6m9g.feishu.cn/wiki/FWgXwGUxIiAZlZk9InVcSWzinJf?from=from_copylink)
+    - [Nanos-lite启动过程分析](https://ebsidb6m9g.feishu.cn/wiki/Wt88wvqe2iuAoCkyW1uca6TXnod?from=from_copylink)
+    - [加载器的实现和难点](https://ebsidb6m9g.feishu.cn/wiki/BPz6w1Ay1iZ3B3ko6IwcseU9nRb?from=from_copylink)
+    - [分析游戏到nemu上运行的过程](https://ebsidb6m9g.feishu.cn/wiki/W7Jjwoydiiau7Kkj2W4ccqBRnVe?from=from_copylink)
+    - [SDB简易调试器：实现监视点](https://ebsidb6m9g.feishu.cn/wiki/BmzTwl34eiLHfokIlSwc7xDTnhg?from=from_copylink)
+    - [ELF学习笔记](https://iiglfr2by0.feishu.cn/docx/FKwXdhuEFofSKvxNmNXctVUHnkh?from=from_copylink)
+    - [Klib测试与实现](https://iiglfr2by0.feishu.cn/docx/OezadnxmCofXskxRdRDcQ6kJnGc?from=from_copylink)
+    - [NEMU 启动过程分析](https://iiglfr2by0.feishu.cn/docx/ZkxKdvjFFoJyh3xFQkfcXN8FnZc?from=from_copylink)
+    - [表达式求值](https://iiglfr2by0.feishu.cn/docx/K3EUdYJskob34zx6TuOcqECCnHg?from=from_copylink)
+
 - 汇报&演示
-  - 初赛阶段性成果汇报
+  - [初赛阶段性成果汇报](/doc/初赛阶段性汇报.pdf)
+  - [初赛阶段性演示视频](https://www.alipan.com/s/VR1WY5AAjMZ)
+  - 队员个人总结：doc文件夹下
 
 ## 项目进度
 
@@ -70,7 +74,7 @@ run的全都队
 - [x] 监视点
 
 ### PA2
-- [ ] 基础设施
+- [x] 基础设施
   - [x] LA32r反汇编器
   - [x] iringbuf
   - [x] mtrace
@@ -88,10 +92,10 @@ run的全都队
 
 ### PA3
 - [x] 实现异常响应机制
-- [ ] Loader 实现
+- [x] Loader 实现
 - [ ] 系统调用支持
-  - [ ] exit
-  - [ ] write
+  - [x] exit
+  - [x] write
   - [ ] brk
   - [ ] gettimeofday
   - [ ] execve
@@ -105,7 +109,7 @@ run的全都队
   - [ ] strace
   - [ ] 快照实现
 ### PA4
-- [x] yield-os 实现上下文切换
+- [x] yield-os 实现上下文管理
 - [ ] 跑通 native RT-Thread
 
 ## 参考资料
