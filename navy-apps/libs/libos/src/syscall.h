@@ -24,4 +24,8 @@ enum {
   SYS_gettimeofday
 };
 
+#define Trap -1
+
+//void do_syscall(Context *c);
+
 #endif

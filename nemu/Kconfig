@@ -180,6 +180,7 @@ config ETRACE
   bool "Enable etrace"
   default y
 
+
 config DIFFTEST
   depends on TARGET_NATIVE_ELF
   bool "Enable differential testing"
