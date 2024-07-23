@@ -25,7 +25,16 @@ void init_proc() {
   Log("Initializing processes...");
 
   // load program here
-  const char filename[] = "/bin/file-test";
+  //const char filename[] = "/bin/file-test";
+  //const char filename[] = "/bin/timer-test";
+  //const char filename[] = "/bin/exec-test";
+  //const char filename[] = "/bin/event-test";
+  //const char filename[] = "/bin/vga-test";
+  //const char filename[] = "/bin/nslider";
+  //const char filename[] = "/bin/menu";
+  //const char filename[] = "/bin/nterm";
+  //const char filename[] = "/bin/bird";
+  const char filename[] = "/bin/pal";
   naive_uload(NULL, filename);
 }
 

@@ -9,7 +9,7 @@ extern "C" {
 
 SDL_Surface* IMG_Load_RW(SDL_RWops *src, int freesrc);
 SDL_Surface* IMG_Load(const char *filename);
-SDL_Surface* IMG_LoadJPG_RW(SDL_RWops *src);
+SDL_Surface* JPG_RW(SDL_RWops *src);
 int IMG_isPNG(SDL_RWops *src);
 char* IMG_GetError();
 

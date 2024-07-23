@@ -1,7 +1,7 @@
 #include <common.h>
 #include "syscall.h"
 #include <fs.h>
-
+#include <sys/time.h>
 
 /*===================strace function===================*/
 const char* getSystemCallString(int value) {
@@ -22,24 +22,21 @@ const char* getSystemCallString(int value) {
       return "SYS_close";
     case SYS_lseek:
       return "SYS_lseek";
+    case SYS_gettimeofday:
+      return "SYS_gettimeofday";
     default:
       return "Unknown system call";
   }
 }
+
 
 int sys_yield() {
     yield();
     return 0;
 }
 
-int sys_write(int fd, void *buff, size_t count) {
-    if (fd == 1 || fd == 2) {
-        for (size_t i = 0; i < count; ++i) putch(*((char *)buff + i));  
-        return count;
-    }else{
-        return fs_write(fd, buff, count);
-    }
-    return -1;
+int sys_write(int fd, void *buff, size_t count){
+  return fs_write(fd, buff, count);
 }
 
 void sys_exit(int status) {
@@ -60,18 +57,18 @@ int sys_open(const char *pathname){
 }
 
 int sys_read(int fd, void *buff, size_t count){
-  if(fd == 1 || fd == 2){
-
-  }else{
-    int len = 0;
-    len = fs_read(fd, buff, count);
-    return len;
-  }
-  return -1;
+  return fs_read(fd, buff, count);
 }
 
 int sys_lseek(int fd, off_t offset, int whence){
   return fs_lseek(fd, offset, whence);
+}
+
+int sys_gettimeofday(struct timeval *tv, struct timezone *tz){
+  uint32_t us = io_read(AM_TIMER_UPTIME).us;
+  tv->tv_sec = us / 1000000;
+  tv->tv_usec = us; 
+  return 0;
 }
 
 
@@ -81,7 +78,7 @@ void do_syscall(Context *c) {
   a[0] = c->GPR1;
   
   /*================strace================*/
-  Log("Name: %s\t SYSID: %d\t Return %d\t",getSystemCallString(a[0]),c->GPR1,c->GPRx); 
+  //Log("Name: %s\t SYSID: %d\t Return %d\t",getSystemCallString(a[0]),c->GPR1,c->GPRx); 
   
   intptr_t ret = 0;
   switch (a[0]) {
@@ -95,6 +92,8 @@ void do_syscall(Context *c) {
     case SYS_open: Log("handle sys_open");ret = sys_open((const char *)c->GPR2);break;
     case SYS_close: Log("handle sys_close");ret = sys_close(c->GPR2);break;
     case SYS_lseek: Log("handle sys_lseek");ret = sys_lseek(c->GPR2,(off_t)c->GPR3,c->GPR4);break;
+    /*============about device============*/
+    case SYS_gettimeofday: Log("handle sys_gettimeofday");ret = sys_gettimeofday((struct timeval *)c->GPR2,(struct timezone *)c->GPR3);break;
     /*============other===================*/
     default: panic("Unhandled syscall ID = %d", a[0]);
   }

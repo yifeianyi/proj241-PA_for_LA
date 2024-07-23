@@ -3,16 +3,114 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
-  assert(dst && src);
-  assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
+    assert(dst && src);
+    assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
+
+    uint32_t source_height = src->h;
+    uint32_t source_width = src->w;
+    uint32_t copy_height = source_height;
+    uint32_t copy_width = source_width;
+    uint32_t source_start_offset = 0;
+    uint32_t destination_start_offset = 0;
+    uint32_t bytes_per_pixel = dst->format->BytesPerPixel;
+    uint32_t destination_pitch = dst->pitch;
+    uint32_t source_pitch = src->pitch;
+
+// Adjust the copy area and start offset if a source rectangle is specified
+  if (srcrect != NULL) {
+      copy_height = srcrect->h;
+      copy_width = srcrect->w;
+      source_start_offset = srcrect->y * source_width + srcrect->x;
+  }
+
+  // Adjust the destination start offset if a destination rectangle is specified
+  if (dstrect != NULL) {
+      destination_start_offset = dstrect->y * destination_pitch / bytes_per_pixel + dstrect->x;
+  }
+
+// Perform the blit operation
+  for (uint32_t row = 0; row < copy_height; ++row) {
+      void *destination = (uint8_t *)dst->pixels + (destination_start_offset + row * (destination_pitch / bytes_per_pixel)) * bytes_per_pixel;
+      void *source = (uint8_t *)src->pixels + (source_start_offset + row * source_width) * bytes_per_pixel;
+      memcpy(destination, source, copy_width * bytes_per_pixel);
+  }
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
+  int32_t start_offset = 0; // Initial offset in the pixel buffer
+  uint32_t surface_height = dst->h;
+  uint32_t surface_width = dst->w;
+  uint32_t rect_height = surface_height; // The height of the rectangle area to fill
+  uint32_t rect_width = surface_width;  // The width of the rectangle area to fill
+
+  if (dstrect != NULL) {
+    // If the destination rectangle is specified, update the offset and dimensions
+    start_offset = dstrect->y * surface_width + dstrect->x;
+    rect_height = dstrect->h;
+    rect_width = dstrect->w;
+  }
+
+  int bytes_per_pixel = dst->format->BytesPerPixel; // Calculate bytes per pixel based on the format
+
+// Fill the specified rectangle with the color
+  for (uint32_t row = 0; row < rect_height; ++row) {
+    void *pixel_row_start = (uint8_t *)dst->pixels + (start_offset + row * surface_width) * bytes_per_pixel;
+    memset(pixel_row_start, color, rect_width * bytes_per_pixel);
+  }
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+  if (s == NULL || s->pixels == NULL) {
+        // Handle null pointer
+        return;
+    }
+
+    if (w == 0 || h == 0) {
+        w = s->w;
+        h = s->h;
+    }
+
+    uint32_t len = (uint32_t)w * (uint32_t)h;
+    uint32_t *buf = (uint32_t *)malloc(len * sizeof(uint32_t));
+
+    if (buf == NULL) {
+        // Handle memory allocation failure
+        return;
+    }
+    
+    uint8_t *pixels = (uint8_t *)s->pixels;
+    uint8_t bytes_per_pixel = s->format->BytesPerPixel;
+    uint32_t pitch = s->pitch;
+
+    for (int row = 0; row < h; ++row) {
+        for (int col = 0; col < w; ++col) {
+            int index = row * w + col;  // index in the buffer
+            int pixel_pos = (y + row) * (pitch / bytes_per_pixel) + (x + col);  // pixel position in the surface
+
+            if (s->format->BitsPerPixel == 32) {
+                uint32_t *pixels_32 = (uint32_t *)pixels;
+                buf[index] = pixels_32[pixel_pos];
+            }
+            else if (s->format->BitsPerPixel == 8) {
+                uint8_t index_in_palette = pixels[pixel_pos];
+                SDL_Color rgba_color = s->format->palette->colors[index_in_palette];
+                buf[index] = (rgba_color.a << 24) | (rgba_color.r << 16) | (rgba_color.g << 8) | (rgba_color.b); 
+            }
+            else {
+                // Unsupported pixel format
+                free(buf);
+                fprintf(stderr, "SDL_UpdateRect: Unsupported pixel format with %d bits per pixel\n", s->format->BitsPerPixel);
+                return;
+            }
+        }
+    }
+
+    NDL_DrawRect(buf, x, y, w, h);
+
+    free(buf);
 }
 
 // APIs below are already implemented.
