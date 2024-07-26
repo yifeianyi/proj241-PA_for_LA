@@ -114,10 +114,8 @@ size_t fs_lseek(int fd,size_t offset, int whence){
         Log("ignore lseek %s", file_table[fd].name);
         return 0;
   }
- 
   Finfo *file = &file_table[fd];
   size_t new_offset;
-  // 根据 whence 参数来计算新的指针位置
     if (whence == SEEK_SET) {
         new_offset = offset;
     } else if (whence == SEEK_CUR) {
@@ -128,12 +126,10 @@ size_t fs_lseek(int fd,size_t offset, int whence){
         Log("Invalid whence value: %d", whence);
         return -1;
     }
-     // 检查新的指针位置是否在文件范围内
     if (new_offset < 0 || new_offset > file->size) {
         Log("Seek position out of bounds");
         return -1;
     }
-     // 设置新的文件读写指针
     file->open_offset = new_offset;
     
     return new_offset;

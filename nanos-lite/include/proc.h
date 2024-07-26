@@ -20,4 +20,5 @@ extern PCB *current;
 
 /* ================ function ===============*/
 void naive_uload(PCB *pcb, const char *filename);
+Context* schedule(Context *prev);
 #endif

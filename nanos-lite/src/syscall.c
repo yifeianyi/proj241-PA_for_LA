@@ -2,6 +2,7 @@
 #include "syscall.h"
 #include <fs.h>
 #include <sys/time.h>
+#include <proc.h>
 
 /*===================strace function===================*/
 const char* getSystemCallString(int value) {
@@ -39,8 +40,8 @@ int sys_write(int fd, void *buff, size_t count){
   return fs_write(fd, buff, count);
 }
 
-void sys_exit(int status) {
-    halt(status);
+void sys_exit(int status) {   
+  halt(status);
 }
 
 
@@ -71,6 +72,10 @@ int sys_gettimeofday(struct timeval *tv, struct timezone *tz){
   return 0;
 }
 
+int sys_execve(const char *fname){
+  naive_uload(NULL,fname);
+  return -1;
+}
 
 void do_syscall(Context *c) {
   uintptr_t a[4];
@@ -82,7 +87,7 @@ void do_syscall(Context *c) {
   
   intptr_t ret = 0;
   switch (a[0]) {
-    case Trap: Log("Trap ");break; //deal with trap
+    case Trap: Log("Trap");break; //deal with trap
     case SYS_exit:Log("handle sys_exit");sys_exit(c->GPRx); break;
     case SYS_yield:Log("handle sys_yield");ret = sys_yield();break;
     case SYS_brk: Log("handle sys_brk");ret = sys_brk((void*)c->GPR2);break;
@@ -92,6 +97,7 @@ void do_syscall(Context *c) {
     case SYS_open: Log("handle sys_open");ret = sys_open((const char *)c->GPR2);break;
     case SYS_close: Log("handle sys_close");ret = sys_close(c->GPR2);break;
     case SYS_lseek: Log("handle sys_lseek");ret = sys_lseek(c->GPR2,(off_t)c->GPR3,c->GPR4);break;
+    case SYS_execve: Log("handle sys_execve");ret = sys_execve((const char*)c->GPR2);break;
     /*============about device============*/
     case SYS_gettimeofday: Log("handle sys_gettimeofday");ret = sys_gettimeofday((struct timeval *)c->GPR2,(struct timezone *)c->GPR3);break;
     /*============other===================*/

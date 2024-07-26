@@ -26,6 +26,5 @@ enum {
 
 #define Trap -1
 
-//void do_syscall(Context *c);
 
 #endif
