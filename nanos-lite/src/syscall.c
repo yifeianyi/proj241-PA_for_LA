@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <proc.h>
 
+#define Trap -1
 /*===================strace function===================*/
 const char* getSystemCallString(int value) {
   switch(value) {
