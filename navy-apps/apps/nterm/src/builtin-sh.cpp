@@ -3,6 +3,10 @@
 #include <unistd.h>
 #include <SDL.h>
 
+#define buf_size 128
+static char fname[buf_size];
+static char arg_first[buf_size];
+
 char handle_key(SDL_Event *ev);
 
 static void sh_printf(const char *format, ...) {
@@ -23,6 +27,37 @@ static void sh_prompt() {
 }
 
 static void sh_handle_cmd(const char *cmd) {
+  if (cmd == NULL) return;
+    if (strncmp(cmd, "echo", 4) == 0) {
+        if (strlen(cmd) == 5) sh_printf("\n");
+        else sh_printf("%s", cmd + 5);
+    } else {
+        if (strlen(cmd) > buf_size) {
+            sh_printf("command too long\n");
+            return;
+        }
+        int arg_first_offset = 0;
+        while (cmd[arg_first_offset] != ' ') {
+            arg_first_offset++;
+            if (cmd[arg_first_offset] == '\n') {
+                arg_first_offset = -1;
+                break;
+            }
+        }
+        memset(fname, 0, buf_size);
+        memset(arg_first, 0, buf_size);
+
+        if (arg_first_offset > 0) {
+            strncpy(fname, cmd, arg_first_offset);
+            strncpy(arg_first, cmd + arg_first_offset + 1, strlen(cmd) - arg_first_offset);
+            char *const argv[] = {fname, arg_first, NULL};
+            execve(fname, argv, NULL);
+        } else {
+            strncpy(fname, cmd, strlen(cmd) - 1);
+            char *const argv[] = {fname, NULL};
+            execve(fname, argv, NULL);
+        }
+    }
 }
 
 void builtin_sh_run() {

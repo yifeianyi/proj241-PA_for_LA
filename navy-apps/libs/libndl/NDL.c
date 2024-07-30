@@ -9,15 +9,13 @@
 static int evtdev = -1;
 static int fbdev = -1;
 static int screen_w = 0, screen_h = 0;
-static int picture_w = 0, picture_h = 0;
-static int picture_x = 0, picture_y = 0;
 
 int Init_screen(){
    int buf_size = 1024; // 缓冲区大小
     char *buf = (char *)malloc(buf_size * sizeof(char));
     assert(buf != NULL); // 确保内存分配成功
 
-    int fd = open("/proc/dispinfo", 0);
+    int fd = open("/proc/dispinfo");
     assert(fd >= 0); // 确保文件打开成功
 
     ssize_t ret = read(fd, buf, buf_size - 1); // 读取数据 (留出1个字节用于'\0')
@@ -34,6 +32,7 @@ int Init_screen(){
     }
 
     free(buf); // 释放缓冲区
+    printf("%d %d\n",screen_w,screen_h);
     return 0;
 }
 
@@ -45,7 +44,7 @@ uint32_t NDL_GetTicks() {
 
 int NDL_PollEvent(char *buf, int len) {
   memset(buf, 0, len);
-  int fd = open("/dev/events", 0, 0);
+  int fd = open("/dev/events");
   int ret = read(fd, buf, len);
   close(fd);
   return ret == 0 ? 0 : 1;
@@ -75,20 +74,14 @@ void NDL_OpenCanvas(int *w, int *h) {
     *w = screen_w;
     *h = screen_h;
   }
-  //记录画布大小
-  picture_w = *w;
-  picture_h = *h;
-  //计算画布放置的位置
-  picture_x=(screen_w - picture_w) / 2;
-  picture_y=(screen_h - picture_h) / 2;
   
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
-  int fd = open("/dev/fb",0,0);
-  printf("fd = %d\n",fd);
-  for (int i = 0; i < h; ++i) { 
-    lseek(fd, ((y + picture_y + i) * screen_w + (x + picture_x)) * 4, SEEK_SET);
+  int fd = open("/dev/fb");
+  //printf("fd = %d\n",fd);
+  for (int i = 0; i < 1; i++) { 
+    lseek(fd, ((y + i) * screen_w + x) * 4, SEEK_SET);
     write(fd, pixels + i * w, 4*w);
     //printf("%d\n",i);
   }

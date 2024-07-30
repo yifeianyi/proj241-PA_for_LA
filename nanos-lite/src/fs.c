@@ -54,9 +54,6 @@ int fs_open(const char *pathname){
   for(int i = 0;i < FS_NEM; i++){
     if(strcmp(file_table[i].name, pathname) == 0){
       //Log("open success %s",file_table[i].name);
-      if(i < FD_FB){
-        return i;
-      }
       file_table[i].open_offset = 0;
       return i;
     }

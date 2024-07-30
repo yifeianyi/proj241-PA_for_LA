@@ -38,5 +38,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
-  return NULL;
+  Context *context = (Context *)(kstack.end - sizeof(Context));
+  context->era = (uintptr_t) entry;
+  return context;
 }

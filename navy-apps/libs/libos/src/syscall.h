@@ -24,6 +24,7 @@ enum {
   SYS_gettimeofday
 };
 
+#define Trap -1
 
 #endif
 

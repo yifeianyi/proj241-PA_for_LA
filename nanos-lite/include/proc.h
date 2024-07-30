@@ -20,5 +20,8 @@ extern PCB *current;
 
 /* ================ function ===============*/
 void naive_uload(PCB *pcb, const char *filename);
+void context_uload(PCB *pcb, const char *filename,char *const argv[],char *const envp[]);
+uintptr_t uloader(PCB *pcb, const char *filename);
 Context* schedule(Context *prev);
+void switch_boot_pcb();
 #endif
