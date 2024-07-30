@@ -26,8 +26,7 @@ int SDL_PollEvent(SDL_Event *event) {
 
       int flag = 0;
       for (unsigned i = 0; i < sizeof(keyname) / sizeof(keyname[0]); ++i) {
-          if (strncmp(buf + 3, keyname[i], strlen(buf) - 4) == 0
-                  && strlen(keyname[i]) == strlen(buf) - 4) {
+          if (strncmp(buf + 3, keyname[i], strlen(buf) - 4) == 0 && strlen(keyname[i]) == strlen(buf) - 4) {
               flag = 1;
               event->key.keysym.sym = i;
               break;
@@ -57,8 +56,7 @@ int SDL_WaitEvent(SDL_Event *event) {
 
     int flag = 0;
     for (unsigned i = 0; i < sizeof(keyname) / sizeof(keyname[0]); ++i) {
-        if (strncmp(buf + 3, keyname[i], strlen(buf) - 4) == 0
-                && strlen(keyname[i]) == strlen(buf) - 4) {
+        if (strncmp(buf + 3, keyname[i], strlen(buf) - 4) == 0 && strlen(keyname[i]) == strlen(buf) - 4) {
             flag = 1;
             event->key.keysym.sym = i;
             break;

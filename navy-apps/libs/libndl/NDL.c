@@ -11,27 +11,27 @@ static int fbdev = -1;
 static int screen_w = 0, screen_h = 0;
 
 int Init_screen(){
-   int buf_size = 1024; // 缓冲区大小
+   int buf_size = 1024; 
     char *buf = (char *)malloc(buf_size * sizeof(char));
-    assert(buf != NULL); // 确保内存分配成功
+    assert(buf != NULL); 
 
     int fd = open("/proc/dispinfo");
-    assert(fd >= 0); // 确保文件打开成功
+    assert(fd >= 0); 
 
-    ssize_t ret = read(fd, buf, buf_size - 1); // 读取数据 (留出1个字节用于'\0')
-    assert(ret >= 0); // 确保读取成功
-    buf[ret] = '\0'; // 确保缓冲区是以空字符结尾
+    ssize_t ret = read(fd, buf, buf_size - 1); 
+    assert(ret >= 0); 
+    buf[ret] = '\0'; 
 
-    assert(close(fd) == 0); // 关闭文件
+    assert(close(fd) == 0); 
 
-    // 使用sscanf提取宽度和高度
+    
     if (sscanf(buf, "WIDTH : %d\nHEIGHT : %d", &screen_w, &screen_h) != 2) {
         fprintf(stderr, "Failed to read width and height.\n");
         free(buf);
-        return; // 提取失败时返回
+        return; 
     }
 
-    free(buf); // 释放缓冲区
+    free(buf); 
     printf("%d %d\n",screen_w,screen_h);
     return 0;
 }

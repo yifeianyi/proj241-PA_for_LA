@@ -108,27 +108,35 @@ size_t fs_write(int fd, void *buf, size_t len){
 /* locate the file*/
 size_t fs_lseek(int fd,size_t offset, int whence){
   if (fd <= 2) {
-        Log("ignore lseek %s", file_table[fd].name);
-        return 0;
+    Log("ignore lseek %s", file_table[fd].name);
+    return 0;
   }
+
   Finfo *file = &file_table[fd];
   size_t new_offset;
-    if (whence == SEEK_SET) {
-        new_offset = offset;
-    } else if (whence == SEEK_CUR) {
-        new_offset = file->open_offset + offset;
-    } else if (whence == SEEK_END) {
-        new_offset = file->size + offset;
-    } else {
-        Log("Invalid whence value: %d", whence);
-        return -1;
-    }
-    if (new_offset < 0 || new_offset > file->size) {
-        Log("Seek position out of bounds");
-        return -1;
-    }
-    file->open_offset = new_offset;
-    
-    return new_offset;
+
+  switch (whence) {
+      case SEEK_SET:
+          new_offset = offset;
+          break;
+      case SEEK_CUR:
+          new_offset = file->open_offset + offset;
+          break;
+      case SEEK_END:
+          new_offset = file->size + offset;
+          break;
+      default:
+          Log("Invalid whence value: %d", whence);
+          return -1;
+  }
+
+  if (new_offset > file->size) {
+      Log("Seek position out of bounds");
+      return -1;
+  }
+
+  file->open_offset = new_offset;
+
+  return new_offset;
 }
 

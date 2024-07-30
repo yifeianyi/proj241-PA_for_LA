@@ -24,11 +24,9 @@ void hello_fun(void *arg) {
 
 /*============new insert============*/
 void context_kload(PCB *pcb,void (*func)(void*), void *arg){
-  //创建上下文
   Area stack;
   stack.start = pcb->stack;
   stack.end = pcb->stack + STACK_SIZE;
-  //将创建完成的返回的指针记录到pcb的cp中
   pcb->cp = kcontext(stack, func, arg); 
 }
 
