@@ -123,16 +123,17 @@ void context_uload(PCB *pcb, const char *filename,char *const argv[],char *const
 void init_proc() {
   //char *A = "M";
   char *B = "B";
-  //char *argv[] = {"/bin/pal", "--skip", NULL};
+  char *argv[] = {"/bin/pal", "--skip", NULL};
   //printf("%s %s\n",argv[0],argv[1]);
   context_kload(&pcb[0], hello_fun,(void*)B);
-  //context_uload(&pcb[1], "/bin/pal", argv, NULL);
-  char *argv[] = {"/bin/nterm",NULL,NULL};
+  context_uload(&pcb[1], "/bin/pal", argv, NULL);
+  //char *argv[] = {"/bin/nterm",NULL,NULL};
   //char *argv[] = {"/bin/menu",NULL,NULL};
   //char *argv[] = {"/bin/exec-test",NULL,NULL};
   //context_uload(&pcb[1],"/bin/exec-test",argv,NULL);
   //context_uload(&pcb[1],"/bin/menu",argv,NULL);
-  context_uload(&pcb[1],"/bin/nterm",argv,NULL);
+  //char *argv[] = {"/bin/vga-test",NULL,NULL};
+  //context_uload(&pcb[1],"/bin/vga-test",argv,NULL);
   switch_boot_pcb();
 
   Log("Initializing processes...");
