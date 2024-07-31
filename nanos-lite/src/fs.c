@@ -72,7 +72,8 @@ int fs_close(int fd){
 size_t fs_read(int fd, void *buf, size_t len){
   ReadFn real_read = file_table[fd].read;
   if(real_read != NULL){
-    return real_read(buf,0,len);
+    size_t open_offset = file_table[fd].open_offset;
+    return real_read(buf,open_offset,len);
   }
   size_t read_len = len;
   size_t open_offset = file_table[fd].open_offset;
@@ -91,7 +92,8 @@ size_t fs_read(int fd, void *buf, size_t len){
 size_t fs_write(int fd, void *buf, size_t len){
   WriteFn real_write = file_table[fd].write;
   if(real_write != NULL){
-    return real_write(buf,0,len);
+    size_t open_offset = file_table[fd].open_offset;
+    return real_write(buf,open_offset,len);
   }
   size_t write_len = len;
   size_t open_offset = file_table[fd].open_offset;

@@ -80,7 +80,7 @@ void NDL_OpenCanvas(int *w, int *h) {
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   int fd = open("/dev/fb");
   //printf("fd = %d\n",fd);
-  for (int i = 0; i < 1; i++) { 
+  for (int i = 0; i < h; i++) { 
     lseek(fd, ((y + i) * screen_w + x) * 4, SEEK_SET);
     write(fd, pixels + i * w, 4*w);
     //printf("%d\n",i);
