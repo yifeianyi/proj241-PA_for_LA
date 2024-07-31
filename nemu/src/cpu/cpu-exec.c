@@ -80,7 +80,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 
 #ifdef CONFIG_ITRACE_IRINGBUF
+  // p[0] = '\0';
   push_to_iringbuf(s->logbuf,s->pc);
+
 #endif
 
 #endif
