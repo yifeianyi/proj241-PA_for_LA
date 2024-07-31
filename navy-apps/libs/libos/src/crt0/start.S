@@ -35,6 +35,7 @@ _start:
 #elif defined(__ISA_LOONGARCH32R__)
 
   move $fp, $zero
+  move $sp, $a0
   bl call_main
 
 #else

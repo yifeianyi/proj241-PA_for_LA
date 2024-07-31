@@ -1,6 +1,8 @@
 #include <proc.h>
 // #include <usr>
 #include </usr/include/elf.h>
+#include <fs.h>
+#include "ramdisk.h"
 
 /* new insert: EM_Loogarch32r */
 #define EM_Loongarch32r 258
@@ -30,6 +32,7 @@
 #endif
 /*===============================================*/
 
+/*
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr eh;
   ramdisk_read(&eh, 0, sizeof(Elf_Ehdr));
@@ -37,7 +40,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   assert((*(uint32_t *)eh.e_ident == 0x464c457f));
   // check ISA
   assert(eh.e_machine == EM_Loongarch32r);
- 
+  
   Elf_Phdr ph[eh.e_phnum];
   ramdisk_read(ph, eh.e_phoff, sizeof(Elf_Phdr)*eh.e_phnum);
   for (int i = 0; i < eh.e_phnum; i++) {
@@ -48,7 +51,49 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       memset((void*)(ph[i].p_vaddr+ph[i].p_filesz), 0, ph[i].p_memsz - ph[i].p_filesz);
     }
   }
+  
   return eh.e_entry;
+}
+*/
+
+static uintptr_t loader(PCB *pcb, const char *filename) {
+  int fd = fs_open(filename);
+  if (fd < 0) {
+    panic("should not reach here");
+  }
+  Elf_Ehdr elf;
+ 
+  assert(fs_read(fd, &elf, sizeof(elf)) == sizeof(elf));
+  // check elf
+  assert(*(uint32_t *)elf.e_ident == 0x464c457f);
+  // check ISA
+  assert(elf.e_machine == EM_Loongarch32r);
+
+  Elf_Phdr phdr;
+  for (int i = 0; i < elf.e_phnum; i++) {
+    uint32_t base = elf.e_phoff + i * elf.e_phentsize;
+ 
+    fs_lseek(fd, base, 0);
+    assert(fs_read(fd, &phdr, elf.e_phentsize) == elf.e_phentsize);
+    
+    // need to Load
+    if (phdr.p_type == PT_LOAD) {
+ 
+      char * buf_malloc = (char *)malloc(phdr.p_filesz);
+ 
+      fs_lseek(fd, phdr.p_offset, 0);
+      assert(fs_read(fd, buf_malloc, phdr.p_filesz) == phdr.p_filesz);
+      
+      memcpy((void*)phdr.p_vaddr, buf_malloc, phdr.p_filesz);
+      memset((void*)phdr.p_vaddr + phdr.p_filesz, 0, phdr.p_memsz - phdr.p_filesz);
+      
+      free(buf_malloc);
+    }
+  }
+ 
+  assert(fs_close(fd) == 0);
+
+  return elf.e_entry;
 }
 
 
@@ -59,3 +104,6 @@ void naive_uload(PCB *pcb, const char *filename) {
   ((void(*)())entry) ();
 }
 
+uintptr_t uloader(PCB *pcb, const char *filename){
+  return loader(pcb, filename);
+} 

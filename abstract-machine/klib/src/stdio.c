@@ -147,7 +147,81 @@ int sprintf(char *out, const char *fmt, ...) {
 
            
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-  panic("Not implemented");
+  va_list pArgs;
+  va_start(pArgs, fmt);
+  char *start = out;
+  size_t remaining = n;
+
+  for (; *fmt != '\0' && remaining > 0; ++fmt) {
+    if (*fmt == '\\') {
+      // When we encounter a backslash, check if the next character is an 'n'
+      ++fmt; // Move to the next character to check if it's an 'n'
+      if (*fmt == 'n') {
+        // If there is space, add a newline character, otherwise exit the loop
+        if (remaining > 1) {
+          *out++ = '\n';
+          --remaining;
+        } else {
+          break;
+        }
+      } else {
+        // If the next character is not an 'n', treat the backslash as a normal character
+        if (remaining > 1) {
+          *out++ = '\\';
+          --remaining;
+        }
+        // Put the fmt pointer back to the previous character to check it in the next iteration
+        fmt--;
+      }
+    } else if (*fmt != '%') {
+      *out++ = *fmt;
+      --remaining;
+    } else {
+      // Handle format specifier
+      fmt++; // Move to the specifier character
+      switch (*fmt) {
+        case '%':
+          *out++ = '%';
+          --remaining;
+          break;
+        case 'd': {
+          int num = va_arg(pArgs, int);
+          int written = snprintf(out, remaining, "%d", num);
+          if (written > 0) {
+            out += written < remaining ? written : remaining - 1;
+            remaining -= written < remaining ? written : remaining - 1;
+          }
+          break;
+        }
+        case 's': {
+          char *s = va_arg(pArgs, char *);
+          int length = strlen(s);
+          if (length < remaining) {
+            strcpy(out, s);
+            out += length;
+            remaining -= length;
+          } else {
+            strncpy(out, s, remaining - 1);
+            out[remaining - 1] = '\0'; // Ensure null-termination
+            return out + remaining - start - 1; // We've exhausted the space
+          }
+          break;
+        }
+        case 'c': {
+          char c = (char)va_arg(pArgs, int);
+          *out++ = c;
+          --remaining;
+          break;
+        }
+        // Other specifiers can be added here
+      }
+    }
+  }
+  *out = '\0'; // Null-terminate the string
+  va_end(pArgs);
+
+  return out - start;
+  //panic("Not implemented");
 }
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
