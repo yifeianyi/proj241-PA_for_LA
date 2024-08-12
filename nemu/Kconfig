@@ -126,8 +126,11 @@ endmenu
 
 menu "Testing and Debugging"
 
-
 config STRACE
+  bool "Enable Strace"
+  default n
+
+config FTRACE
   bool "Enable Ftrace"
   default n
 
