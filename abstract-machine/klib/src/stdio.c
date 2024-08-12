@@ -50,7 +50,34 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
     else{
      switch(*(++fmt)){
      case '%': *out = *fmt; ++out; break;
-     case 'd': out += itoa(va_arg(ap,int),out,10);break;
+     case 'd':
+    {
+      int value = va_arg(ap, int);
+      char buffer[12]; // Buffer to hold the integer as a string
+      itoa(value, buffer, 10);
+      int width = 2; // The minimum width
+      char fill = ' '; // The fill character
+
+      // Check if the format is %02d or %2d
+      if (*(fmt - 1) == '0') {
+        fill = '0';
+      }
+
+      // Calculate the actual width of the integer
+      int actual_width = strlen(buffer);
+
+      // If the actual width is less than the minimum width, we need to add fill characters
+      if (actual_width < width) {
+          for (int i = 0; i < width - actual_width; ++i) {
+            *out++ = fill;
+          }
+        }
+
+        // Copy the integer to the output
+        strcpy(out, buffer);
+        out += actual_width;
+    }
+    break;
      case 's':
         {
         char *s = va_arg(ap,char*);
@@ -64,6 +91,24 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
           *out++ = c;
        }
        break;
+    case 'p':
+       {
+           uintptr_t value = (uintptr_t)va_arg(ap, void*);
+          *out++ = '0';
+          *out++ = 'x';
+          for (int i = sizeof(void*) * 2 - 1; i >= 0; --i) {
+            // 获得当前十六进制位的字符
+            int current_digit = (value >> (4 * i)) & 0xF;
+            if (current_digit <= 9) {
+                // '0'到'9'之间
+                *out++ = '0' + current_digit;
+            } else {
+                // 'a'到'f'之间
+                *out++ = 'a' + (current_digit - 10);
+            }
+         }
+       }
+       break;
      }
      
     }
@@ -75,7 +120,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 }
 
 int printf(const char *fmt, ...) {
-  char buf[1024];
+  char buf[2048];
 	va_list ap;
 	va_start(ap, fmt);
 
@@ -129,7 +174,10 @@ int sprintf(char *out, const char *fmt, ...) {
 
            
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-  panic("Not implemented");
+  char str[1024];
+  sprintf(str, fmt);
+  strncmp(str, out , n);
+  return 0;
 }
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
