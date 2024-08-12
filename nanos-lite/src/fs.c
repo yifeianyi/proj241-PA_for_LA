@@ -34,6 +34,7 @@ static Finfo file_table[] __attribute__((used)) = {
 #include "files.h"
 };
 
+char *GetFileName(int fd){return file_table[fd].name;}
 
 #define NR_FILES (sizeof(file_table) / sizeof(file_table[0]))
 int fs_open(const char *pathname, int flags, int mode){
