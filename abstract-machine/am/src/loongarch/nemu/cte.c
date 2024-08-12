@@ -10,11 +10,11 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
-    uintptr_t ecode = BITS(c->estat,21,16 );// c->estat >> 16;
+    uintptr_t ecode = BITS(c->estat,21,16);
     // printf("In __am_irq_handle,ecode:%d\n",ecode);
     switch (ecode) {
       case 11: ev.event = EVENT_SYSCALL;break;
-      /*-1*/case 63: ev.event = EVENT_YIELD;break;
+      case 63: ev.event = EVENT_YIELD;break;
       default: ev.event = EVENT_ERROR; break;
     }
     c = user_handler(ev, c);
