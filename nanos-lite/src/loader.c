@@ -1,6 +1,7 @@
 #include <proc.h>
 // #include <usr>
 #include </usr/include/elf.h>
+#include <fs.h>
 
 #ifdef __LP64__
 # define Elf_Ehdr Elf64_Ehdr
@@ -9,26 +10,57 @@
 # define Elf_Ehdr Elf32_Ehdr
 # define Elf_Phdr Elf32_Phdr
 #endif
-size_t ramdisk_read(void *buf, size_t offset, size_t len);
-size_t ramdisk_write(const void *buf, size_t offset, size_t len);
+
+#if defined(__ISA_AM_NATIVE__)
+# define EXPECT_TYPE EM_X86_64
+#elif defined(__ISA_X86__)
+# define EXPECT_TYPE EM_X86_64
+#elif defined(__ISA_LOONGARCH32R__)
+# define EXPECT_TYPE 0x102
+#else
+# error Unsupported ISA
+#endif
+
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
-  Elf_Ehdr ehdr;
-  ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
-  assert(*(uint32_t*)ehdr.e_ident == 0x464c457f);
-
-  // short value = ehdr.e_machine;
-
-  Elf_Phdr phdr[ehdr.e_phnum];
-  ramdisk_read(phdr,ehdr.e_ehsize, sizeof(Elf_Phdr)*ehdr.e_phnum);
-
-  for(int i=0; i< ehdr.e_phnum;i++){
-    if(phdr[i].p_type == PT_LOAD){
-      ramdisk_read((void*)phdr[i].p_vaddr, phdr[i].p_offset, phdr[i].p_memsz);
-      memset((void*)(phdr[i].p_vaddr+phdr[i].p_filesz), 0, phdr[i].p_memsz-phdr[i].p_filesz);
+  
+  int fd = fs_open(filename, 0, 0);
+  if (fd < 0) {
+    panic("should not reach here");
+  }
+  Elf_Ehdr elf;
+ 
+  assert(fs_read(fd, &elf, sizeof(elf)) == sizeof(elf));
+  assert(*(uint32_t *)elf.e_ident == 0x464c457f);// 检查魔数
+  if(EXPECT_TYPE != elf.e_machine){
+    panic("elf 和 isa 不匹配.");
+  }
+  
+  Elf_Phdr phdr;
+  for (int i = 0; i < elf.e_phnum; i++) {
+    uint32_t base = elf.e_phoff + i * elf.e_phentsize;
+ 
+    fs_lseek(fd, base, 0);
+    assert(fs_read(fd, &phdr, elf.e_phentsize) == elf.e_phentsize);
+    
+    // 需要装载的段
+    if (phdr.p_type == PT_LOAD) {
+ 
+      char * buf_malloc = (char *)malloc(phdr.p_filesz);
+ 
+      fs_lseek(fd, phdr.p_offset, 0);
+      assert(fs_read(fd, buf_malloc, phdr.p_filesz) == phdr.p_filesz);
+      
+      memcpy((void*)phdr.p_vaddr, buf_malloc, phdr.p_filesz);
+      memset((void*)phdr.p_vaddr + phdr.p_filesz, 0, phdr.p_memsz - phdr.p_filesz);
+      
+      free(buf_malloc);
     }
   }
-  return ehdr.e_entry;
+ 
+  assert(fs_close(fd) == 0);
+  
+  return elf.e_entry;
 }
 
 void naive_uload(PCB *pcb, const char *filename) {
