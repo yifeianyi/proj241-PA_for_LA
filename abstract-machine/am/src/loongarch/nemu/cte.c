@@ -11,9 +11,9 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     uintptr_t ecode = BITS(c->estat,21,16);
-    // printf("In __am_irq_handle,ecode:%d\n",ecode);
+    printf("In __am_irq_handle,ecode:%d\n",ecode);
     switch (ecode) {
-      case 11: ev.event = EVENT_SYSCALL;break;
+      case 0xB: ev.event = EVENT_SYSCALL;break;
       case 63: ev.event = EVENT_YIELD;break;
       default: ev.event = EVENT_ERROR; break;
     }

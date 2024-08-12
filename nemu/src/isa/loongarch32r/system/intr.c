@@ -27,7 +27,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc, bool flag_sys) {
     EsubCode = -1;
   } 
   else if(flag_sys){
-    Ecode = NO;
+    Ecode = 0xB;
     EsubCode = 0;
   }
   else{
