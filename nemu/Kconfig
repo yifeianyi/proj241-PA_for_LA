@@ -127,6 +127,10 @@ endmenu
 menu "Testing and Debugging"
 
 
+config STRACE
+  bool "Enable Ftrace"
+  default n
+
 config TRACE
   bool "Enable tracer"
   default y
