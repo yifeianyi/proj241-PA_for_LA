@@ -61,8 +61,7 @@ void _exit(int status) {
 }
 
 int _open(const char *path, int flags, mode_t mode) {
-  _exit(SYS_open);
-  return 0;
+  return _syscall_(SYS_open, (intptr_t)path, flags, mode);
 }
 
 int _write(int fd, void *buf, size_t count) {
@@ -85,8 +84,9 @@ void *_sbrk(intptr_t increment) {
 }
 
 int _read(int fd, void *buf, size_t count) {
-  _exit(SYS_read);
-  return 0;
+  int ret = _syscall_(SYS_read, fd, (intptr_t)buf, count);
+  // _exit(SYS_read);
+  return ret;
 }
 
 int _close(int fd) {
@@ -100,7 +100,7 @@ off_t _lseek(int fd, off_t offset, int whence) {
 }
 
 int _gettimeofday(struct timeval *tv, struct timezone *tz) {
-  _exit(SYS_gettimeofday);
+  _syscall_(SYS_gettimeofday, (intptr_t)tv, (intptr_t)tz, 0);
   return 0;
 }
 

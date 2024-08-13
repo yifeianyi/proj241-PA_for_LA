@@ -3,17 +3,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <assert.h>
 
 static int evtdev = -1;
 static int fbdev = -1;
 static int screen_w = 0, screen_h = 0;
 
 uint32_t NDL_GetTicks() {
-  return 0;
+  struct timeval tv;
+  assert(gettimeofday(&tv, NULL) == 0);
+  return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
 int NDL_PollEvent(char *buf, int len) {
-  return 0;
+  int rlen = read(evtdev, buf, len);
+  return rlen;
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
@@ -57,6 +61,7 @@ int NDL_Init(uint32_t flags) {
   if (getenv("NWM_APP")) {
     evtdev = 3;
   }
+  evtdev = open("/dev/events", 0);
   return 0;
 }
 

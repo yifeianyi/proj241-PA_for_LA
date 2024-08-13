@@ -29,7 +29,9 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     panic("should not reach here");
   }
   Elf_Ehdr elf;
- 
+  
+  Log("==== file name:%s ====",filename);
+
   assert(fs_read(fd, &elf, sizeof(elf)) == sizeof(elf));
   assert(*(uint32_t *)elf.e_ident == 0x464c457f);// 检查魔数
   if(EXPECT_TYPE != elf.e_machine){
