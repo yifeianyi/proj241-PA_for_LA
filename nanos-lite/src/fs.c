@@ -12,7 +12,7 @@ typedef struct {
   size_t open_offset;
 } Finfo;
 
-enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_EVENT,FD_DISPINFO,FD_FB};
+enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_EVENT,FD_DISPINFO,FD_FB,FD_SBCTL,FD_SB};
 
 size_t invalid_read(void *buf, size_t offset, size_t len) {
   panic("should not reach here");
@@ -32,6 +32,8 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_EVENT]  = {"/dev/events", 0, 0, events_read ,invalid_write},
   [FD_DISPINFO]  = {"/proc/dispinfo", 0, 0, dispinfo_read, invalid_write},
   [FD_FB]  = {"/dev/fb", 0, 0, invalid_read, fb_write},
+  [FD_SBCTL] = {"/dev/sbctl", 0, 0, sbctl_read, sbctl_write},
+  [FD_SB] = {"/dev/sb", 0, 0, invalid_read, sb_write},
 #include "files.h"
 };
 
@@ -55,8 +57,10 @@ int fs_close(int fd){
  
 size_t fs_read(int fd, void *buf, size_t len){
   ReadFn readFn = file_table[fd].read;
+  // printf("fd:%d, %s\n", fd, file_table[fd].name);
   if (readFn != NULL) {
     // 特殊文件处理
+    // printf("%s\n", file_table[fd].name);
     size_t open_offset = file_table[fd].open_offset;
     size_t fs_ret = readFn(buf, open_offset, len);
     return fs_ret;

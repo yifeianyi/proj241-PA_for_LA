@@ -1,4 +1,5 @@
 #include <common.h>
+#include <fs.h>
 
 #if defined(MULTIPROGRAM) && !defined(TIME_SHARING)
 # define MULTIPROGRAM_YIELD() yield()
@@ -40,6 +41,38 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   Canvas_x = gpu.width;
   Canvas_y = gpu.height;
   return rlen;
+}
+
+size_t sbctl_read(void *buf, size_t offset, size_t len) {
+  AM_AUDIO_CONFIG_T cfg = io_read(AM_AUDIO_CONFIG);
+  AM_AUDIO_STATUS_T stat = io_read(AM_AUDIO_STATUS);
+  // 总缓冲区大小中减去已处理的字节数来计算剩余的缓冲区大小
+  *((uint32_t *)buf) = cfg.bufsize - stat.count;
+  return len;
+}
+
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+
+size_t sbctl_write(const void *buf, size_t offset, size_t len) {
+  (void)offset;
+
+  struct {
+    int freq;
+    int channels;
+    int samples;
+  } __attribute__((packed)) data;
+  len = MIN(len, sizeof(data));
+  memcpy(&data, buf, len);
+  io_write(AM_AUDIO_CTRL, data.freq, data.channels, data.samples);
+  return len;
+}
+
+size_t sb_write(const void *buf, size_t offset, size_t len) {
+  Area wbuf;
+  wbuf.start = (void *)buf;
+  wbuf.end = (void *)buf + len;
+  io_write(AM_AUDIO_PLAY, wbuf);
+  return len;
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {

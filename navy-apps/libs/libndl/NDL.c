@@ -3,7 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/time.h>
+#include <time.h>
 #include <assert.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #define DEBUG 1
 static int evtdev = -1;
 static int fbdev = -1;
@@ -56,17 +62,24 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
+  int sbctl = open("/dev/sbctl", 0, 0);
+  printf("sbctl: %d", sbctl);
+  uint32_t buf[] = {freq, channels, samples};
+  write(sbctl, (void *)buf, 12);
+  close(sbctl);
+}
+int NDL_PlayAudio(void *buf, int len) {
+  int sb = open("/dev/sb", 0, 0);
+  return write(sb, buf, len);
+}
+int NDL_QueryAudio() {
+  int sbctl = open("/dev/sbctl", 0, 0);
+  int size = 0;
+  read(sbctl, (void *)&size, 4);
+  return size;
 }
 
 void NDL_CloseAudio() {
-}
-
-int NDL_PlayAudio(void *buf, int len) {
-  return 0;
-}
-
-int NDL_QueryAudio() {
-  return 0;
 }
 
 int NDL_Init(uint32_t flags) {

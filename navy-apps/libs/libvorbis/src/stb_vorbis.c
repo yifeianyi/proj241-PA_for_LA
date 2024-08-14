@@ -3165,7 +3165,7 @@ static int is_whole_packet_present(stb_vorbis *f)
    return TRUE;
 }
 #endif // !STB_VORBIS_NO_PUSHDATA_API
-
+#include <stdio.h>
 static int start_decoder(vorb *f)
 {
    uint8 header[6], x,y;
@@ -3175,7 +3175,7 @@ static int start_decoder(vorb *f)
    // first page, first packet
    f->first_decode = TRUE;
 
-   if (!start_page(f))                              return FALSE;
+   if (!start_page(f)){ printf("1 - !start_page(f)\n");  return FALSE;}
    // validate page flag
    if (!(f->page_flag & PAGEFLAG_first_page))       return error(f, VORBIS_invalid_first_page);
    if (f->page_flag & PAGEFLAG_last_page)           return error(f, VORBIS_invalid_first_page);
@@ -3193,9 +3193,9 @@ static int start_decoder(vorb *f)
           header[4] == 'e' &&
           header[5] == 'a' &&
           get8(f)   == 'd' &&
-          get8(f)   == '\0')                        return error(f, VORBIS_ogg_skeleton_not_supported);
-      else
-                                                    return error(f, VORBIS_invalid_first_page);
+          get8(f)   == '\0'){           printf("1 - if\n");             return error(f, VORBIS_ogg_skeleton_not_supported);
+      }else{ printf("1 - else\n");
+                                                    return error(f, VORBIS_invalid_first_page);}
    }
 
    // read packet
@@ -3228,12 +3228,12 @@ static int start_decoder(vorb *f)
    if (!(x & 1))                                    return error(f, VORBIS_invalid_first_page);
 
    // second packet!
-   if (!start_page(f))                              return FALSE;
+   if (!start_page(f)){ printf("2 - !start_page(f)\n");  return FALSE;}
 
-   if (!start_packet(f))                            return FALSE;
+   if (!start_packet(f)){ printf("1 - !start_packet(f)\n");  return FALSE;}
 
-   if (!next_segment(f))                            return FALSE;
-
+   if (!next_segment(f)){ printf("1 - !next_segment(f)\n");  return FALSE;}
+   printf("1  == no error == \n");
    if (get8_packet(f) != VORBIS_packet_comment)            return error(f, VORBIS_invalid_setup);
    for (i=0; i < 6; ++i) header[i] = get8_packet(f);
    if (!vorbis_validate(header))                    return error(f, VORBIS_invalid_setup);
@@ -3289,6 +3289,8 @@ static int start_decoder(vorb *f)
    }
    #endif
 
+   printf("2  == no error == \n");
+
    crc32_init(); // always init it, to avoid multithread race conditions
 
    if (get8_packet(f) != VORBIS_packet_setup)       return error(f, VORBIS_invalid_setup);
@@ -3301,16 +3303,20 @@ static int start_decoder(vorb *f)
    f->codebooks = (Codebook *) setup_malloc(f, sizeof(*f->codebooks) * f->codebook_count);
    if (f->codebooks == NULL)                        return error(f, VORBIS_outofmem);
    memset(f->codebooks, 0, sizeof(*f->codebooks) * f->codebook_count);
+
+   // printf("3  == no error == f->codebook_count=%d\n", f->codebook_count);
+
    for (i=0; i < f->codebook_count; ++i) {
+      // printf("in for: i=%d  == no error == \n", i);
       uint32 *values;
       int ordered, sorted_count;
       int total=0;
       uint8 *lengths;
       Codebook *c = f->codebooks+i;
       CHECK(f);
-      x = get_bits(f, 8); if (x != 0x42)            return error(f, VORBIS_invalid_setup);
-      x = get_bits(f, 8); if (x != 0x43)            return error(f, VORBIS_invalid_setup);
-      x = get_bits(f, 8); if (x != 0x56)            return error(f, VORBIS_invalid_setup);
+      x = get_bits(f, 8); if (x != 0x42){ printf("x != 0x42\n"); return error(f, VORBIS_invalid_setup);}            
+      x = get_bits(f, 8); if (x != 0x43){ printf("x != 0x43\n"); return error(f, VORBIS_invalid_setup);}
+      x = get_bits(f, 8); if (x != 0x56){ printf("x != 0x56\n"); return error(f, VORBIS_invalid_setup);}
       x = get_bits(f, 8);
       c->dimensions = (get_bits(f, 8)<<8) + x;
       x = get_bits(f, 8);
@@ -3318,6 +3324,8 @@ static int start_decoder(vorb *f)
       c->entries = (get_bits(f, 8)<<16) + (y<<8) + x;
       ordered = get_bits(f,1);
       c->sparse = ordered ? 0 : get_bits(f,1);
+
+      // printf("in for:1 - i=%d  == no error == \n", i);
 
       if (c->dimensions == 0 && c->entries != 0)    return error(f, VORBIS_invalid_setup);
 
@@ -3327,6 +3335,8 @@ static int start_decoder(vorb *f)
          lengths = c->codeword_lengths = (uint8 *) setup_malloc(f, c->entries);
 
       if (!lengths) return error(f, VORBIS_outofmem);
+
+      // printf("in for:2 - i=%d  == no error == \n", i);
 
       if (ordered) {
          int current_entry = 0;
@@ -3354,6 +3364,8 @@ static int start_decoder(vorb *f)
          }
       }
 
+      // printf("in for:3 - i=%d  == no error == \n", i);
+
       if (c->sparse && total >= c->entries >> 2) {
          // convert sparse items to non-sparse!
          if (c->entries > (int) f->setup_temp_memory_required)
@@ -3366,6 +3378,8 @@ static int start_decoder(vorb *f)
          lengths = c->codeword_lengths;
          c->sparse = 0;
       }
+
+      // printf("in for:4 - i=%d  == no error == \n", i);
 
       // compute the size of the sorted tables
       if (c->sparse) {
@@ -3405,7 +3419,7 @@ static int start_decoder(vorb *f)
          if (c->sparse) setup_temp_free(f, values, 0);
          return error(f, VORBIS_invalid_setup);
       }
-
+      printf("in for:5 - i=%d  == no error == \n", i);
       if (c->sorted_entries) {
          // allocate an extra slot for sentinels
          c->sorted_codewords = (uint32 *) setup_malloc(f, sizeof(*c->sorted_codewords) * (c->sorted_entries+1));
@@ -3426,12 +3440,19 @@ static int start_decoder(vorb *f)
          c->codewords = NULL;
       }
 
+      printf("in for:6 - i=%d  == no error == \n", i);
+
       compute_accelerated_huffman(c);
 
       CHECK(f);
-      c->lookup_type = get_bits(f, 4);
+      c->lookup_type = get_bits(f, 4); // 第24次时，返回值为1
       if (c->lookup_type > 2) return error(f, VORBIS_invalid_setup);
+
+      printf("in for:6.1 - i=%d \t c->lookup_type=%d == no error == \n", i, c->lookup_type);
+
       if (c->lookup_type > 0) {
+         printf("in for:6.2 - i=%d  == no error == \n", i);
+
          uint16 *mults;
          c->minimum_value = float32_unpack(get_bits(f, 32));
          c->delta_value = float32_unpack(get_bits(f, 32));
@@ -3439,19 +3460,32 @@ static int start_decoder(vorb *f)
          c->sequence_p = get_bits(f,1);
          if (c->lookup_type == 1) {
             int values = lookup1_values(c->entries, c->dimensions);
-            if (values < 0) return error(f, VORBIS_invalid_setup);
+            printf("in for:6.2 - i=%d values:%d == no error == \n", i, values);
+            
+            if (values < 0){ 
+               int ret_6_2 = error(f, VORBIS_invalid_setup);
+               printf("in for:6.2 - i=%d ret_6_2:%d == no error == \n", i, ret_6_2);
+               return ret_6_2;}
             c->lookup_values = (uint32) values;
          } else {
             c->lookup_values = c->entries * c->dimensions;
          }
+
+         printf("in for:6.3 - i=%d  == no error == \n", i);
+
          if (c->lookup_values == 0) return error(f, VORBIS_invalid_setup);
          mults = (uint16 *) setup_temp_malloc(f, sizeof(mults[0]) * c->lookup_values);
          if (mults == NULL) return error(f, VORBIS_outofmem);
          for (j=0; j < (int) c->lookup_values; ++j) {
             int q = get_bits(f, c->value_bits);
-            if (q == EOP) { setup_temp_free(f,mults,sizeof(mults[0])*c->lookup_values); return error(f, VORBIS_invalid_setup); }
+            if (q == EOP) { setup_temp_free(f,mults,sizeof(mults[0])*c->lookup_values); 
+            int end3_ret = error(f, VORBIS_invalid_setup);
+            printf("end_ret=%d\n",end3_ret);
+            return end3_ret; }
             mults[j] = q;
          }
+
+         printf("in for:7 - i=%d  == no error == \n", i);
 
 #ifndef STB_VORBIS_DIVIDES_IN_CODEBOOK
          if (c->lookup_type == 1) {
@@ -3463,7 +3497,10 @@ static int start_decoder(vorb *f)
                c->multiplicands = (codetype *) setup_malloc(f, sizeof(c->multiplicands[0]) * c->sorted_entries * c->dimensions);
             } else
                c->multiplicands = (codetype *) setup_malloc(f, sizeof(c->multiplicands[0]) * c->entries        * c->dimensions);
-            if (c->multiplicands == NULL) { setup_temp_free(f,mults,sizeof(mults[0])*c->lookup_values); return error(f, VORBIS_outofmem); }
+            if (c->multiplicands == NULL) { setup_temp_free(f,mults,sizeof(mults[0])*c->lookup_values); 
+               int end2_ret = error(f, VORBIS_outofmem);
+               printf("end_ret=%d\n",end2_ret);
+               return end2_ret; }
             len = sparse ? c->sorted_entries : c->entries;
             for (j=0; j < len; ++j) {
                unsigned int z = sparse ? c->sorted_values[j] : j;
@@ -3478,7 +3515,9 @@ static int start_decoder(vorb *f)
                   if (k+1 < c->dimensions) {
                      if (div > UINT_MAX / (unsigned int) c->lookup_values) {
                         setup_temp_free(f, mults,sizeof(mults[0])*c->lookup_values);
-                        return error(f, VORBIS_invalid_setup);
+                        int end_ret = error(f, VORBIS_invalid_setup);
+                        printf("end_ret=%d\n",end_ret);
+                        return end_ret;
                      }
                      div *= c->lookup_values;
                   }
@@ -3508,7 +3547,10 @@ static int start_decoder(vorb *f)
          CHECK(f);
       }
       CHECK(f);
+      printf("in for:end - i=%d  == no error == \n", i);
    }
+
+   printf("4  == no error == \n");
 
    // time domain transfers (notused)
 
@@ -4682,6 +4724,8 @@ stb_vorbis * stb_vorbis_open_filename(const char *filename, int *error, const st
 }
 #endif // STB_VORBIS_NO_STDIO
 
+
+
 stb_vorbis * stb_vorbis_open_memory(const unsigned char *data, int len, int *error, const stb_vorbis_alloc *alloc)
 {
    stb_vorbis *f, p;
@@ -4692,7 +4736,18 @@ stb_vorbis * stb_vorbis_open_memory(const unsigned char *data, int len, int *err
    p.stream_start = (uint8 *) p.stream;
    p.stream_len = len;
    p.push_mode = FALSE;
-   if (start_decoder(&p)) {
+
+   printf("p.stream: %p\n", (void *)p.stream);
+   printf("p.stream_end: %p\n", (void *)p.stream_end);
+   printf("p.stream_start: %p\n", (void *)p.stream_start);
+   printf("p.stream_len: %d\n", p.stream_len);
+   printf("p.push_mode: %d\n", p.push_mode);
+
+   int rett = start_decoder(&p);
+
+   printf("rett:%d\n", rett);
+
+   if (rett) {
       f = vorbis_alloc(&p);
       if (f) {
          *f = p;
