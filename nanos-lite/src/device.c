@@ -32,13 +32,24 @@ size_t events_read(void *buf, size_t offset, size_t len) {
   }
 }
 
+static uint32_t Canvas_x,Canvas_y;
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
-  return 0;
+  AM_GPU_CONFIG_T gpu = io_read(AM_GPU_CONFIG);
+  int rlen = sprintf(buf, "WIDTH:%d\nHEIGHT:%d\n", gpu.width, gpu.height);
+  // printf("dispinfo_read:\nWIDTH:%d\nHEIGHT:%d\n", gpu.width, gpu.height);
+  Canvas_x = gpu.width;
+  Canvas_y = gpu.height;
+  return rlen;
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  return 0;
-}
+  int x = offset % Canvas_x;  //计算起点
+  int y = offset / Canvas_x;
+  // Log("[fb write]x:%d y:%d len:%d \n",x,y,len);
+  io_write(AM_GPU_FBDRAW,x,y, (uint32_t *)buf, len , 1, true);
+
+  return len;
+} 
 
 void init_device() {
   Log("Initializing devices...");

@@ -5,11 +5,11 @@
 // char *GetFileName(int fd);
 
 
-void Syscall_write(intptr_t *buf, size_t count){
-  for(int i = 0; i < count; i++){
-    putch(*((char*)buf + i));
-  }
-}
+// void Syscall_write(intptr_t *buf, size_t count){
+//   for(int i = 0; i < count; i++){
+//     putch(*((char*)buf + i));
+//   }
+// }
 
 int Syscall_gettimeofday(struct timeval *tv, struct timezone *tz) {
     uint64_t us = io_read(AM_TIMER_UPTIME).us;
@@ -25,7 +25,6 @@ void do_syscall(Context *c) {
   switch (a[0]) {
     case SYS_brk:{
       c->GPRx = 0;
-      // Log("In sys_sbrk");
       break;
     }
     case SYS_exit:{
@@ -54,12 +53,34 @@ void do_syscall(Context *c) {
   // Log("===== In sys_write =====");
   printf(ANSI_FMT("write(filename:%s, len: %d)",ANSI_BG_BLUE)"\n",GetFileName((int)c->GPR2),c->GPR4);
 #endif
-      c->GPRx = 0;
-      Syscall_write((intptr_t *)c->GPR3,c->GPR4);
+      
+      c->GPRx = fs_write((int)c->GPR2,(intptr_t *)c->GPR3,c->GPR4);
       break;
     }
     case SYS_read:{
+#ifdef CONFIG_STRACE
+  // Log("===== In sys_write =====");
+  printf(ANSI_FMT("read(filename:%s, len: %d)",ANSI_BG_BLUE)"\n",GetFileName((int)c->GPR2),c->GPR4);
+#endif
+      
       c->GPRx = fs_read((int)(c->GPR2), (intptr_t *)(c->GPR3), (size_t)(c->GPR4));
+
+#ifdef CONFIG_STRACE
+if(strcmp("/proc/dispinfo",GetFileName((int)c->GPR2))){
+  printf("buf:\n");
+  for(int i = 0;i<c->GPR4;i++)putch(*(char*)(c->GPR3 + i));
+  printf("\n");
+}
+  
+#endif
+      break;
+    }
+    case SYS_lseek:{
+      c->GPRx = fs_lseek(c->GPR2, (size_t)c->GPR3, c->GPR4);
+      break;
+    }
+    case SYS_close:{
+      c->GPRx = fs_close((int)(c->GPR1));
       break;
     }
     default: panic("Unhandled syscall ID = %d", a[0]);

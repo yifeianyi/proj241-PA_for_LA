@@ -12,7 +12,7 @@ typedef struct {
   size_t open_offset;
 } Finfo;
 
-enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_EVENT,FD_FB};
+enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_EVENT,FD_DISPINFO,FD_FB};
 
 size_t invalid_read(void *buf, size_t offset, size_t len) {
   panic("should not reach here");
@@ -30,6 +30,8 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
   [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
   [FD_EVENT]  = {"/dev/events", 0, 0, events_read ,invalid_write},
+  [FD_DISPINFO]  = {"/proc/dispinfo", 0, 0, dispinfo_read, invalid_write},
+  [FD_FB]  = {"/dev/fb", 0, 0, invalid_read, fb_write},
 #include "files.h"
 };
 
@@ -59,6 +61,7 @@ size_t fs_read(int fd, void *buf, size_t len){
     size_t fs_ret = readFn(buf, open_offset, len);
     return fs_ret;
   }
+  
   size_t read_len = len;
   size_t open_offset = file_table[fd].open_offset;
   size_t size = file_table[fd].size;
@@ -98,6 +101,7 @@ size_t fs_lseek(int fd, size_t offset, int whence){
         Log("ignore lseek %s", file_table[fd].name);
         return 0;
   }
+  Finfo *cur_file = &file_table[fd];
   size_t cur_offset;
   /*
     对于 SEEK_SET，cur_offset 直接设置为 offset。
@@ -107,23 +111,29 @@ size_t fs_lseek(int fd, size_t offset, int whence){
   switch (whence)
   {
   case SEEK_SET: cur_offset = offset; break;
-  case SEEK_CUR: cur_offset = file_table[fd].open_offset + offset; break;
-  case SEEK_END: cur_offset = file_table[fd].size + offset; break;
+  case SEEK_CUR: cur_offset = cur_file->open_offset + offset; break;
+  case SEEK_END: cur_offset = cur_file->size + offset; break;
   default:
     Log("Invalid whence value: %d", whence);
     return -1;
   }
 
     // 检查新的指针位置是否在文件范围内
-    file_table[fd].open_offset = cur_offset;
+    
+    
    if (cur_offset < 0 || cur_offset > file_table[fd].size) {
         return -1;
-    } 
+    }
+
+    cur_file->open_offset = cur_offset;
     
      // 设置新的文件读写指针
-    return file_table[fd].open_offset;
+    return cur_offset;
 }
 
 void init_fs() {
   // TODO: initialize the size of /dev/fb
+  AM_GPU_CONFIG_T fb_config = io_read(AM_GPU_CONFIG);
+  file_table[FD_FB].size = fb_config.width * fb_config.height * 4;
+ 
 }
