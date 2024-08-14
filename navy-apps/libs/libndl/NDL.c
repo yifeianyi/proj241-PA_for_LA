@@ -81,7 +81,7 @@ int NDL_Init(uint32_t flags) {
   read(disp,disps,sizeof(disps));
   close(disp);
   sscanf(disps,"%*[A-z] :%d\n%*[A-z] :%d",&screen_w,&screen_h);
-  printf("display:width:%d,  high:%d\n",screen_w,screen_w);
+  // printf("display:width:%d,  high:%d\n",screen_w,screen_w);
 
   fbdev = open("/dev/fb",0);
   return 0;
