@@ -29,8 +29,7 @@ void init_proc() {
   // naive_uload(NULL, "/bin/timer-test");
   // naive_uload(NULL, "/bin/event-test");
   // naive_uload(NULL, "/bin/bmp-test");
-  // naive_uload(current, "/bin/nterm");
-  naive_uload(NULL, "/bin/pal");
+  naive_uload(current, "/bin/pal");
   // naive_uload(current, "/bin/nslider");
 }
 

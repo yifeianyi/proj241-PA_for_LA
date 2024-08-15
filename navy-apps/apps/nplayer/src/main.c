@@ -90,9 +90,11 @@ int main(int argc, char *argv[]) {
   int ret = fread(buf, size, 1, fp);
   assert(ret == 1);
   fclose(fp);
+  printf("stb_vorbis_open_memory start ok\n");
 
   int error;
   v = stb_vorbis_open_memory(buf, size, &error, NULL);
+  printf("stb_vorbis_open_memory = %s\n", v);
   assert(v);
   info = stb_vorbis_get_info(v);
 
