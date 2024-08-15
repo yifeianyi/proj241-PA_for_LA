@@ -3419,7 +3419,7 @@ static int start_decoder(vorb *f)
          if (c->sparse) setup_temp_free(f, values, 0);
          return error(f, VORBIS_invalid_setup);
       }
-      printf("in for:5 - i=%d  == no error == \n", i);
+      // printf("in for:5 - i=%d  == no error == \n", i);
       if (c->sorted_entries) {
          // allocate an extra slot for sentinels
          c->sorted_codewords = (uint32 *) setup_malloc(f, sizeof(*c->sorted_codewords) * (c->sorted_entries+1));
@@ -3440,7 +3440,7 @@ static int start_decoder(vorb *f)
          c->codewords = NULL;
       }
 
-      printf("in for:6 - i=%d  == no error == \n", i);
+      // printf("in for:6 - i=%d  == no error == \n", i);
 
       compute_accelerated_huffman(c);
 
@@ -3460,11 +3460,11 @@ static int start_decoder(vorb *f)
          c->sequence_p = get_bits(f,1);
          if (c->lookup_type == 1) {
             int values = lookup1_values(c->entries, c->dimensions);
-            printf("in for:6.2 - i=%d values:%d == no error == \n", i, values);
+            printf("in for:6.2 - i=%d values:%d \n", i, values);
             
             if (values < 0){ 
                int ret_6_2 = error(f, VORBIS_invalid_setup);
-               printf("in for:6.2 - i=%d ret_6_2:%d == no error == \n", i, ret_6_2);
+               printf("in for:6.2 - i=%d ret_6_2:%d \n", i, ret_6_2);
                return ret_6_2;}
             c->lookup_values = (uint32) values;
          } else {
